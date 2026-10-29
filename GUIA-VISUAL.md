@@ -54,5 +54,5 @@ Este guia vale para toda tela (`Screens*.jsx`). Objetivo: visual leve e fluido, 
 - [ ] Botão pequeno sem ícone como ação principal
 
 ## Como testar
-- Sintaxe: `node /tmp/claude-0/-home-claude/0f69aa76-87e4-5b15-89f3-6ee567fb0d71/scratchpad/babelcheck/check.js <arquivo.jsx>` (rodar de dentro da pasta `babelcheck`).
-- Servidor local já roda em `http://localhost:3077/` (dados de exemplo, modo local). Screenshot: `cd /tmp/claude-0/-home-claude/0f69aa76-87e4-5b15-89f3-6ee567fb0d71/scratchpad && node shot.js <pasta-saida> <paginas> [light|dark] [largura]` — páginas: `geral, tarefas, cooperacoes, coop-aberta, bau, metas, alunos, analises-operadores, analises-redes, analises-heatmap, analises-projecao, financeiro-pagamentos, financeiro-custos, avisos, gestao-operadores, gestao-ponto, gestao-redes, gestao-pix, gestao-loja, gestao-ranking, gestao-notif, proxies, assinatura, config-marca, config-acessos, config-notif, config-conta`. O script imprime erros de página; tem que terminar com `no page errors`.
+- Sintaxe: compile cada `.jsx` com `@babel/core` + `@babel/preset-react` (ou abra o painel e veja o console: o `index.html` mostra a caixa "O painel não abriu" com o erro).
+- Rode o servidor local (`node server/server.cjs`) e confira cada tela em claro, escuro (botão da lua no cabeçalho) e em 390px de largura. Para ver o painel com dados de exemplo sem login, grave no `localStorage` a chave `ms7op-session` com `{"role":"admin","name":"Teste","opId":""}` e recarregue.

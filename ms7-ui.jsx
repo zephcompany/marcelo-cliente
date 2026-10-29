@@ -407,10 +407,10 @@
         if (!w) return;
         const a = w.querySelector('[aria-selected="true"]');
         if (!a) {
-          setInd({ left: 0, width: 0, ready: false });
+          setInd({ left: 0, width: 0, top: 0, height: 0, ready: false });
           return;
         }
-        setInd({ left: a.offsetLeft, width: a.offsetWidth, ready: true });
+        setInd({ left: a.offsetLeft, width: a.offsetWidth, top: a.offsetTop, height: a.offsetHeight, ready: true });
       },
       [],
     );
@@ -439,7 +439,11 @@
         className: ['ms7-tabs', chips ? 'ms7-tabs-chips' : line ? 'ms7-tabs-line' : 'ms7-tabs-seg', full || (!chips && !line) ? 'ms7-tabs-full' : '', className || ''].join(' ').trim(),
         style: style,
       },
-      h('span', { className: 'ms7-tabs-ind', 'aria-hidden': 'true', style: { left: ind.left, width: ind.width, opacity: ind.ready ? 1 : 0 } }),
+      h('span', {
+        className: 'ms7-tabs-ind',
+        'aria-hidden': 'true',
+        style: Object.assign({ left: ind.left, width: ind.width, opacity: ind.ready ? 1 : 0 }, line || !ind.ready ? {} : { top: ind.top, height: ind.height }),
+      }),
       list.map(function (t) {
         const on = t.id === value;
         return h(

@@ -1227,6 +1227,14 @@
       window.scrollTo(0, 0);
     }
     window.ms7Go = go;
+    /* calculado antes do return do login para a ordem dos hooks ser sempre a mesma */
+    const pg = ALLOW && ALLOW.indexOf(page) < 0 ? 'geral' : !isOp && page === 'ponto' ? (localStorage.setItem('ms7op-gestao', 'ponto'), 'gestao') : page;
+    React.useEffect(
+      function () {
+        if (session) document.documentElement.setAttribute('data-pg', pg);
+      },
+      [pg, !!session],
+    );
     if (!session || /[?&]login=1/.test(location.search))
       return (
         <React.Fragment>
@@ -1274,13 +1282,6 @@
             })
           : FOOT
     ).concat([{ id: 'logout', label: 'Sair', icon: 'log-out' }]);
-    const pg = ALLOW && ALLOW.indexOf(page) < 0 ? 'geral' : !isOp && page === 'ponto' ? (localStorage.setItem('ms7op-gestao', 'ponto'), 'gestao') : page;
-    React.useEffect(
-      function () {
-        document.documentElement.setAttribute('data-pg', pg);
-      },
-      [pg],
-    );
     const S =
       {
         ponto: PontoScreen,

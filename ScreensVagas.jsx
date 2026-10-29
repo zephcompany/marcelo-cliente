@@ -3,6 +3,7 @@
   /* ---------- CSS só desta tela (tokens) ---------- */
   const CSS = [
     '.ms7v-qr{width:216px;height:216px;border-radius:12px;background:#fff;box-shadow:0 0 0 1px var(--line);padding:8px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;overflow:hidden}',
+    '.ms7v-qr.is-ph{background:var(--surface-card)}',
     '.ms7v-qr img{width:100%;height:100%;border-radius:6px;display:block}',
     '.ms7v-qr-ph{width:100%;height:100%;border-radius:8px;background:var(--surface-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text-secondary);font-size:12.5px;font-weight:500;text-align:center;padding:12px;box-sizing:border-box}',
     'html[data-theme="dark"] .ms7v-qr{box-shadow:0 0 0 1px var(--line-strong)}',
@@ -70,7 +71,7 @@
   /* QR em moldura branca (ou skeleton enquanto gera) */
   function QrFrame({ src, placeholder, loading }) {
     return (
-      <div className="ms7v-qr">
+      <div className={'ms7v-qr' + (src ? '' : ' is-ph')}>
         {src ? (
           <img src={src} alt="QR Code PIX" />
         ) : loading ? (

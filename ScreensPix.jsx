@@ -1156,7 +1156,7 @@
         </Card>
         {grupos0.length ? (
           <div className="ms7px-pills">
-            <span className="ms7-eyebrow" style={{ marginRight: 2 }}>
+            <span className="ms7-eyebrow" style={{ marginRight: 2, whiteSpace: 'nowrap', flexShrink: 0 }}>
               {'Lotes · ' + grupos.length}
             </span>
             <Tabs
