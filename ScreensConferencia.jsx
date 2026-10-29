@@ -50,6 +50,8 @@
     const [v, setV] = React.useState(String(grp.total.toFixed(2)).replace('.', ','));
     const r = num(v);
     const dif = Math.round((r - grp.total) * 100) / 100;
+    const okC = 'var(--ms7-green)',
+      badC = 'var(--ms7-error)';
     return (
       <DS.Modal
         open
@@ -74,7 +76,7 @@
           </React.Fragment>
         }
       >
-        <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           <DS.Input
             label="Quanto caiu de verdade na conta"
             prefix="R$"
@@ -88,20 +90,22 @@
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: 10,
+              gap: 12,
               padding: '12px 14px',
               borderRadius: 12,
-              background:
-                dif === 0 ? 'color-mix(in oklab, var(--ms7-green) 12%, transparent)' : 'color-mix(in oklab, var(--ms7-error) 12%, transparent)',
+              background: 'color-mix(in oklab, ' + (dif === 0 ? okC : badC) + ' 10%, var(--surface-card))',
+              boxShadow: 'inset 0 0 0 1px color-mix(in oklab, ' + (dif === 0 ? okC : badC) + ' 22%, transparent)',
             }}
           >
-            <DS.Icon name={dif === 0 ? 'circle-check' : 'triangle-alert'} size={18} color={dif === 0 ? 'var(--ms7-green)' : 'var(--ms7-error)'} />
-            <b style={{ fontSize: 14 }}>
+            <span className="ms7d-tile" style={{ width: 30, height: 30, borderRadius: 9, background: 'var(--surface-card)', color: dif === 0 ? okC : badC }}>
+              <DS.Icon name={dif === 0 ? 'circle-check' : 'triangle-alert'} size={16} strokeWidth={2} />
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 600, color: dif === 0 ? okC : badC }}>
               {dif === 0 ? 'Bate certinho com o painel' : (dif < 0 ? 'Faltam ' : 'Sobram ') + brl(Math.abs(dif)) + ' na conta'}
-            </b>
+            </span>
           </div>
-          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Ao confirmar, esses saques saem de "A conferir" e o contador deste grupo volta a zero.
+          <span style={{ fontSize: 12.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+            Ao confirmar, esses saques saem de "A conferir" e o contador deste grupo volta a&nbsp;zero.
           </span>
         </div>
       </DS.Modal>
@@ -190,23 +194,16 @@
         }),
       });
     }
-    const card = { background: 'var(--surface-card)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)' };
-    const kpi = function (l, v, cor) {
-      return (
-        <div style={Object.assign({}, card, { padding: '14px 18px', flex: '1 1 180px', minWidth: 0 })}>
-          <div style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>{l}</div>
-          <div style={{ fontSize: 24, fontWeight: 800, marginTop: 6, fontVariantNumeric: 'tabular-nums', color: cor || 'var(--text-primary)' }}>
-            {v}
-          </div>
-        </div>
-      );
+    /* KPI compacto do DS (mesmo visual do KpiRow), com cor opcional no valor */
+    const kpi = function (l, v, cor, icon, tone) {
+      return <DS.StatCard key={l} variant="compact" icon={icon} tone={tone} label={l} value={v} valueColor={cor} />;
     };
     const H = C.hist || [];
     const difTot = H.reduce(function (a, h) {
       return a + (h.real - h.esperado);
     }, 0);
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <DS.Tabs
             variant="chips"
@@ -237,145 +234,118 @@
         </div>
         {aba === 'pend' ? (
           <React.Fragment>
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-              {kpi('Total a conferir', brl(tot))}
-              {kpi('Saques', pend.length)}
-              {kpi('Grupos com valor', lista.length)}
+            <div className="ms7-kpis ms7-stagger" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))' }}>
+              {kpi('Total a conferir', brl(tot), undefined, 'banknote', 'green')}
+              {kpi('Saques', pend.length, undefined, 'arrow-down-to-line', 'blue')}
+              {kpi('Grupos com valor', lista.length, undefined, 'landmark', 'yellow')}
             </div>
             {lista.length ? (
-              lista.map(function (grp) {
-                const on = aberto === grp.g.id;
-                const porOp = {};
-                grp.itens.forEach(function (x) {
-                  const o = (porOp[x.op] = porOp[x.op] || { n: 0, v: 0 });
-                  o.n++;
-                  o.v += x.valor;
-                });
-                return (
-                  <div key={grp.g.id} style={Object.assign({}, card, { overflow: 'hidden' })}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '16px 18px', flexWrap: 'wrap' }}>
-                      <span
-                        style={{
-                          width: 40,
-                          height: 40,
-                          borderRadius: 12,
-                          flexShrink: 0,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: 'var(--surface-muted, var(--ms7-gray-100))',
-                        }}
-                      >
-                        <DS.Icon name="landmark" size={18} />
-                      </span>
-                      <div style={{ flex: '1 1 220px', minWidth: 0 }}>
-                        <div style={{ fontSize: 16, fontWeight: 800, textTransform: 'uppercase', letterSpacing: '.02em' }}>{gLabel(grp.g)}</div>
-                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginTop: 2 }}>
-                          {Object.keys(porOp)
-                            .map(function (o) {
-                              return o + ' · ' + porOp[o].n + (porOp[o].n === 1 ? ' saque' : ' saques') + ' · ' + brl(porOp[o].v);
-                            })
-                            .join('   |   ')}
-                        </div>
-                      </div>
-                      <div style={{ textAlign: 'right' }}>
-                        <div
-                          style={{
-                            fontSize: 11,
-                            fontWeight: 700,
-                            letterSpacing: '.05em',
-                            textTransform: 'uppercase',
-                            color: 'var(--text-secondary)',
-                          }}
-                        >
-                          Tem que ter na conta
-                        </div>
-                        <div style={{ fontSize: 24, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{brl(grp.total)}</div>
-                      </div>
-                      <DS.Button
-                        size="sm"
-                        variant="outline"
-                        iconRight={on ? 'chevron-up' : 'chevron-down'}
-                        onClick={function () {
-                          setAberto(on ? null : grp.g.id);
-                        }}
-                      >
-                        {grp.itens.length + (grp.itens.length === 1 ? ' saque' : ' saques')}
-                      </DS.Button>
-                      <DS.Button
-                        size="sm"
-                        variant="brand"
-                        iconLeft="check"
-                        onClick={function () {
-                          setModal(grp);
-                        }}
-                      >
-                        Conferido
-                      </DS.Button>
-                    </div>
-                    {on ? (
-                      <div style={{ borderTop: '1px solid var(--border-subtle)', overflowX: 'auto' }}>
-                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                          <thead>
-                            <tr
-                              style={{
-                                color: 'var(--text-secondary)',
-                                fontSize: 11,
-                                fontWeight: 700,
-                                letterSpacing: '.05em',
-                                textTransform: 'uppercase',
-                              }}
-                            >
-                              {['Operador', 'Plataforma', 'Conta', 'Chave', 'Saque'].map(function (t, i) {
-                                return (
-                                  <th key={t} style={{ textAlign: i === 4 ? 'right' : 'left', padding: '8px 18px' }}>
-                                    {t}
-                                  </th>
-                                );
-                              })}
-                            </tr>
-                          </thead>
-                          <tbody>
-                            {grp.itens.map(function (x) {
+              <section className="ms7-card" style={{ overflow: 'hidden' }}>
+                {lista.map(function (grp) {
+                  const on = aberto === grp.g.id;
+                  const porOp = {};
+                  grp.itens.forEach(function (x) {
+                    const o = (porOp[x.op] = porOp[x.op] || { n: 0, v: 0 });
+                    o.n++;
+                    o.v += x.valor;
+                  });
+                  return (
+                    <React.Fragment key={grp.g.id}>
+                      <div className="ms7d-grp">
+                        <span className="ms7d-tile" style={{ width: 40, height: 40, borderRadius: 12, background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}>
+                          <DS.Icon name="landmark" size={18} strokeWidth={1.9} />
+                        </span>
+                        <div style={{ flex: '1 1 220px', minWidth: 0 }}>
+                          <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em', lineHeight: 1.25 }}>{gLabel(grp.g)}</div>
+                          <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginTop: 6 }}>
+                            {Object.keys(porOp).map(function (o) {
                               return (
-                                <tr key={x.id} style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                                  <td style={{ padding: '9px 18px', fontWeight: 700 }}>{x.op}</td>
-                                  <td style={{ padding: '9px 18px' }}>{x.plat}</td>
-                                  <td style={{ padding: '9px 18px' }}>{x.ct.usuario || '—'}</td>
-                                  <td style={{ padding: '9px 18px', fontFamily: 'ui-monospace, monospace' }}>
-                                    {x.k.tipo ? PIXV.format(x.k.tipo, x.k.valor) : x.k.valor}
-                                  </td>
-                                  <td style={{ padding: '9px 18px', textAlign: 'right', fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>
-                                    {brl(x.valor)}
-                                  </td>
-                                </tr>
+                                <DS.Badge key={o} tone="gray" variant="soft" size="sm">
+                                  {o + ' · ' + porOp[o].n + (porOp[o].n === 1 ? ' saque' : ' saques') + ' · ' + brl(porOp[o].v)}
+                                </DS.Badge>
                               );
                             })}
-                          </tbody>
-                        </table>
+                          </div>
+                        </div>
+                        <div style={{ textAlign: 'right', minWidth: 0 }}>
+                          <div className="ms7-eyebrow">Tem que ter na conta</div>
+                          <div className="ms7-num" style={{ marginTop: 3, fontSize: 22, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                            {brl(grp.total)}
+                          </div>
+                        </div>
+                        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                          <DS.Button
+                            size="sm"
+                            variant="outline"
+                            iconRight={on ? 'chevron-up' : 'chevron-down'}
+                            onClick={function () {
+                              setAberto(on ? null : grp.g.id);
+                            }}
+                          >
+                            {grp.itens.length + (grp.itens.length === 1 ? ' saque' : ' saques')}
+                          </DS.Button>
+                          <DS.Button
+                            size="sm"
+                            variant="brand"
+                            iconLeft="check"
+                            onClick={function () {
+                              setModal(grp);
+                            }}
+                          >
+                            Conferido
+                          </DS.Button>
+                        </div>
                       </div>
-                    ) : null}
-                  </div>
-                );
-              })
-            ) : (
-              <div
-                style={Object.assign({}, card, {
-                  padding: '48px 20px',
-                  textAlign: 'center',
-                  color: 'var(--text-secondary)',
-                  fontSize: 14,
-                  fontWeight: 600,
+                      {on ? (
+                        <div className="ms7d-grp-det">
+                          <div className="ms7-table-wrap">
+                            <table className="ms7-table">
+                              <thead>
+                                <tr>
+                                  {['Operador', 'Plataforma', 'Conta', 'Chave', 'Saque'].map(function (t, i) {
+                                    return (
+                                      <th key={t} style={{ textAlign: i === 4 ? 'right' : 'left' }}>
+                                        {t}
+                                      </th>
+                                    );
+                                  })}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {grp.itens.map(function (x) {
+                                  return (
+                                    <tr key={x.id}>
+                                      <td style={{ fontWeight: 600 }}>{x.op}</td>
+                                      <td>{x.plat}</td>
+                                      <td>{x.ct.usuario || '—'}</td>
+                                      <td className="ms7-num" style={{ fontFamily: 'var(--font-mono)', fontSize: 12.5 }}>
+                                        {x.k.tipo ? PIXV.format(x.k.tipo, x.k.valor) : x.k.valor}
+                                      </td>
+                                      <td className="ms7-num" style={{ textAlign: 'right', fontWeight: 600 }}>
+                                        {brl(x.valor)}
+                                      </td>
+                                    </tr>
+                                  );
+                                })}
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      ) : null}
+                    </React.Fragment>
+                  );
                 })}
-              >
-                Nada para conferir. Quando o operador coloca uma chave e marca a conta como Sacado, o valor aparece aqui no grupo da chave.
-              </div>
+              </section>
+            ) : (
+              <section className="ms7-card" style={{ padding: 12 }}>
+                <Empty art="Wallet" title="Nada para conferir" sub="Quando o operador coloca uma chave e marca a conta como Sacado, o valor aparece aqui no grupo da chave." />
+              </section>
             )}
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <div style={{ display: 'flex', gap: 14, flexWrap: 'wrap' }}>
-              {kpi('Conferências', H.length)}
+            <div className="ms7-kpis ms7-stagger" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))' }}>
+              {kpi('Conferências', H.length, undefined, 'list-checks', 'blue')}
               {kpi(
                 'Total conferido',
                 brl(
@@ -383,73 +353,84 @@
                     return a + h.real;
                   }, 0),
                 ),
+                undefined,
+                'banknote',
+                'green',
               )}
               {kpi(
                 'Diferença acumulada',
                 (difTot > 0 ? '+' : '') + brl(difTot),
                 difTot < 0 ? 'var(--ms7-error)' : difTot > 0 ? 'var(--ms7-orange)' : undefined,
+                'scale',
+                'orange',
               )}
             </div>
-            <div style={Object.assign({}, card, { overflowX: 'auto' })}>
+            <section className="ms7-card" style={{ padding: H.length ? '8px 8px 4px' : 12 }}>
               {H.length ? (
-                <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                  <thead>
-                    <tr style={{ color: 'var(--text-secondary)', fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase' }}>
-                      {['Data', 'Grupo', 'Operadores', 'Saques', 'Esperado', 'Caiu', 'Diferença', ''].map(function (t, i) {
+                <div className="ms7-table-wrap">
+                  <table className="ms7-table">
+                    <thead>
+                      <tr>
+                        {['Data', 'Grupo', 'Operadores', 'Saques', 'Esperado', 'Caiu', 'Diferença', ''].map(function (t, i) {
+                          return (
+                            <th key={i} style={{ textAlign: i >= 3 && i <= 6 ? 'right' : 'left' }}>
+                              {t}
+                            </th>
+                          );
+                        })}
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {H.map(function (h) {
+                        const d = Math.round((h.real - h.esperado) * 100) / 100;
                         return (
-                          <th key={i} style={{ textAlign: i >= 3 && i <= 6 ? 'right' : 'left', padding: '10px 16px' }}>
-                            {t}
-                          </th>
+                          <tr key={h.id}>
+                            <td className="ms7-num" style={{ whiteSpace: 'nowrap', color: 'var(--text-secondary)' }}>
+                              {new Date(h.em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                            </td>
+                            <td style={{ fontWeight: 600 }}>{h.label}</td>
+                            <td>{(h.ops || []).join(', ')}</td>
+                            <td className="ms7-num" style={{ textAlign: 'right' }}>
+                              {h.n}
+                            </td>
+                            <td className="ms7-num" style={{ textAlign: 'right' }}>
+                              {brl(h.esperado)}
+                            </td>
+                            <td className="ms7-num" style={{ textAlign: 'right' }}>
+                              {brl(h.real)}
+                            </td>
+                            <td style={{ textAlign: 'right' }}>
+                              {d === 0 ? (
+                                <DS.Badge tone="green" size="sm">
+                                  OK
+                                </DS.Badge>
+                              ) : (
+                                <DS.Badge tone={d < 0 ? 'error' : 'orange'} size="sm">
+                                  {(d > 0 ? '+' : '') + brl(d)}
+                                </DS.Badge>
+                              )}
+                            </td>
+                            <td style={{ width: 44, padding: '6px 8px' }}>
+                              <DS.IconButton
+                                icon="rotate-ccw"
+                                size={30}
+                                iconSize={14}
+                                label="Desfazer"
+                                onClick={function () {
+                                  desfazer(h);
+                                }}
+                              />
+                            </td>
+                          </tr>
                         );
                       })}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {H.map(function (h) {
-                      const d = Math.round((h.real - h.esperado) * 100) / 100;
-                      return (
-                        <tr key={h.id} style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                          <td style={{ padding: '10px 16px', whiteSpace: 'nowrap' }}>
-                            {new Date(h.em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
-                          </td>
-                          <td style={{ padding: '10px 16px', fontWeight: 700, textTransform: 'uppercase' }}>{h.label}</td>
-                          <td style={{ padding: '10px 16px' }}>{(h.ops || []).join(', ')}</td>
-                          <td style={{ padding: '10px 16px', textAlign: 'right' }}>{h.n}</td>
-                          <td style={{ padding: '10px 16px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{brl(h.esperado)}</td>
-                          <td style={{ padding: '10px 16px', textAlign: 'right', fontVariantNumeric: 'tabular-nums' }}>{brl(h.real)}</td>
-                          <td
-                            style={{
-                              padding: '10px 16px',
-                              textAlign: 'right',
-                              fontWeight: 800,
-                              fontVariantNumeric: 'tabular-nums',
-                              color: d < 0 ? 'var(--ms7-error)' : d > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)',
-                            }}
-                          >
-                            {d === 0 ? 'OK' : (d > 0 ? '+' : '') + brl(d)}
-                          </td>
-                          <td style={{ padding: '6px 12px', width: 44 }}>
-                            <DS.IconButton
-                              icon="rotate-ccw"
-                              size={30}
-                              iconSize={14}
-                              label="Desfazer"
-                              onClick={function () {
-                                desfazer(h);
-                              }}
-                            />
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              ) : (
-                <div style={{ padding: '40px 20px', textAlign: 'center', color: 'var(--text-secondary)', fontSize: 14, fontWeight: 600 }}>
-                  Nenhuma conferência ainda.
+                    </tbody>
+                  </table>
                 </div>
+              ) : (
+                <Empty art="Tasks" title="Nenhuma conferência ainda" sub="Cada conferência confirmada fica registrada aqui, com o valor esperado e o que caiu na conta." />
               )}
-            </div>
+            </section>
           </React.Fragment>
         )}
         {modal ? (

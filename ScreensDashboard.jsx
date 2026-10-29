@@ -1,5 +1,49 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
+  /* CSS da camada visual (só tokens) — dashboard, análises, conferência */
+  (function () {
+    if (document.getElementById('ms7-dash-css')) return;
+    const s = document.createElement('style');
+    s.id = 'ms7-dash-css';
+    s.textContent = [
+      '.ms7d-hero-num{display:block;font-size:clamp(34px,4.6vw,44px);font-weight:600;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}',
+      '.ms7d-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));margin-top:4px;padding-top:16px;border-top:1px solid var(--line)}',
+      '.ms7d-fact{min-width:0;padding:0 18px}.ms7d-fact:first-child{padding-left:0}.ms7d-fact+.ms7d-fact{border-left:1px solid var(--line)}',
+      '.ms7d-fact-v{margin-top:5px;font-size:18px;font-weight:600;letter-spacing:-.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '@media (max-width:520px){.ms7d-facts{grid-template-columns:1fr}.ms7d-fact{padding:10px 0;border-left:0!important;border-top:1px solid var(--border-subtle)}.ms7d-fact:first-child{border-top:0;padding-top:0}}',
+      '.ms7d-tip{position:absolute;top:6px;padding:8px 12px;border-radius:10px;background:var(--surface-card);box-shadow:var(--shadow-pop);pointer-events:none;white-space:nowrap;animation:ms7-pop 200ms var(--ease-out) both}',
+      '.ms7d-tip-d{display:block;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}',
+      '.ms7d-list{display:flex;flex-direction:column}',
+      '.ms7d-row{display:flex;align-items:center;gap:12px;padding:12px 10px;margin:0 -10px;border-radius:10px;transition:background var(--dur-fast)}',
+      '.ms7d-row:hover{background:var(--surface-muted)}.ms7d-row.is-click{cursor:pointer}',
+      '.ms7d-list>.ms7d-row:not(:last-child){border-bottom:1px solid var(--border-subtle)}',
+      '.ms7d-tile{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center}',
+      '.ms7d-t{font-size:14px;font-weight:600;letter-spacing:-.005em;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.ms7d-s{font-size:12.5px;font-weight:500;color:var(--text-secondary);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '@media (max-width:520px){.ms7d-t,.ms7d-s{white-space:normal}}',
+      '.ms7d-chips{display:flex;flex-wrap:wrap;gap:8px}',
+      '.ms7d-chip{display:inline-flex;align-items:center;height:36px;padding:0 14px 0 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);transition:border-color var(--dur-fast),background var(--dur-fast),transform var(--dur-base) var(--ease-standard)}',
+      '.ms7d-chip:hover{border-color:var(--line-strong);transform:translateY(-1px)}',
+      '.ms7d-chip.is-on{border-color:color-mix(in oklab,var(--ms7-green-900) 40%,var(--line));background:color-mix(in oklab,var(--ms7-green-900) 7%,var(--surface-card))}',
+      '.ms7d-chip .ms7-check{font-size:13.5px;font-weight:600;gap:8px}',
+      '.ms7d-pos{width:26px;height:26px;border-radius:8px;background:var(--surface-muted);font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}',
+      '.ms7d-pos.is-first{background:var(--ms7-lime-500);color:#0C3B26}',
+      '.ms7d-rede{padding:18px 20px;display:flex;flex-direction:column;gap:12px}',
+      '.ms7d-rede-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-top:12px;border-top:1px solid var(--border-subtle)}',
+      '.ms7d-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}',
+      '.ms7d-tile-box{padding:14px 16px;border-radius:12px;background:var(--surface-muted)}',
+      '.ms7d-form{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end}.ms7d-form>.ms7-field{flex:1 1 180px}',
+      '.ms7d-toolbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;margin-bottom:12px;border-radius:12px;background:var(--surface-muted)}',
+      '.ms7d-legend{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}',
+      '.ms7d-legend-bar{width:120px;height:8px;border-radius:4px;background:linear-gradient(90deg,color-mix(in oklab,var(--ms7-green) 10%,var(--surface-muted)),color-mix(in oklab,var(--ms7-green) 55%,var(--surface-card)),var(--ms7-green-900))}',
+      '.ms7-chart-heat>div>div>span{font-weight:600!important}',
+      '.ms7-chart-heat>div>div:last-child>span:first-child{font-weight:500!important;color:var(--text-secondary)}',
+      '.ms7d-grp{display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap}',
+      '.ms7d-grp+.ms7d-grp,.ms7d-grp-det+.ms7d-grp{border-top:1px solid var(--border-subtle)}',
+      '.ms7d-grp-det{border-top:1px solid var(--border-subtle);padding:2px 8px 6px}',
+    ].join('');
+    document.head.appendChild(s);
+  })();
   const pct = function (v) {
     return (isFinite(v) ? v : 0).toLocaleString('pt-BR', { maximumFractionDigits: 0 }) + '%';
   };
@@ -108,6 +152,10 @@
     localStorage.setItem('ms7op-open-coop', id);
     window.ms7Go('cooperacoes');
   }
+  /* tile de ícone tingido (detalhe de cor, nunca card inteiro) */
+  const tint = function (c) {
+    return 'color-mix(in oklab, ' + c + ' 12%, var(--surface-card))';
+  };
   function AlertsCard({ session }) {
     const { Card, Badge } = DS;
     const al = buildAlerts(session);
@@ -123,44 +171,23 @@
         }
       >
         {al.length ? (
-          <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <div className="ms7d-list">
             {al.slice(0, 6).map(function (a, i) {
+              const c = 'var(--ms7-' + (a.tone === 'error' ? 'error' : a.tone === 'yellow' ? 'orange' : 'blue') + ')';
               return (
                 <div
                   key={i}
+                  className="ms7d-row is-click"
                   onClick={function () {
                     a.coop ? openCoop(a.coop) : window.ms7Go(a.page);
                   }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    padding: '10px 0',
-                    borderBottom: i < Math.min(al.length, 6) - 1 ? '1px solid var(--border-subtle)' : 'none',
-                    cursor: 'pointer',
-                  }}
                 >
-                  <span
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: 9,
-                      flexShrink: 0,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      background:
-                        'color-mix(in srgb, var(--ms7-' +
-                        (a.tone === 'error' ? 'error' : a.tone === 'yellow' ? 'yellow' : 'blue') +
-                        ') 16%, var(--surface-card))',
-                      color: 'var(--ms7-' + (a.tone === 'error' ? 'error' : a.tone === 'yellow' ? 'orange' : 'blue') + ')',
-                    }}
-                  >
+                  <span className="ms7d-tile" style={{ background: tint(c), color: c }}>
                     <DS.Icon name={a.icon} size={16} strokeWidth={2} />
                   </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600 }}>{a.title}</div>
-                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>{a.sub}</div>
+                    <div className="ms7d-t">{a.title}</div>
+                    <div className="ms7d-s">{a.sub}</div>
                   </div>
                   <DS.Icon name="chevron-right" size={16} color="var(--text-secondary)" />
                 </div>
@@ -168,7 +195,7 @@
             })}
           </div>
         ) : (
-          <Empty icon="circle-check" title="Tudo certo" sub="Nenhum alerta no momento." />
+          <Empty art="Bell" compact title="Tudo certo" sub="Nenhum alerta no momento." />
         )}
       </Card>
     );
@@ -293,298 +320,206 @@
         return n.type === 'ciclo';
       })
       .slice(0, 5);
-    const box = { background: 'var(--surface-card)', borderRadius: 20, boxShadow: 'var(--shadow-card)', padding: '20px 22px', minWidth: 0 };
-    const lab = { fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' };
+    const sec = { fontSize: 13.5, fontWeight: 500, color: 'var(--text-secondary)' };
+    const num = function (v, size) {
+      return { fontSize: size || 14, fontWeight: 600, color: col(v), whiteSpace: 'nowrap' };
+    };
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 16, alignItems: 'stretch' }}>
-          <div
-            style={Object.assign({}, box, {
-              flex: '2 1 520px',
-              minWidth: 0,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 12,
-              background: 'linear-gradient(135deg, color-mix(in oklab, var(--ms7-lime-500) 10%, var(--surface-card)) 0%, var(--surface-card) 55%)',
-            })}
-          >
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'stretch' }}>
+          <section className="ms7-card" style={{ flex: '2 1 520px', minWidth: 0, padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <b style={{ fontSize: 15 }}>Lucro líquido</b>
+              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: 1.25, letterSpacing: '-0.015em' }}>Lucro líquido</h3>
               <span style={{ flex: 1 }}></span>
-              <span
-                style={{
-                  fontSize: 12,
-                  fontWeight: 700,
-                  padding: '4px 12px',
-                  borderRadius: 12,
-                  background: 'var(--surface-muted, var(--ms7-gray-100))',
-                }}
-              >
+              <DS.Badge tone="gray" variant="soft">
                 {per}
-              </span>
+              </DS.Badge>
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: 14, flexWrap: 'wrap' }}>
-              <span
-                style={{
-                  fontSize: 'clamp(34px,5vw,52px)',
-                  fontWeight: 800,
-                  letterSpacing: '-.02em',
-                  lineHeight: 1,
-                  fontVariantNumeric: 'tabular-nums',
-                  color: col(gC.lucro),
-                }}
-              >
-                {brlS(gC.lucro)}
-              </span>
-              <span style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)' }}>
-                {gC.coops + (gC.coops === 1 ? ' cooperação concluída' : ' cooperações concluídas') + ' · ROI ' + pct(gC.roi)}
-              </span>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px 14px', flexWrap: 'wrap' }}>
+              <DS.CountUp value={brlS(gC.lucro)} className="ms7d-hero-num" style={{ color: col(gC.lucro) }} />
+              <span style={sec}>{gC.coops + (gC.coops === 1 ? ' cooperação concluída' : ' cooperações concluídas') + ' · ROI ' + pct(gC.roi)}</span>
             </div>
-            <div style={lab}>Resultado por dia</div>
-            <div style={{ position: 'relative' }}>
+            <div className="ms7-eyebrow" style={{ marginTop: 6 }}>
+              Resultado por dia
+            </div>
+            <div style={{ position: 'relative', flex: 1, minHeight: 170, display: 'flex', flexDirection: 'column' }}>
               {vals.length ? (
-                <svg
-                  viewBox={'0 0 ' + W + ' ' + H}
-                  preserveAspectRatio="none"
-                  style={{ width: '100%', height: 170, display: 'block' }}
-                  onMouseLeave={function () {
-                    setHv(null);
-                  }}
-                >
-                  <defs>
-                    <linearGradient id="ms7fh" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0" stopColor="var(--ms7-green)" stopOpacity=".28"></stop>
-                      <stop offset="1" stopColor="var(--ms7-green)" stopOpacity="0"></stop>
-                    </linearGradient>
-                  </defs>
-                  <line x1="0" x2={W} y1={y0} y2={y0} stroke="var(--border-default)" strokeDasharray="4 4"></line>
-                  <path d={area} fill="url(#ms7fh)"></path>
-                  <path d={line} fill="none" stroke="var(--ms7-green)" strokeWidth="2.5" vectorEffect="non-scaling-stroke"></path>
-                  {pts.map(function (p, i) {
-                    return (
-                      <rect
-                        key={i}
-                        x={p[0] - W / Math.max(2, pts.length) / 2}
-                        y="0"
-                        width={W / Math.max(2, pts.length)}
-                        height={H}
-                        fill="transparent"
-                        onMouseEnter={function () {
-                          setHv(i);
-                        }}
-                      ></rect>
-                    );
-                  })}
-                  {hv != null ? (
-                    <line
-                      x1={pts[hv][0]}
-                      x2={pts[hv][0]}
-                      y1="0"
-                      y2={H}
-                      stroke="var(--text-secondary)"
-                      strokeWidth="1"
-                      vectorEffect="non-scaling-stroke"
-                    ></line>
-                  ) : null}
-                </svg>
-              ) : (
-                <div
-                  style={{
-                    height: 120,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: 13,
-                    fontWeight: 600,
-                    color: 'var(--text-secondary)',
-                    borderRadius: 14,
-                    background: 'var(--surface-muted, var(--ms7-gray-100))',
-                  }}
-                >
-                  Nenhuma cooperação concluída neste período.
+                <div className="ms7-chart ms7-chart-area" style={{ flex: 1, display: 'flex' }}>
+                  <svg
+                    viewBox={'0 0 ' + W + ' ' + H}
+                    preserveAspectRatio="none"
+                    style={{ width: '100%', height: '100%', minHeight: 170, display: 'block', flex: 1 }}
+                    onMouseLeave={function () {
+                      setHv(null);
+                    }}
+                  >
+                    <defs>
+                      <linearGradient id="ms7fh" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0" stopColor="var(--ms7-green)" stopOpacity=".26"></stop>
+                        <stop offset="1" stopColor="var(--ms7-green)" stopOpacity="0"></stop>
+                      </linearGradient>
+                    </defs>
+                    <line x1="0" x2={W} y1={y0} y2={y0} stroke="var(--line)" strokeDasharray="4 4"></line>
+                    <path d={area} fill="url(#ms7fh)"></path>
+                    <path d={line} fill="none" stroke="var(--ms7-green)" strokeWidth="2.25" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke"></path>
+                    {pts.map(function (p, i) {
+                      return (
+                        <rect
+                          key={i}
+                          x={p[0] - W / Math.max(2, pts.length) / 2}
+                          y="0"
+                          width={W / Math.max(2, pts.length)}
+                          height={H}
+                          fill="transparent"
+                          onMouseEnter={function () {
+                            setHv(i);
+                          }}
+                        ></rect>
+                      );
+                    })}
+                    {hv != null ? <rect x={pts[hv][0] - 0.5} y="0" width="1" height={H} fill="var(--text-secondary)" opacity=".55"></rect> : null}
+                  </svg>
                 </div>
+              ) : (
+                <Empty art="Chart" compact title="Nenhuma cooperação concluída neste período" sub="Quando uma cooperação é concluída, o lucro de cada dia aparece aqui." />
               )}
               {hv != null ? (
-                <div
+                <span
                   style={{
                     position: 'absolute',
-                    top: 6,
-                    left: Math.min(70, Math.max(0, (pts[hv][0] / W) * 100)) + '%',
-                    padding: '8px 12px',
-                    borderRadius: 12,
+                    left: (pts[hv][0] / W) * 100 + '%',
+                    top: (pts[hv][1] / H) * 100 + '%',
+                    width: 10,
+                    height: 10,
+                    marginLeft: -5,
+                    marginTop: -5,
+                    borderRadius: '50%',
                     background: 'var(--surface-card)',
-                    boxShadow: 'var(--shadow-pop)',
-                    fontSize: 13,
-                    fontWeight: 600,
+                    border: '2px solid ' + col(vals[hv]),
                     pointerEvents: 'none',
-                    whiteSpace: 'nowrap',
                   }}
-                >
-                  <b>{ks[hv].split('-').reverse().slice(0, 2).join('/')}</b>
-                  <div style={{ color: col(vals[hv]), fontWeight: 800 }}>{brlS(vals[hv])}</div>
+                ></span>
+              ) : null}
+              {hv != null ? (
+                <div className="ms7d-tip" style={{ left: Math.min(70, Math.max(0, (pts[hv][0] / W) * 100)) + '%' }}>
+                  <span className="ms7d-tip-d">{ks[hv].split('-').reverse().slice(0, 2).join('/')}</span>
+                  <span className="ms7-num" style={num(vals[hv], 14)}>
+                    {brlS(vals[hv])}
+                  </span>
                 </div>
               ) : null}
             </div>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(3,minmax(0,1fr))',
-                borderRadius: 14,
-                border: '1px solid var(--border-subtle)',
-                overflow: 'hidden',
-              }}
-            >
+            <div className="ms7d-facts">
               {[
                 ['Dias com resultado', String(vals.length), null],
                 ['Média por dia', brlS(media), media],
                 ['Melhor dia', brlS(best), best],
-              ].map(function (x, i) {
+              ].map(function (x) {
                 return (
-                  <div key={x[0]} style={{ padding: '12px 16px', borderLeft: i ? '1px solid var(--border-subtle)' : 'none', minWidth: 0 }}>
-                    <div style={lab}>{x[0]}</div>
-                    <div
-                      style={{
-                        marginTop: 4,
-                        fontSize: 18,
-                        fontWeight: 800,
-                        fontVariantNumeric: 'tabular-nums',
-                        color: x[2] == null ? 'var(--text-primary)' : col(x[2]),
-                        whiteSpace: 'nowrap',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                      }}
-                    >
+                  <div key={x[0]} className="ms7d-fact">
+                    <div className="ms7-eyebrow">{x[0]}</div>
+                    <div className="ms7-num ms7d-fact-v" style={{ color: x[2] == null ? 'var(--text-primary)' : col(x[2]) }}>
                       {x[1]}
                     </div>
                   </div>
                 );
               })}
             </div>
-          </div>
-          <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: 16, minWidth: 0 }}>
-            <div style={Object.assign({}, box, { background: TM.bg, color: TM.fg, border: TM.bd || 'none' })}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <b style={{ flex: 1, fontSize: 15 }}>Metas</b>
-              </div>
-              <div
-                style={{
-                  marginTop: 10,
-                  fontSize: 30,
-                  fontWeight: 800,
-                  fontVariantNumeric: 'tabular-nums',
-                  color: mc === 'natural' ? col(sm(at) + sm(fi)) : TM.ac,
-                }}
-              >
-                {brlS(sm(at) + sm(fi))}
-              </div>
-              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 6, fontSize: 13, fontWeight: 600 }}>
+          </section>
+          <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
+            <DS.Card
+              title="Metas"
+              padding={20}
+              action={
+                <DS.Button
+                  size="sm"
+                  variant="ghost"
+                  iconRight="arrow-right"
+                  onClick={function () {
+                    window.ms7Go('cooperacoes');
+                  }}
+                >
+                  Ver cooperações
+                </DS.Button>
+              }
+            >
+              <DS.CountUp
+                value={brlS(sm(at) + sm(fi))}
+                style={{ display: 'block', fontSize: 28, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, color: mc === 'natural' ? col(sm(at) + sm(fi)) : TM.ac }}
+              />
+              <div style={{ marginTop: 12 }}>
                 {[
                   ['Ativas (parcial)', at.length, sm(at)],
                   ['Finalizadas', fi.length, sm(fi)],
-                ].map(function (x) {
+                ].map(function (x, i) {
                   return (
-                    <div key={x[0]} style={{ display: 'flex', gap: 8 }}>
-                      <span style={{ flex: 1, opacity: 0.85 }}>{x[0] + ' · ' + x[1]}</span>
-                      <b style={{ fontVariantNumeric: 'tabular-nums' }}>{brlS(x[2])}</b>
+                    <div key={x[0]} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', borderTop: i ? '1px solid var(--border-subtle)' : 'none' }}>
+                      <span style={Object.assign({ flex: 1 }, sec)}>{x[0]}</span>
+                      <DS.CountDot tone="muted">{x[1]}</DS.CountDot>
+                      <span className="ms7-num" style={num(x[2])}>
+                        {brlS(x[2])}
+                      </span>
                     </div>
                   );
                 })}
               </div>
-              <button
-                type="button"
-                onClick={function () {
-                  window.ms7Go('cooperacoes');
-                }}
-                style={{
-                  marginTop: 14,
-                  border: 0,
-                  background: 'transparent',
-                  color: mc === 'natural' ? 'var(--ms7-green)' : TM.ac,
-                  font: '700 13px var(--font-sans)',
-                  cursor: 'pointer',
-                  padding: 0,
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 6,
-                }}
-              >
-                Ver cooperações
-                <DS.Icon name="arrow-right" size={14} />
-              </button>
-            </div>
-            <div style={box}>
-              <b style={{ fontSize: 15 }}>Resultados</b>
-              <div style={{ marginTop: 12, display: 'flex', flexDirection: 'column', gap: 12 }}>
+            </DS.Card>
+            <DS.Card title="Resultados" padding={20}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {comp.map(function (x) {
                   return (
                     <div key={x[0]}>
-                      <div style={{ display: 'flex', gap: 8, fontSize: 13, fontWeight: 600 }}>
-                        <span style={{ flex: 1, color: 'var(--text-secondary)' }}>{x[0]}</span>
-                        <b style={{ fontVariantNumeric: 'tabular-nums', color: col(x[1]) }}>{brlS(x[1])}</b>
+                      <div style={{ display: 'flex', gap: 8, alignItems: 'baseline' }}>
+                        <span style={Object.assign({ flex: 1 }, sec)}>{x[0]}</span>
+                        <span className="ms7-num" style={num(x[1])}>
+                          {brlS(x[1])}
+                        </span>
                       </div>
-                      <div style={{ marginTop: 6, height: 4, borderRadius: 2, background: 'var(--surface-muted, var(--ms7-gray-100))' }}>
-                        <div
-                          style={{
-                            width: Math.round((Math.abs(x[1]) / cmx) * 100) + '%',
-                            height: '100%',
-                            borderRadius: 2,
-                            background: x[1] >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)',
-                          }}
-                        ></div>
+                      <div className="ms7-bar" style={{ marginTop: 8 }}>
+                        <i style={{ width: Math.round((Math.abs(x[1]) / cmx) * 100) + '%', background: x[1] >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}></i>
                       </div>
                     </div>
                   );
                 })}
-                <div style={{ display: 'flex', gap: 8, paddingTop: 10, borderTop: '1px solid var(--border-subtle)', fontSize: 14, fontWeight: 800 }}>
-                  <span style={{ flex: 1 }}>Lucro líquido</span>
-                  <span style={{ fontVariantNumeric: 'tabular-nums', color: col(gC.lucro) }}>{brlS(gC.lucro)}</span>
+                <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', paddingTop: 14, borderTop: '1px solid var(--line)' }}>
+                  <span style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>Lucro líquido</span>
+                  <span className="ms7-num" style={Object.assign(num(gC.lucro, 16), { letterSpacing: '-0.02em' })}>
+                    {brlS(gC.lucro)}
+                  </span>
                 </div>
               </div>
-            </div>
+            </DS.Card>
           </div>
         </div>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,340px),1fr))', gap: 16 }}>
-          <div style={box}>
-            <div style={{ display: 'flex', alignItems: 'baseline' }}>
-              <b style={{ flex: 1, fontSize: 15 }}>Sua próxima ação</b>
-              <span style={lab}>{acoes.length ? acoes.length + (acoes.length === 1 ? ' pendência' : ' pendências') : ''}</span>
-            </div>
-            <div style={{ marginTop: 10, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              {acoes.length ? (
-                acoes.map(function (a) {
+        <Grid min={340}>
+          <DS.Card
+            title="Sua próxima ação"
+            action={
+              acoes.length ? (
+                <DS.Badge tone="gray" variant="soft">
+                  {acoes.length + (acoes.length === 1 ? ' pendência' : ' pendências')}
+                </DS.Badge>
+              ) : null
+            }
+          >
+            {acoes.length ? (
+              <div className="ms7d-list">
+                {acoes.map(function (a) {
+                  const c = a[0] === 'shield-alert' ? 'var(--ms7-error)' : 'var(--ms7-green-900)';
                   return (
-                    <div
-                      key={a[1]}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '10px 12px',
-                        borderRadius: 14,
-                        background: 'var(--surface-muted, var(--ms7-gray-100))',
-                      }}
-                    >
-                      <span
-                        style={{
-                          width: 34,
-                          height: 34,
-                          borderRadius: 10,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: 'var(--surface-card)',
-                          flexShrink: 0,
-                        }}
-                      >
-                        <DS.Icon name={a[0]} size={16} color="var(--ms7-green)" />
+                    <div key={a[1]} className="ms7d-row">
+                      <span className="ms7d-tile" style={{ background: tint(c), color: c }}>
+                        <DS.Icon name={a[0]} size={16} strokeWidth={2} />
                       </span>
-                      <div style={{ flex: 1, minWidth: 0, fontSize: 14, fontWeight: 700 }}>
+                      <div className="ms7d-t" style={{ flex: 1, whiteSpace: 'normal' }}>
                         {a[1]}
-                        <span style={{ marginLeft: 6, color: 'var(--text-secondary)' }}>{'· ' + a[2]}</span>
+                        <span className="ms7-num" style={{ marginLeft: 6, fontWeight: 500, color: 'var(--text-secondary)' }}>
+                          {'· ' + a[2]}
+                        </span>
                       </div>
                       <DS.Button
                         size="sm"
-                        variant="brand"
+                        variant="primary"
                         iconRight="arrow-right"
                         onClick={function () {
                           window.ms7Go(a[4]);
@@ -594,74 +529,42 @@
                       </DS.Button>
                     </div>
                   );
-                })
-              ) : (
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', padding: '8px 0' }}>Nada pendente agora.</div>
-              )}
-            </div>
-          </div>
-          <div style={box}>
-            <b style={{ fontSize: 15 }}>Últimas remessas</b>
-            <div style={{ marginTop: 8, display: 'flex', flexDirection: 'column' }}>
-              {rem.length ? (
-                rem.map(function (n, i) {
+                })}
+              </div>
+            ) : (
+              <Empty art="Tasks" compact title="Nada pendente agora" sub="Cooperações finalizadas, tarefas do dia e contas bloqueadas aparecem aqui." />
+            )}
+          </DS.Card>
+          <DS.Card title="Últimas remessas">
+            {rem.length ? (
+              <div className="ms7d-list">
+                {rem.map(function (n) {
                   const b = String(n.body || '').split('\n');
                   const r =
                     b.find(function (x) {
                       return /^Resultado/.test(x);
                     }) || '';
                   return (
-                    <div
-                      key={n.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '10px 0',
-                        borderTop: i ? '1px solid var(--border-subtle)' : 'none',
-                      }}
-                    >
-                      <DS.Avatar name={(b[0] || '').replace(/^Operador:\s*/, '') || '?'} size={32} />
+                    <div key={n.id} className="ms7d-row">
+                      <DS.Avatar name={(b[0] || '').replace(/^Operador:\s*/, '') || '?'} size={34} />
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: 14, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                          {n.title}
-                        </div>
-                        <div
-                          style={{
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: 'var(--text-secondary)',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {[(b[0] || '').replace(/^Operador:\s*/, ''), b[1], n.at].filter(Boolean).join(' · ')}
-                        </div>
+                        <div className="ms7d-t">{n.title}</div>
+                        <div className="ms7d-s">{[(b[0] || '').replace(/^Operador:\s*/, ''), b[1], n.at].filter(Boolean).join(' · ')}</div>
                       </div>
                       {r ? (
-                        <b
-                          style={{
-                            fontSize: 13,
-                            fontVariantNumeric: 'tabular-nums',
-                            color: /-R\$/.test(r) ? 'var(--ms7-error)' : 'var(--ms7-green)',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
+                        <span className="ms7-num" style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: 'nowrap', color: /-R\$/.test(r) ? 'var(--ms7-error)' : 'var(--ms7-green)' }}>
                           {r.replace(/^Resultado:\s*/, '')}
-                        </b>
+                        </span>
                       ) : null}
                     </div>
                   );
-                })
-              ) : (
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', padding: '8px 0' }}>
-                  Os ciclos enviados pelos operadores aparecem aqui.
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
+                })}
+              </div>
+            ) : (
+              <Empty art="Inbox" compact title="Sem remessas ainda" sub="Os ciclos enviados pelos operadores aparecem aqui." />
+            )}
+          </DS.Card>
+        </Grid>
       </div>
     );
   }
@@ -771,20 +674,12 @@
             ];
             return (
               <Card title="Resumo do período">
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(160px,1fr))', gap: 12 }}>
+                <div className="ms7d-tiles ms7-stagger">
                   {it.map(function (x) {
                     return (
-                      <div key={x[0]} style={{ padding: '14px 16px', borderRadius: 14, background: 'var(--surface-muted, var(--ms7-gray-100))' }}>
-                        <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>{x[0]}</div>
-                        <div
-                          style={{
-                            marginTop: 6,
-                            fontSize: 22,
-                            fontWeight: 800,
-                            fontVariantNumeric: 'tabular-nums',
-                            color: x[2] || 'var(--text-primary)',
-                          }}
-                        >
+                      <div key={x[0]} className="ms7d-tile-box">
+                        <div className="ms7-eyebrow">{x[0]}</div>
+                        <div className="ms7-num" style={{ marginTop: 6, fontSize: 22, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, color: x[2] || 'var(--text-primary)' }}>
                           {x[1]}
                         </div>
                       </div>
@@ -864,116 +759,79 @@
             }
           >
             {rows.length ? (
-              <div style={{ overflowX: 'auto' }}>
-                <div style={{ minWidth: 720, display: 'flex', flexDirection: 'column' }}>
-                  <div
-                    style={{
-                      display: 'grid',
-                      gridTemplateColumns: 'minmax(180px,1.4fr) 80px 120px 130px 140px minmax(120px,1fr)',
-                      gap: 12,
-                      padding: '0 6px 10px',
-                      fontSize: 11,
-                      fontWeight: 700,
-                      letterSpacing: '.05em',
-                      textTransform: 'uppercase',
-                      color: 'var(--text-secondary)',
-                      borderBottom: '1px solid var(--border-default)',
-                    }}
-                  >
-                    <span>Operador</span>
-                    <span style={{ textAlign: 'center' }}>Contas</span>
-                    <span style={{ textAlign: 'center' }}>Bloqueadas</span>
-                    <span style={{ textAlign: 'right' }}>Comissão</span>
-                    <span style={{ textAlign: 'right' }}>Lucro</span>
-                    <span></span>
-                  </div>
-                  {(function () {
-                    const mx = Math.max(
-                      1,
-                      Math.max.apply(
-                        null,
-                        rows.map(function (o) {
-                          return Math.abs(o.lucroC);
-                        }),
-                      ),
-                    );
-                    return rows.map(function (o) {
-                      return (
-                        <div
-                          key={o.id}
-                          onClick={function () {
-                            setDet(o.id);
-                          }}
-                          style={{
-                            display: 'grid',
-                            gridTemplateColumns: 'minmax(180px,1.4fr) 80px 120px 130px 140px minmax(120px,1fr)',
-                            gap: 12,
-                            alignItems: 'center',
-                            padding: '12px 6px',
-                            borderBottom: '1px solid var(--border-subtle)',
-                            cursor: 'pointer',
-                          }}
-                        >
-                          <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
-                            <Avatar name={o.nome} size={34} />
-                            <div style={{ minWidth: 0 }}>
-                              <div style={{ fontSize: 15, fontWeight: 700, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-                                {o.nome}
-                              </div>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                                {o.concl + (o.concl === 1 ? ' concluída' : ' concluídas')}
-                              </div>
-                            </div>
-                          </div>
-                          <b style={{ textAlign: 'center', fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>{o.n}</b>
-                          <div style={{ textAlign: 'center' }}>
-                            {o.bloq ? (
-                              <span
-                                style={{
-                                  display: 'inline-block',
-                                  padding: '3px 9px',
-                                  borderRadius: 8,
-                                  fontSize: 12,
-                                  fontWeight: 800,
-                                  background: 'color-mix(in oklab, var(--ms7-error) 14%, transparent)',
-                                  color: 'var(--ms7-error)',
-                                }}
-                              >
-                                {o.bloq + ' · ' + ((o.bloq / Math.max(1, o.n)) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%'}
-                              </span>
-                            ) : (
-                              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>0</span>
-                            )}
-                          </div>
-                          <b style={{ textAlign: 'right', fontSize: 15, fontVariantNumeric: 'tabular-nums' }}>{MS7.brl(o.comC)}</b>
-                          <b
-                            style={{
-                              textAlign: 'right',
-                              fontSize: 15,
-                              fontVariantNumeric: 'tabular-nums',
-                              color: o.lucroC >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)',
+              <div className="ms7-table-wrap">
+                <table className="ms7-table" style={{ minWidth: 720 }}>
+                  <thead>
+                    <tr>
+                      <th>Operador</th>
+                      <th style={{ textAlign: 'center' }}>Contas</th>
+                      <th style={{ textAlign: 'center' }}>Bloqueadas</th>
+                      <th style={{ textAlign: 'right' }}>Comissão</th>
+                      <th style={{ textAlign: 'right' }}>Lucro</th>
+                      <th style={{ width: '22%' }}></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(function () {
+                      const mx = Math.max(
+                        1,
+                        Math.max.apply(
+                          null,
+                          rows.map(function (o) {
+                            return Math.abs(o.lucroC);
+                          }),
+                        ),
+                      );
+                      return rows.map(function (o) {
+                        return (
+                          <tr
+                            key={o.id}
+                            className="is-click"
+                            onClick={function () {
+                              setDet(o.id);
                             }}
                           >
-                            {MS7.brl(o.lucroC)}
-                          </b>
-                          <div style={{ height: 10, borderRadius: 5, background: 'var(--surface-muted, var(--ms7-gray-100))' }}>
-                            <div
-                              style={{
-                                width: Math.max(2, Math.round((Math.abs(o.lucroC) / mx) * 100)) + '%',
-                                height: '100%',
-                                borderRadius: 5,
-                                background: o.lucroC >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)',
-                              }}
-                            ></div>
-                          </div>
-                        </div>
-                      );
-                    });
-                  })()}
-                </div>
+                            <td>
+                              <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                                <Avatar name={o.nome} size={30} />
+                                <div style={{ minWidth: 0 }}>
+                                  <div className="ms7d-t">{o.nome}</div>
+                                  <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>{o.concl + (o.concl === 1 ? ' concluída' : ' concluídas')}</div>
+                                </div>
+                              </div>
+                            </td>
+                            <td className="ms7-num" style={{ textAlign: 'center', fontWeight: 600 }}>
+                              {o.n}
+                            </td>
+                            <td style={{ textAlign: 'center' }}>
+                              {o.bloq ? (
+                                <Badge tone="error" size="sm">
+                                  {o.bloq + ' · ' + ((o.bloq / Math.max(1, o.n)) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%'}
+                                </Badge>
+                              ) : (
+                                <span style={{ color: 'var(--text-secondary)' }}>0</span>
+                              )}
+                            </td>
+                            <td className="ms7-num" style={{ textAlign: 'right', fontWeight: 600 }}>
+                              {MS7.brl(o.comC)}
+                            </td>
+                            <td className="ms7-num" style={{ textAlign: 'right', fontWeight: 600, color: o.lucroC >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>
+                              {MS7.brl(o.lucroC)}
+                            </td>
+                            <td>
+                              <div className="ms7-bar">
+                                <i style={{ width: Math.max(2, Math.round((Math.abs(o.lucroC) / mx) * 100)) + '%', background: o.lucroC >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}></i>
+                              </div>
+                            </td>
+                          </tr>
+                        );
+                      });
+                    })()}
+                  </tbody>
+                </table>
               </div>
             ) : (
-              <Empty icon="users" title="Nenhum operador" sub="Cadastre operadores em Gestão → Operadores." />
+              <Empty art="People" title="Nenhum operador" sub="Cadastre operadores em Gestão → Operadores." />
             )}
           </Card>
         )}
@@ -1017,25 +875,22 @@
                     </React.Fragment>
                   }
                 >
-                  <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div className="ms7d-list">
                     {l.map(function (c) {
                       const k = DB.calc(c);
                       return (
-                        <div
-                          key={c.id}
-                          style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '10px 0', borderTop: '1px solid var(--border-subtle)' }}
-                        >
+                        <div key={c.id} className="ms7d-row">
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: 14, fontWeight: 700 }}>{DB.coopNome(c)}</div>
-                            <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                              {'Finalizada em ' + DB.fmtDate(DB.comData(c)) + ' · ' + DB.comText(c)}
-                            </div>
+                            <div className="ms7d-t">{DB.coopNome(c)}</div>
+                            <div className="ms7d-s">{'Finalizada em ' + DB.fmtDate(DB.comData(c)) + ' · ' + DB.comText(c)}</div>
                           </div>
-                          <b style={{ fontSize: 14 }}>{MS7.brl(k.com)}</b>
+                          <span className="ms7-num" style={{ fontSize: 14, fontWeight: 600, whiteSpace: 'nowrap' }}>
+                            {MS7.brl(k.com)}
+                          </span>
                         </div>
                       );
                     })}
-                    {!l.length ? <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Nenhuma cooperação neste período.</div> : null}
+                    {!l.length ? <Empty art="Coop" compact title="Nenhuma cooperação neste período" sub="As cooperações concluídas do operador aparecem aqui com a comissão de cada uma." /> : null}
                   </div>
                 </DS.Modal>
               );
@@ -1092,26 +947,27 @@
             { icon: 'circle-check', label: 'Coops concluídas', value: s('concluidas'), tone: 'orange' },
           ]}
         />
-        <Card title="Operadores">
-          <Hint>Marque os operadores que deseja comparar.</Hint>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: '12px 24px' }}>
+        <Card title="Operadores" subtitle="Marque os operadores que deseja comparar.">
+          <div className="ms7d-chips">
             {O.map(function (o) {
+              const on = sel.indexOf(o.id) >= 0;
               return (
-                <Checkbox
-                  key={o.id}
-                  label={o.nome}
-                  checked={sel.indexOf(o.id) >= 0}
-                  onChange={function () {
-                    tog(o.id);
-                  }}
-                />
+                <div key={o.id} className={'ms7d-chip' + (on ? ' is-on' : '')}>
+                  <Checkbox
+                    label={o.nome}
+                    checked={on}
+                    onChange={function () {
+                      tog(o.id);
+                    }}
+                  />
+                </div>
               );
             })}
           </div>
         </Card>
         {rows.length === 0 ? (
           <Card>
-            <Empty icon="users" title="Nenhum operador selecionado" />
+            <Empty art="People" title="Nenhum operador selecionado" sub="Marque ao menos um operador acima para ver a comparação." />
           </Card>
         ) : (
           <React.Fragment>
@@ -1123,7 +979,7 @@
                 <BarChart height={200} data={d('com', 1000)} series={[{ name: 'Comissão', color: 'var(--chart-2)' }]} />
               </Card>
             </Grid>
-            <Card title="Comparação ranqueada">
+            <Card title="Comparação ranqueada" reveal>
               <DataTable
                 rows={rows.map(function (o, i) {
                   return Object.assign({ pos: i + 1 }, o);
@@ -1132,11 +988,23 @@
                   {
                     key: 'pos',
                     label: '#',
+                    width: 44,
                     render: function (r) {
-                      return <b>{String(r.pos).padStart(2, '0')}</b>;
+                      return <span className={'ms7d-pos' + (r.pos === 1 ? ' is-first' : '')}>{String(r.pos).padStart(2, '0')}</span>;
                     },
                   },
-                  { key: 'nome', label: 'Operador' },
+                  {
+                    key: 'nome',
+                    label: 'Operador',
+                    render: function (r) {
+                      return (
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 10 }}>
+                          <DS.Avatar name={r.nome} size={30} />
+                          <span style={{ fontWeight: 600 }}>{r.nome}</span>
+                        </span>
+                      );
+                    },
+                  },
                   { key: 'coops', label: 'Coops', align: 'center' },
                   { key: 'n', label: 'Contas', align: 'center' },
                   {
@@ -1152,7 +1020,7 @@
                     label: 'Comissão',
                     align: 'right',
                     render: function (r) {
-                      return MS7.brl(r.com);
+                      return <span className="ms7-num">{MS7.brl(r.com)}</span>;
                     },
                   },
                   {
@@ -1160,7 +1028,11 @@
                     label: 'ROI',
                     align: 'right',
                     render: function (r) {
-                      return <b>{pct(r.roi)}</b>;
+                      return (
+                        <span className="ms7-num" style={{ fontWeight: 600 }}>
+                          {pct(r.roi)}
+                        </span>
+                      );
                     },
                   },
                   {
@@ -1169,7 +1041,7 @@
                     align: 'center',
                     render: function (r) {
                       return r.pos === 1 && r.coops ? (
-                        <Badge tone="green" size="sm">
+                        <Badge tone="lime" size="sm">
                           Líder
                         </Badge>
                       ) : null;
@@ -1229,64 +1101,54 @@
                 series={[{ name: 'Lucro (mil R$)', color: 'var(--chart-1)' }]}
               />
             </Card>
-            <Card title="Redes">
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.25 }}>Redes</h3>
+                <DS.CountDot tone="muted">{R.length}</DS.CountDot>
+              </div>
+              <div className="ms7-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(230px,1fr))', gap: 16 }}>
                 {R.map(function (r) {
                   return (
-                    <div
-                      key={r.nome}
-                      style={{
-                        border: '1px solid var(--border-subtle)',
-                        borderRadius: 14,
-                        padding: 16,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 10,
-                      }}
-                    >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <DS.Icon name="network" size={18} />
-                        <b style={{ fontSize: 15 }}>{r.nome}</b>
+                    <section key={r.nome} className="ms7-card ms7-hover-card ms7d-rede">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
+                        <span className="ms7d-tile" style={{ width: 30, height: 30, borderRadius: 9, background: tint('var(--ms7-green-900)'), color: 'var(--ms7-green-900)' }}>
+                          <DS.Icon name="network" size={15} strokeWidth={2} />
+                        </span>
+                        <span className="ms7d-t" style={{ fontSize: 15 }}>
+                          {r.nome}
+                        </span>
                       </div>
                       <div>
-                        <div
-                          style={{
-                            fontSize: 11,
-                            fontWeight: 700,
-                            textTransform: 'uppercase',
-                            letterSpacing: '.06em',
-                            color: 'var(--text-secondary)',
-                          }}
-                        >
-                          Lucro líquido
-                        </div>
-                        <div style={{ fontSize: 22, fontWeight: 700, color: r.lucro >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>
+                        <div className="ms7-eyebrow">Lucro líquido</div>
+                        <div className="ms7-num" style={{ marginTop: 4, fontSize: 20, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, color: r.lucro >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>
                           {MS7.brl(r.lucro)}
                         </div>
                       </div>
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 8, fontSize: 12 }}>
-                        <div>
-                          <div style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Coops</div>
-                          <b>{r.coops}</b>
-                        </div>
-                        <div>
-                          <div style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>Contas</div>
-                          <b>{r.n}</b>
-                        </div>
-                        <div>
-                          <div style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>ROI</div>
-                          <b>{pct(r.roi)}</b>
-                        </div>
+                      <div className="ms7d-rede-facts">
+                        {[
+                          ['Coops', r.coops],
+                          ['Contas', r.n],
+                          ['ROI', pct(r.roi)],
+                        ].map(function (x) {
+                          return (
+                            <div key={x[0]} style={{ minWidth: 0 }}>
+                              <div className="ms7-eyebrow">{x[0]}</div>
+                              <div className="ms7-num" style={{ marginTop: 3, fontSize: 14, fontWeight: 600 }}>
+                                {x[1]}
+                              </div>
+                            </div>
+                          );
+                        })}
                       </div>
-                    </div>
+                    </section>
                   );
                 })}
               </div>
-            </Card>
+            </div>
           </React.Fragment>
         ) : (
           <Card>
-            <Empty icon="network" title="Sem operações neste período" />
+            <Empty art="Globe" title="Sem operações neste período" sub="As redes aparecem aqui assim que tiverem cooperações no período escolhido." />
           </Card>
         )}
       </div>
