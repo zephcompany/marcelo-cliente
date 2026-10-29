@@ -1,5 +1,49 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
+  /* ---------- CSS só desta tela (tokens) ---------- */
+  const CSS = [
+    '.ms7g-acts{display:inline-flex;gap:2px;opacity:0;transition:opacity var(--dur-fast)}',
+    '.ms7-table tr:hover .ms7g-acts,.ms7g-acts:focus-within{opacity:1}',
+    '@media (hover:none){.ms7g-acts{opacity:1}}',
+    '.ms7g-tile{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900)}',
+    '.ms7g-name{font-size:14px;font-weight:600;letter-spacing:-.005em;line-height:1.25}',
+    '.ms7g-sub{font-size:12.5px;font-weight:500;color:var(--text-secondary);line-height:1.35}',
+    '.ms7g-chip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 6px 0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;font-size:13px;font-weight:600;letter-spacing:-.005em;transition:border-color var(--dur-fast),background var(--dur-fast),color var(--dur-fast)}',
+    '.ms7g-chip:hover{border-color:var(--line-strong);background:var(--surface-muted)}',
+    '.ms7g-chip.is-sel{cursor:pointer;padding-right:12px}',
+    '.ms7g-chip.is-on{border-color:var(--ms7-green-900);background:color-mix(in oklab,var(--ms7-green-900) 9%,var(--surface-card));color:var(--ms7-green-900)}',
+    '.ms7g-chip-ico{color:var(--text-secondary);display:inline-flex}.ms7g-chip.is-on .ms7g-chip-ico{color:inherit}',
+    '.ms7g-chip-x{width:20px;height:20px;border-radius:50%;border:0;padding:0;background:transparent;color:var(--text-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity var(--dur-fast),background var(--dur-fast),color var(--dur-fast)}',
+    '.ms7g-chip:hover .ms7g-chip-x,.ms7g-chip-x:focus-visible{opacity:1}',
+    '.ms7g-chip-x:hover{background:var(--line);color:var(--text-primary)}',
+    '@media (hover:none){.ms7g-chip-x{opacity:1}}',
+    '.ms7g-cell{height:36px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-card);color:var(--text-primary);font:500 13px var(--font-sans);width:100%;min-width:0;box-sizing:border-box;transition:border-color var(--dur-fast),box-shadow var(--dur-base) var(--ease-standard)}',
+    'input.ms7g-cell[type="date"]{height:36px;padding:0 10px;border-radius:8px;border:1px solid var(--line);font:500 13px var(--font-sans)}',
+    '.ms7g-cell:hover{border-color:var(--line-strong)}',
+    '.ms7g-cell:focus{outline:0;border-color:var(--ms7-green-900);box-shadow:0 0 0 3px color-mix(in oklab,var(--ms7-green-900) 16%,transparent)}',
+    '.ms7g-cell::placeholder{color:var(--ms7-gray-400)}',
+    '.ms7g-money{position:relative;min-width:0}.ms7g-money>span{position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:var(--text-secondary);pointer-events:none}.ms7g-money>.ms7g-cell{padding-left:34px}',
+    '.ms7g-prod{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,2.2fr) 128px 48px 32px;gap:8px;align-items:center}',
+    '.ms7g-prod.is-head{padding-bottom:2px}',
+    '@media (max-width:760px){.ms7g-prod{grid-template-columns:minmax(0,1fr) 48px 32px;row-gap:6px;padding:10px 0;border-bottom:1px solid var(--border-subtle)}.ms7g-prod>:nth-child(1),.ms7g-prod>:nth-child(2){grid-column:1/-1}.ms7g-prod.is-head{display:none}}',
+    '.ms7g-cup{display:grid;grid-template-columns:minmax(160px,1.4fr) 84px 150px 96px 56px 48px 32px;gap:8px;align-items:center;min-width:700px}',
+    '.ms7g-scroll{overflow-x:auto;display:flex;flex-direction:column;gap:8px;padding-bottom:2px}',
+    '.ms7g-line{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--border-subtle);flex-wrap:wrap}',
+    '.ms7g-line:first-child{border-top:0;padding-top:0}',
+    '.ms7g-pos{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:var(--surface-muted);color:var(--text-primary);font-variant-numeric:tabular-nums}',
+    '.ms7g-pos.is-1{background:var(--ms7-lime-500);color:#0C3B26}.ms7g-pos.is-rest{background:transparent;color:var(--text-secondary)}',
+    '.ms7g-tpl{position:relative;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background var(--dur-fast)}',
+    '.ms7g-tpl:hover,.ms7g-tpl.is-on{background:var(--surface-muted)}',
+    '.ms7g-tpl.is-on::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:3px;background:var(--ms7-green-900)}',
+    '.ms7g-tpl .ms7g-tile{background:var(--surface-card);color:var(--text-secondary);box-shadow:0 0 0 1px var(--line)}',
+    '.ms7g-tpl.is-on .ms7g-tile{background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900);box-shadow:none}',
+  ].join('');
+  if (!document.getElementById('ms7-gestao-css')) {
+    const st = document.createElement('style');
+    st.id = 'ms7-gestao-css';
+    st.textContent = CSS;
+    document.head.appendChild(st);
+  }
   function OperadoresTab() {
     const { Card, DataTable, Switch, IconButton, Button, Modal, Input, Avatar, Badge } = DS;
     const db = DB.useDB();
@@ -135,26 +179,23 @@
       };
     };
     const vagasTop = isCliG && window.VagasCard ? <VagasCard /> : null;
+    const novo = function () {
+      if (window.podeNovoOperador && !window.podeNovoOperador()) return;
+      open(null);
+    };
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {vagasTop}
         <Card
           title="Operadores"
           action={
-            <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
+            <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               {isCliG ? null : (
-                <Badge size="sm" variant="soft" tone={used >= 10 ? 'error' : 'green'}>
+                <Badge variant="soft" tone={used >= 10 ? 'error' : 'green'}>
                   {'Seats ' + used + '/10'}
                 </Badge>
               )}
-              <Button
-                size="sm"
-                iconLeft="plus"
-                onClick={function () {
-                  if (window.podeNovoOperador && !window.podeNovoOperador()) return;
-                  open(null);
-                }}
-              >
+              <Button variant="brand" iconLeft="user-plus" onClick={novo}>
                 Novo operador
               </Button>
             </div>
@@ -162,102 +203,125 @@
         >
           <Hint>
             Cadastre o operador aqui com email e senha: ele já entra no painel com esse acesso. Depois envie o endereço do painel, o email e a senha
-            para ele.
+            para&nbsp;ele.
           </Hint>
-          <DataTable
-            rows={rows}
-            columns={[
-              {
-                key: 'nome',
-                label: 'Nome',
-                render: function (r) {
-                  return (
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                      <Avatar name={r.nome} size={32} />
-                      <div>
-                        <b>{r.nome}</b>
-                        <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{(accOf(r.id) || {}).email || r.email || '—'}</div>
+          {rows.length ? (
+            <DataTable
+              rows={rows}
+              columns={[
+                {
+                  key: 'nome',
+                  label: 'Nome',
+                  render: function (r) {
+                    return (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+                        <Avatar name={r.nome} size={34} />
+                        <div style={{ minWidth: 0, whiteSpace: 'nowrap' }}>
+                          <div className="ms7g-name">{r.nome}</div>
+                          <div className="ms7g-sub" style={{ marginTop: 2 }}>
+                            {(accOf(r.id) || {}).email || r.email || '—'}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  );
+                    );
+                  },
                 },
-              },
-              {
-                key: 'acesso',
-                label: 'Acesso',
-                align: 'center',
-                render: function (r) {
-                  if (!real) return '—';
-                  const ac = accOf(r.id);
-                  return (
-                    <Badge size="sm" variant="soft" tone={ac ? (ac.ativo ? 'green' : 'gray') : 'yellow'}>
-                      {ac ? (ac.ativo ? 'Pode entrar' : 'Bloqueado') : 'Sem acesso'}
-                    </Badge>
-                  );
+                {
+                  key: 'acesso',
+                  label: 'Acesso',
+                  align: 'center',
+                  render: function (r) {
+                    if (!real) return <span style={{ color: 'var(--text-secondary)' }}>—</span>;
+                    const ac = accOf(r.id);
+                    return (
+                      <Badge size="sm" variant="soft" tone={ac ? (ac.ativo ? 'green' : 'gray') : 'yellow'}>
+                        {ac ? (ac.ativo ? 'Pode entrar' : 'Bloqueado') : 'Sem acesso'}
+                      </Badge>
+                    );
+                  },
                 },
-              },
-              {
-                key: 'coops',
-                label: 'Coops',
-                align: 'center',
-                render: function (r) {
-                  return coops(r.id);
+                {
+                  key: 'coops',
+                  label: 'Coops',
+                  align: 'center',
+                  render: function (r) {
+                    return (
+                      <span className="ms7-num" style={{ fontWeight: 600 }}>
+                        {coops(r.id)}
+                      </span>
+                    );
+                  },
                 },
-              },
-              {
-                key: 'ativo',
-                label: 'Ativo',
-                align: 'center',
-                render: function (r) {
-                  return (
-                    <Switch
-                      checked={r.ativo}
-                      onChange={function (v) {
-                        DB.A.saveOperador({ id: r.id, ativo: v });
-                      }}
-                    />
-                  );
-                },
-              },
-              {
-                key: 'a',
-                label: '',
-                align: 'right',
-                render: function (r) {
-                  return (
-                    <div style={{ display: 'inline-flex', gap: 2 }}>
-                      <IconButton
-                        icon="pencil"
-                        size={30}
-                        iconSize={16}
-                        onClick={function () {
-                          open(r);
+                {
+                  key: 'ativo',
+                  label: 'Ativo',
+                  align: 'center',
+                  render: function (r) {
+                    return (
+                      <Switch
+                        checked={r.ativo}
+                        onChange={function (v) {
+                          DB.A.saveOperador({ id: r.id, ativo: v });
                         }}
                       />
-                      <IconButton
-                        icon="trash-2"
-                        size={30}
-                        iconSize={16}
-                        onClick={function () {
-                          if (coops(r.id)) {
-                            toast('Esse operador tem cooperações. Desative em vez de remover.');
-                            return;
-                          }
-                          if (confirm('Remover ' + r.nome + '?')) DB.A.removeOperador(r.id);
-                        }}
-                      />
-                    </div>
-                  );
+                    );
+                  },
                 },
-              },
-            ]}
-          />
+                {
+                  key: 'a',
+                  label: '',
+                  align: 'right',
+                  width: 80,
+                  render: function (r) {
+                    return (
+                      <div className="ms7g-acts">
+                        <IconButton
+                          icon="pencil"
+                          size={30}
+                          iconSize={15}
+                          label="Editar"
+                          onClick={function () {
+                            open(r);
+                          }}
+                        />
+                        <IconButton
+                          icon="trash-2"
+                          size={30}
+                          iconSize={15}
+                          label="Remover"
+                          onClick={function () {
+                            if (coops(r.id)) {
+                              toast('Esse operador tem cooperações. Desative em vez de remover.');
+                              return;
+                            }
+                            if (confirm('Remover ' + r.nome + '?')) DB.A.removeOperador(r.id);
+                          }}
+                        />
+                      </div>
+                    );
+                  },
+                },
+              ]}
+            />
+          ) : (
+            <Empty
+              art="People"
+              title="Nenhum operador ainda"
+              sub="Cadastre o primeiro operador com email e senha: ele já entra no painel com esse acesso."
+              action={
+                <Button variant="brand" iconLeft="user-plus" onClick={novo}>
+                  Novo operador
+                </Button>
+              }
+            />
+          )}
           <Modal
             open={!!edit}
             onClose={function () {
               setEdit(null);
             }}
             title={edit === 'new' ? 'Novo operador' : 'Editar operador'}
+            subtitle={edit === 'new' ? 'Nome, email e senha num lugar só' : undefined}
             footer={
               <React.Fragment>
                 <Button
@@ -268,27 +332,43 @@
                 >
                   Cancelar
                 </Button>
-                <Button variant="brand" disabled={busy} onClick={save}>
+                <Button variant="brand" iconLeft="check" disabled={busy} onClick={save}>
                   Salvar
                 </Button>
               </React.Fragment>
             }
           >
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 }}>
               <div style={{ gridColumn: '1 / -1' }}>
-                <Input label="Nome" required value={f.nome || ''} onChange={u('nome')} />
+                <Input label="Nome" required icon="user" value={f.nome || ''} onChange={u('nome')} />
               </div>
-              <Input label="Email (login)" value={f.email || ''} onChange={u('email')} />
+              <Input label="Email (login)" icon="mail" value={f.email || ''} onChange={u('email')} />
               <Input
                 label={f.accId ? 'Nova senha' : 'Senha'}
                 type="password"
+                icon="lock"
                 value={f.senha || ''}
                 onChange={u('senha')}
                 placeholder={f.accId ? 'Deixe em branco para manter' : 'Mínimo 8 caracteres'}
               />
               {!real ? (
-                <div style={{ gridColumn: '1 / -1', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                  No modo demonstração o acesso não é criado. No servidor, email e senha viram o login do operador.
+                <div
+                  style={{
+                    gridColumn: '1 / -1',
+                    display: 'flex',
+                    gap: 8,
+                    alignItems: 'flex-start',
+                    padding: '10px 12px',
+                    borderRadius: 10,
+                    background: 'var(--surface-muted)',
+                    fontSize: 12.5,
+                    fontWeight: 500,
+                    lineHeight: 1.45,
+                    color: 'var(--text-secondary)',
+                  }}
+                >
+                  <DS.Icon name="info" size={14} style={{ marginTop: 2 }} />
+                  <span>No modo demonstração o acesso não é criado. No servidor, email e senha viram o login do&nbsp;operador.</span>
                 </div>
               ) : null}
             </div>
@@ -311,8 +391,8 @@
             }
           >
             <p style={{ margin: 0, fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
-              Para dar acesso a um operador, vá em <b>Configurações → Acessos</b>, crie o login (email e senha) e vincule ao operador. Depois envie o
-              endereço do painel e os dados de acesso para ele.
+              Para dar acesso a um operador, vá em <b style={{ fontWeight: 600 }}>Configurações → Acessos</b>, crie o login (email e senha) e vincule
+              ao operador. Depois envie o endereço do painel e os dados de acesso para&nbsp;ele.
             </p>
           </Modal>
         </Card>
@@ -357,25 +437,16 @@
                   onClick={function () {
                     setSel(n);
                   }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '10px 12px',
-                    borderRadius: 10,
-                    border: 'none',
-                    cursor: 'pointer',
-                    textAlign: 'left',
-                    background: on ? 'var(--ms7-lime-100)' : 'transparent',
-                    fontFamily: 'var(--font-sans)',
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: on ? 'var(--ms7-green-ink, #005D3B)' : 'var(--text-primary)',
-                  }}
+                  className={'ms7g-tpl' + (on ? ' is-on' : '')}
+                  style={{ border: 'none', textAlign: 'left', fontFamily: 'var(--font-sans)', color: 'var(--text-primary)', width: '100%' }}
                 >
-                  <DS.Icon name="users" size={16} />
-                  <span style={{ flex: 1 }}>{n}</span>
-                  <span style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{4 - (i % 2)}</span>
+                  <span className="ms7g-tile">
+                    <DS.Icon name="users" size={15} />
+                  </span>
+                  <span className="ms7g-name" style={{ flex: 1 }}>
+                    {n}
+                  </span>
+                  <DS.CountDot tone="muted">{4 - (i % 2)}</DS.CountDot>
                 </button>
               );
             })}
@@ -395,7 +466,7 @@
             </div>
           }
         >
-          <Hint>Grupos direcionam avisos e notificações.</Hint>
+          <Hint>Grupos direcionam avisos e&nbsp;notificações.</Hint>
           <DataTable
             rows={members}
             columns={[
@@ -403,7 +474,7 @@
                 key: 'nome',
                 label: 'Nome',
                 render: function (r) {
-                  return <b>{r.nome}</b>;
+                  return <span className="ms7g-name">{r.nome}</span>;
                 },
               },
               { key: 'email', label: 'Email' },
@@ -467,7 +538,7 @@
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
             <Button
               size="sm"
-              variant="ghost"
+              variant="outline"
               iconLeft="list-checks"
               disabled={!all.length}
               onClick={function () {
@@ -494,6 +565,7 @@
           <Button
             size="sm"
             variant="ghost"
+            iconLeft={cnt < all.length ? 'check-check' : 'x'}
             onClick={function () {
               const ids = {};
               if (cnt < all.length)
@@ -516,7 +588,7 @@
           </Button>
           <Button
             size="sm"
-            variant="brand"
+            variant="danger"
             iconLeft="trash-2"
             disabled={!cnt}
             onClick={function () {
@@ -622,53 +694,32 @@
         const ck = !!sel.ids[x.id];
         return (
           <button
+            type="button"
             onClick={function () {
               tog(x.id);
             }}
-            style={{
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: 8,
-              height: 34,
-              padding: '0 12px',
-              borderRadius: 10,
-              border: '2px solid ' + (ck ? 'var(--ms7-green-900)' : 'transparent'),
-              background: ck ? 'var(--ms7-lime-100)' : 'var(--ms7-gray-100)',
-              color: 'var(--text-primary)',
-              fontFamily: 'inherit',
-              fontSize: 14,
-              fontWeight: 600,
-              cursor: 'pointer',
-            }}
+            className={'ms7g-chip is-sel' + (ck ? ' is-on' : '')}
+            aria-pressed={ck}
           >
-            <DS.Icon name={ck ? 'square-check' : 'square'} size={16} />
+            <DS.Icon name={ck ? 'square-check' : 'square'} size={15} strokeWidth={2} />
             {x.nome}
           </button>
         );
       }
       return (
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            height: 34,
-            padding: '0 6px 0 12px',
-            borderRadius: 10,
-            background: 'var(--ms7-gray-100)',
-            fontSize: 14,
-            fontWeight: 600,
-          }}
-        >
-          <DS.Icon name={p.icon} size={15} />
+        <span className="ms7g-chip">
+          <span className="ms7g-chip-ico">
+            <DS.Icon name={p.icon} size={14} />
+          </span>
           {x.nome}
           {n ? (
-            <span title="Cooperações em andamento" style={{ fontSize: 11, fontWeight: 700, color: 'var(--ms7-orange)' }}>
-              {n + ' ativa' + (n > 1 ? 's' : '')}
-            </span>
+            <DS.CountDot tone="muted" style={{ height: 20, borderRadius: 10, padding: '0 7px', fontSize: 10.5 }}>
+              <span title="Cooperações em andamento">{n + ' ativa' + (n > 1 ? 's' : '')}</span>
+            </DS.CountDot>
           ) : null}
           {col === 'plataformas' ? (
             <button
+              type="button"
               onClick={function () {
                 setGv(x.grupo || '');
                 setNm(x.nome);
@@ -676,20 +727,21 @@
               }}
               aria-label="Editar"
               title="Renomear ou mudar grupo"
-              style={{ border: 'none', background: 'none', cursor: 'pointer', display: 'flex', padding: 2, color: 'inherit' }}
+              className="ms7g-chip-x"
             >
-              <DS.Icon name="layers" size={14} />
+              <DS.Icon name="layers" size={12} strokeWidth={2} />
             </button>
           ) : null}
           <button
+            type="button"
             onClick={function () {
               remover(col, x);
             }}
             aria-label="Remover"
             title={n ? n + ' em andamento' : 'Remover'}
-            style={{ border: 'none', background: 'none', cursor: 'pointer', display: 'flex', padding: 2, color: 'inherit' }}
+            className="ms7g-chip-x"
           >
-            <DS.Icon name="x" size={14} />
+            <DS.Icon name="x" size={12} strokeWidth={2} />
           </button>
         </span>
       );
@@ -697,13 +749,14 @@
     const gps = PIXV.grupos(db);
     return (
       <React.Fragment>
-        <Grid min={400}>
+        <Grid min={300}>
           <Card title="Redes" action={Tools('redes')}>
-            <Hint>Redes que aparecem na Nova cooperação. A plataforma não fica salva: você digita o nome dela em cada cooperação.</Hint>
-            <div style={{ display: 'flex', gap: 10, marginBottom: 14, flexWrap: 'wrap' }}>
-              <div style={{ flex: '1 1 160px', minWidth: 0 }}>
+            <Hint>Redes que aparecem na Nova cooperação. A plataforma não fica salva: você digita o nome dela em cada&nbsp;cooperação.</Hint>
+            <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
+              <div style={{ flex: '1 1 240px', minWidth: 0 }}>
                 <Input
                   placeholder="Nova rede"
+                  icon="network"
                   value={v.redes}
                   onChange={function (e) {
                     set('redes', e.target.value);
@@ -711,6 +764,7 @@
                 />
               </div>
               <Button
+                variant="brand"
                 iconLeft="plus"
                 onClick={function () {
                   DB.A.addLista('redes', v.redes);
@@ -720,11 +774,15 @@
                 Adicionar
               </Button>
             </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
-              {db.redes.map(function (x) {
-                return <Chip key={x.id} x={x} col="redes" icon="network" />;
-              })}
-            </div>
+            {db.redes.length ? (
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                {db.redes.map(function (x) {
+                  return <Chip key={x.id} x={x} col="redes" icon="network" />;
+                })}
+              </div>
+            ) : (
+              <Empty art="Globe" compact title="Nenhuma rede cadastrada" sub="Digite o nome acima e clique em Adicionar, ou importe uma lista." />
+            )}
           </Card>
         </Grid>
         <Modal
@@ -746,6 +804,7 @@
               </Button>
               <Button
                 variant="brand"
+                iconLeft="check"
                 onClick={function () {
                   if (String(nm).trim() && nm.trim() !== ed.nome) DB.A.renamePlataforma(ed.id, nm);
                   DB.A.setPlataformaGrupo(ed.id, gv);
@@ -805,6 +864,7 @@
             setImp(null);
           }}
           title={'Importar ' + (imp === 'redes' ? 'redes' : 'plataformas')}
+          subtitle="Cole a lista e cada linha vira um item"
           footer={
             <React.Fragment>
               <Button
@@ -856,14 +916,14 @@
       localStorage.setItem('ms7op-pix-aba', v);
     };
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 18 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <DS.Tabs
           variant="dark"
           value={t}
           onChange={ch}
           items={[
-            { id: 'chaves', label: 'Chaves' },
-            { id: 'conf', label: 'Conferência de saques' },
+            { id: 'chaves', label: 'Chaves', icon: 'key-round' },
+            { id: 'conf', label: 'Conferência de saques', icon: 'badge-check' },
           ]}
           style={{ maxWidth: 440 }}
         />
@@ -883,6 +943,7 @@
       <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
         <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
           <Button
+            variant="brand"
             iconLeft="plus"
             onClick={function () {
               setOpen(true);
@@ -898,41 +959,33 @@
             return (
               <Card key={m.nome}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
-                  <span
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 10,
-                      background: 'var(--ms7-lime-100)',
-                      color: 'var(--ms7-green-ink, #005D3B)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
+                  <span className="ms7g-tile" style={{ width: 36, height: 36, borderRadius: 10 }}>
                     <DS.Icon name="target" size={18} />
                   </span>
                   <div style={{ flex: 1 }}>
-                    <b style={{ fontSize: 16 }}>{m.nome}</b>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{m.tipo}</div>
+                    <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em' }}>{m.nome}</div>
+                    <div className="ms7g-sub">{m.tipo}</div>
                   </div>
                   <IconButton icon="pencil" size={28} iconSize={14} />
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', margin: '16px 0 6px' }}>
-                  <span style={{ fontSize: 20, fontWeight: 800 }}>{money ? MS7.brlK(m.atual) : MS7.num(m.atual)}</span>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  <span className="ms7-num" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.03em' }}>
+                    {money ? MS7.brlK(m.atual) : MS7.num(m.atual)}
+                  </span>
+                  <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>
                     {'de ' + (money ? MS7.brlK(m.alvo) : MS7.num(m.alvo))}
                   </span>
                 </div>
-                <div style={{ height: 8, borderRadius: 4, background: 'var(--ms7-gray-100)' }}>
-                  <div style={{ width: p + '%', height: '100%', borderRadius: 4, background: 'var(--ms7-lime-600)' }}></div>
+                <div className="ms7-bar">
+                  <i style={{ width: p + '%' }}></i>
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 12, gap: 8 }}>
                   <Badge size="sm" variant="soft" tone="purple">
                     {m.rec}
                   </Badge>
-                  <b style={{ fontSize: 13 }}>{p + '%'}</b>
+                  <span className="ms7-num" style={{ fontSize: 13, fontWeight: 600 }}>
+                    {p + '%'}
+                  </span>
                 </div>
               </Card>
             );
@@ -1013,7 +1066,12 @@
     if (!L)
       return (
         <Card>
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Carregando…</div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="ms7-skeleton" style={{ height: 36, width: '60%' }}></div>
+            <div className="ms7-skeleton" style={{ height: 36 }}></div>
+            <div className="ms7-skeleton" style={{ height: 36 }}></div>
+            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>Carregando…</div>
+          </div>
         </Card>
       );
     const upd = function (k, idx, campo, v) {
@@ -1065,29 +1123,18 @@
           toast(e.message || 'Erro ao salvar');
         });
     }
-    const cell = {
-      height: 36,
-      padding: '0 10px',
-      border: '1px solid var(--border-default)',
-      borderRadius: 10,
-      background: 'var(--surface-card)',
-      color: 'var(--text-primary)',
-      fontFamily: 'inherit',
-      fontSize: 13,
-      fontWeight: 600,
-      boxSizing: 'border-box',
-      width: '100%',
-      minWidth: 0,
-    };
     const pagos = peds.filter(function (p) {
       return p.status === 'approved';
     });
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <div style={{ flex: 1, fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+          <span className="ms7g-tile" style={{ width: 38, height: 38, borderRadius: 11 }}>
+            <DS.Icon name="store" size={18} />
+          </span>
+          <div style={{ flex: '1 1 260px', minWidth: 0, fontSize: 13.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
             Produtos e cupons que aparecem em Proxies → Comprar. O pagamento é PIX do Mercado Pago (copia e cola). A entrega automática no site
-            Marcelo Proxies será ligada depois.
+            Marcelo Proxies será ligada&nbsp;depois.
           </div>
           <Button variant="brand" iconLeft="check" disabled={!sujo} onClick={salvar}>
             Salvar loja
@@ -1095,6 +1142,7 @@
         </div>
         <Card
           title="Produtos"
+          subtitle={L.produtos.length + (L.produtos.length === 1 ? ' produto' : ' produtos')}
           action={
             <Button
               size="sm"
@@ -1109,12 +1157,18 @@
           }
         >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {L.produtos.length ? (
+              <div className="ms7g-prod is-head">
+                <span className="ms7-eyebrow">Nome</span>
+                <span className="ms7-eyebrow">Descrição</span>
+                <span className="ms7-eyebrow">Preço</span>
+                <span className="ms7-eyebrow">Ativo</span>
+                <span></span>
+              </div>
+            ) : null}
             {L.produtos.map(function (p, ix) {
               return (
-                <div
-                  key={p.id}
-                  style={{ display: 'grid', gridTemplateColumns: 'minmax(0,2fr) minmax(0,2fr) 110px auto auto', gap: 8, alignItems: 'center' }}
-                >
+                <div key={p.id} className="ms7g-prod">
                   <input
                     aria-label="Nome"
                     placeholder="Nome"
@@ -1122,7 +1176,7 @@
                     onChange={function (e) {
                       upd('produtos', ix, 'nome', e.target.value);
                     }}
-                    style={cell}
+                    className="ms7g-cell"
                   />
                   <input
                     aria-label="Descrição"
@@ -1131,18 +1185,21 @@
                     onChange={function (e) {
                       upd('produtos', ix, 'desc', e.target.value);
                     }}
-                    style={cell}
+                    className="ms7g-cell"
                   />
-                  <input
-                    aria-label="Preço"
-                    placeholder="Preço"
-                    inputMode="decimal"
-                    value={p.preco}
-                    onChange={function (e) {
-                      upd('produtos', ix, 'preco', e.target.value);
-                    }}
-                    style={cell}
-                  />
+                  <div className="ms7g-money">
+                    <span>R$</span>
+                    <input
+                      aria-label="Preço"
+                      placeholder="Preço"
+                      inputMode="decimal"
+                      value={p.preco}
+                      onChange={function (e) {
+                        upd('produtos', ix, 'preco', e.target.value);
+                      }}
+                      className="ms7g-cell ms7-num"
+                    />
+                  </div>
                   <Switch
                     checked={p.ativo !== false}
                     onChange={function (v) {
@@ -1161,11 +1218,14 @@
                 </div>
               );
             })}
-            {!L.produtos.length ? <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Nenhum produto.</div> : null}
+            {!L.produtos.length ? (
+              <Empty art="Wallet" compact title="Nenhum produto" sub="Clique em + Produto para colocar o primeiro item na loja." />
+            ) : null}
           </div>
         </Card>
         <Card
           title="Cupons"
+          subtitle={L.cupons.length ? L.cupons.length + (L.cupons.length === 1 ? ' cupom' : ' cupons') : 'Descontos em % para a loja'}
           action={
             <Button
               size="sm"
@@ -1179,35 +1239,23 @@
             </Button>
           }
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <div className="ms7g-scroll">
             {L.cupons.length ? (
-              <div
-                style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'minmax(0,1.4fr) 80px 150px 90px 60px auto auto',
-                  gap: 8,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  letterSpacing: '.05em',
-                  textTransform: 'uppercase',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                <span>Código</span>
-                <span>% desc.</span>
-                <span>Validade</span>
-                <span>Limite</span>
-                <span>Usos</span>
-                <span>Ativo</span>
+              <div className="ms7g-cup">
+                <span className="ms7-eyebrow">Código</span>
+                <span className="ms7-eyebrow">% desc.</span>
+                <span className="ms7-eyebrow">Validade</span>
+                <span className="ms7-eyebrow">Limite</span>
+                <span className="ms7-eyebrow" style={{ textAlign: 'center' }}>
+                  Usos
+                </span>
+                <span className="ms7-eyebrow">Ativo</span>
                 <span></span>
               </div>
             ) : null}
             {L.cupons.map(function (c, ix) {
               return (
-                <div
-                  key={ix}
-                  style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1.4fr) 80px 150px 90px 60px auto auto', gap: 8, alignItems: 'center' }}
-                >
+                <div key={ix} className="ms7g-cup">
                   <input
                     aria-label="Código"
                     placeholder="EX: MS7VIP"
@@ -1215,7 +1263,8 @@
                     onChange={function (e) {
                       upd('cupons', ix, 'codigo', e.target.value.toUpperCase());
                     }}
-                    style={cell}
+                    className="ms7g-cell"
+                    style={{ fontFamily: 'var(--font-mono)', letterSpacing: '.04em' }}
                   />
                   <input
                     aria-label="% de desconto"
@@ -1224,7 +1273,7 @@
                     onChange={function (e) {
                       upd('cupons', ix, 'pct', e.target.value);
                     }}
-                    style={cell}
+                    className="ms7g-cell ms7-num"
                   />
                   <input
                     aria-label="Validade"
@@ -1233,7 +1282,7 @@
                     onChange={function (e) {
                       upd('cupons', ix, 'validade', e.target.value);
                     }}
-                    style={cell}
+                    className="ms7g-cell"
                   />
                   <input
                     aria-label="Limite de usos"
@@ -1243,9 +1292,11 @@
                     onChange={function (e) {
                       upd('cupons', ix, 'limite', e.target.value.replace(/\D/g, ''));
                     }}
-                    style={cell}
+                    className="ms7g-cell ms7-num"
                   />
-                  <b style={{ fontSize: 13, textAlign: 'center' }}>{c.usos || 0}</b>
+                  <span className="ms7-num" style={{ fontSize: 13, fontWeight: 600, textAlign: 'center' }}>
+                    {c.usos || 0}
+                  </span>
                   <Switch
                     checked={c.ativo !== false}
                     onChange={function (v) {
@@ -1265,40 +1316,33 @@
               );
             })}
             {!L.cupons.length ? (
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Nenhum cupom. Clique em + Cupom.</div>
+              <Empty art="Wallet" compact title="Nenhum cupom" sub="Clique em + Cupom para criar um código de desconto." />
             ) : null}
           </div>
         </Card>
         {on ? (
-          <Card title={'Pedidos pagos · ' + pagos.length}>
+          <Card title="Pedidos pagos" subtitle={pagos.length + (pagos.length === 1 ? ' pedido pago' : ' pedidos pagos')} reveal>
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {pagos.length ? (
                 pagos.map(function (p) {
                   return (
-                    <div
-                      key={p.id}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 12,
-                        padding: '10px 0',
-                        borderTop: '1px solid var(--border-subtle)',
-                        flexWrap: 'wrap',
-                      }}
-                    >
+                    <div key={p.id} className="ms7g-line">
+                      <span className="ms7g-tile">
+                        <DS.Icon name="shopping-bag" size={15} />
+                      </span>
                       <div style={{ flex: '1 1 240px', minWidth: 0 }}>
-                        <b style={{ fontSize: 14 }}>
+                        <div className="ms7g-name">
                           {(p.itens || [])
                             .map(function (x) {
                               return x.qtd + 'x ' + x.nome;
                             })
                             .join(', ')}
-                        </b>
-                        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                        </div>
+                        <div className="ms7g-sub" style={{ marginTop: 2 }}>
                           {p.email + ' · ' + new Date(p.criado).toLocaleString('pt-BR') + (p.cupom ? ' · cupom ' + p.cupom : '')}
                         </div>
                       </div>
-                      <b>{MS7.brl(p.valor)}</b>
+                      <Money v={p.valor} />
                       {p.entregue ? (
                         <Badge size="sm" variant="soft" tone="green">
                           Entregue
@@ -1322,7 +1366,7 @@
                   );
                 })
               ) : (
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Nenhum pedido pago ainda.</div>
+                <Empty art="Wallet" compact title="Nenhum pedido pago ainda" sub="Os pedidos pagos via PIX na loja aparecem aqui para você marcar a entrega." />
               )}
             </div>
           </Card>
@@ -1351,6 +1395,12 @@
     return (
       <Card
         title="Ranking"
+        subtitle={'Por resultado · ' + (t === 'op' ? 'operadores' : 'alunos')}
+        icon={
+          <span className="ms7g-tile">
+            <DS.Icon name="trophy" size={15} />
+          </span>
+        }
         action={
           <Tabs
             variant="chips"
@@ -1372,49 +1422,47 @@
               label: '#',
               width: 60,
               render: function (r) {
-                return (
-                  <span
-                    style={{
-                      width: 28,
-                      height: 28,
-                      borderRadius: 8,
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontWeight: 800,
-                      fontSize: 12,
-                      background: r.pos === 1 ? 'var(--ms7-lime-500)' : r.pos <= 3 ? 'var(--ms7-gray-100)' : 'transparent',
-                      color: r.pos === 1 ? 'var(--ms7-green-900)' : 'inherit',
-                    }}
-                  >
-                    {String(r.pos).padStart(2, '0')}
-                  </span>
-                );
+                return <span className={'ms7g-pos' + (r.pos === 1 ? ' is-1' : r.pos <= 3 ? '' : ' is-rest')}>{String(r.pos).padStart(2, '0')}</span>;
               },
             },
             {
               key: 'nome',
               label: 'Nome',
               render: function (r) {
-                return <b>{r.nome}</b>;
+                return (
+                  <span className="ms7g-name" style={{ whiteSpace: 'nowrap' }}>
+                    {r.nome}
+                  </span>
+                );
               },
             },
-            { key: 'x', label: 'Volume' },
+            {
+              key: 'x',
+              label: 'Volume',
+              render: function (r) {
+                return <span style={{ color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{r.x}</span>;
+              },
+            },
             {
               key: 'v',
               label: 'Resultado',
               align: 'right',
               render: function (r) {
-                return <Money v={r.v} signed />;
+                return (
+                  <span style={{ whiteSpace: 'nowrap' }}>
+                    <Money v={r.v} signed />
+                  </span>
+                );
               },
             },
             {
               key: 'b',
               label: '',
               align: 'right',
+              width: 90,
               render: function (r) {
                 return r.pos === 1 ? (
-                  <Badge size="sm" tone="green">
+                  <Badge size="sm" tone="lime">
                     Líder
                   </Badge>
                 ) : null;
@@ -1437,10 +1485,11 @@
     const cur = tpl.find(function (t) {
       return t.id === sel;
     });
+    const ICONS = { 1: 'user-plus', 2: 'flag', 3: 'key-round', 4: 'credit-card' };
     return (
       <Grid min={300}>
-        <Card title="Modelos">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+        <Card title="Modelos" subtitle="Ligue, desligue e escolha qual editar" padding={16}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {tpl.map(function (t) {
               const on = t.id === sel;
               return (
@@ -1449,22 +1498,19 @@
                   onClick={function () {
                     setSel(t.id);
                   }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '10px 12px',
-                    borderRadius: 10,
-                    cursor: 'pointer',
-                    background: on ? 'var(--ms7-lime-100)' : 'transparent',
-                  }}
+                  className={'ms7g-tpl' + (on ? ' is-on' : '')}
                 >
-                  <DS.Icon name="bell" size={16} />
-                  <span style={{ flex: 1, fontSize: 14, fontWeight: 600, color: on ? 'var(--ms7-green-900)' : 'var(--text-primary)' }}>{t.nome}</span>
+                  <span className="ms7g-tile">
+                    <DS.Icon name={ICONS[t.id] || 'bell'} size={15} />
+                  </span>
+                  <span className="ms7g-name" style={{ flex: 1, minWidth: 0 }}>
+                    {t.nome}
+                  </span>
                   <span
                     onClick={function (e) {
                       e.stopPropagation();
                     }}
+                    style={{ display: 'inline-flex' }}
                   >
                     <Switch
                       checked={t.on}
@@ -1482,8 +1528,20 @@
             })}
           </div>
         </Card>
-        <Card title={cur.nome}>
-          <Hint>Personalize o texto de cada notificação, ative ou desative e defina quem recebe cada alerta.</Hint>
+        <Card
+          title={cur.nome}
+          icon={
+            <span className="ms7g-tile">
+              <DS.Icon name={ICONS[cur.id] || 'bell'} size={15} />
+            </span>
+          }
+          action={
+            <DS.Badge size="sm" variant="soft" tone={cur.on ? 'green' : 'gray'}>
+              {cur.on ? 'Ativa' : 'Desativada'}
+            </DS.Badge>
+          }
+        >
+          <Hint>Personalize o texto de cada notificação, ative ou desative e defina quem recebe cada&nbsp;alerta.</Hint>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <Select
               label="Quem recebe"
@@ -1505,7 +1563,7 @@
               defaultValue={cur.txt}
               hint="Use {variavel} para inserir dados automaticamente."
             />
-            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
               <Button
                 variant="outline"
                 iconLeft="send"

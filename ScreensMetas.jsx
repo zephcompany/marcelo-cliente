@@ -1,5 +1,64 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
+  (function () {
+    const CSS = [
+      '.ms7m-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:20px;align-items:start}',
+      '.ms7m-card{padding:20px;display:flex;flex-direction:column;gap:14px}',
+      '.ms7m-card.is-done{opacity:.82}',
+      '.ms7m-head{display:flex;align-items:flex-start;gap:10px}',
+      '.ms7m-sel{display:flex;align-items:center;height:30px}',
+      '.ms7m-tile{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900)}',
+      '.ms7m-tile.is-done{background:var(--ms7-green-900);color:var(--text-inverse)}',
+      '.ms7m-name{font-size:17px;font-weight:600;letter-spacing:-.015em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.ms7m-act{display:flex;gap:2px;flex-shrink:0;opacity:.55;transition:opacity var(--dur-fast)}',
+      '.ms7m-card:hover .ms7m-act,.ms7m-card:focus-within .ms7m-act{opacity:1}',
+      '@media (hover:none){.ms7m-act{opacity:1}}',
+      '.ms7m-prog{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}',
+      '.ms7m-big{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.1}',
+      '.ms7m-pct{font-size:14px;font-weight:600}',
+      '.ms7m-facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px 14px;padding:12px 14px;border-radius:12px;background:var(--surface-muted)}',
+      '.ms7m-fact{min-width:0;display:flex;flex-direction:column;gap:3px}',
+      '.ms7m-fact-row{display:flex;align-items:center;gap:2px;min-width:0}',
+      '.ms7m-fact-v{flex:1;min-width:0;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}',
+      '.ms7m-fact-v.is-mono{font-family:var(--font-mono);font-size:13px}',
+      '.ms7m-obs{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--ms7-lime-100);color:var(--ms7-green-ink);font-size:13px;font-weight:500;line-height:1.45}',
+      '.ms7m-foot{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border-subtle);padding-top:14px;margin-top:2px}',
+      '.ms7m-bar{position:sticky;top:8px;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:14px;background:var(--surface-card);box-shadow:0 0 0 1.5px var(--ms7-green-900),0 14px 34px -22px rgba(17,21,18,.35)}',
+      '.ms7m-op{padding:18px 20px;display:flex;flex-direction:column;gap:12px}',
+      '.ms7m-op-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}',
+      '.ms7m-op-name{font-size:16px;font-weight:600;letter-spacing:-.015em}',
+      '.ms7m-op-sub{font-size:13px;font-weight:500;color:var(--text-secondary);margin-top:2px}',
+      '.ms7m-op-val{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}',
+      '.ms7m-hist{display:flex;flex-direction:column;gap:2px;padding:8px 12px;border-radius:12px;background:var(--surface-muted)}',
+      '.ms7m-hist-row{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:500;min-height:34px}',
+      '.ms7m-step{width:24px;height:24px;border-radius:50%;background:var(--ms7-green-900);color:var(--text-inverse);font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;flex-shrink:0}',
+      '.ms7m-chip{display:inline-flex;align-items:center;height:30px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);overflow:hidden;transition:border-color var(--dur-fast),background var(--dur-fast)}',
+      '.ms7m-chip:hover{border-color:var(--line-strong)}',
+      '.ms7m-chip.is-on{background:var(--ms7-green-900);border-color:var(--ms7-green-900);color:var(--text-inverse)}',
+      '.ms7m-chip button{height:100%;border:0;background:transparent;color:inherit;font-family:inherit;font-size:12.5px;font-weight:600;line-height:1;cursor:pointer}',
+      '.ms7m-chip .x{width:26px;display:flex;align-items:center;justify-content:center;opacity:.6}',
+      '.ms7m-chip .x:hover{opacity:1}',
+      '.ms7m-roll{height:38px;min-width:56px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}',
+      '.ms7m-roll:hover{border-color:var(--line-strong)}',
+      '.ms7m-roll.is-on{background:var(--ms7-green-900);border-color:var(--ms7-green-900);color:var(--text-inverse)}',
+      '.ms7m-gp{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;text-align:left;cursor:pointer;transition:border-color var(--dur-fast),background var(--dur-fast)}',
+      '.ms7m-gp:hover:not(:disabled){border-color:var(--line-strong)}',
+      '.ms7m-gp.is-on{border-color:var(--ms7-green-900);background:color-mix(in oklab,var(--ms7-green-900) 7%,var(--surface-card))}',
+      '.ms7m-gp:disabled{cursor:not-allowed;opacity:.5}',
+      '.ms7m-gp .t{display:block;font-size:13px;font-weight:600;text-transform:uppercase;letter-spacing:.02em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.ms7m-gp .s{font-size:12px;font-weight:500;color:var(--text-secondary)}',
+      '.ms7m-gp .s.is-bad{color:var(--ms7-error)}',
+      '.ms7m-note{padding:12px 14px;border-radius:12px;background:var(--surface-muted);font-size:13px;font-weight:500;line-height:1.5}',
+      '@media (max-width:640px){.ms7m-grid{gap:14px}.ms7m-card{padding:16px}}',
+    ].join('');
+    let s = document.getElementById('ms7-metas-css');
+    if (!s) {
+      s = document.createElement('style');
+      s.id = 'ms7-metas-css';
+      document.head.appendChild(s);
+    }
+    s.textContent = CSS;
+  })();
   const FIM = ['Finalizada', 'Concluída'];
   function feitaConta(k) {
     return !!(String(k.usuario || '').trim() && (+k.deposito || 0) + (+k.redeposito || 0) > 0);
@@ -430,7 +489,7 @@
     });
     const num = { fontVariantNumeric: 'tabular-nums', textAlign: 'right', whiteSpace: 'nowrap' };
     const td = function (x) {
-      return Object.assign({ padding: '10px 8px' }, num, x || {});
+      return Object.assign({}, num, x || {});
     };
     const DV = Object.keys(porOp)
       .map(function (k) {
@@ -516,23 +575,12 @@
             DV.map(function (d) {
               const nome = d.k ? DB.opName(d.k) : 'Sem operador';
               return (
-                <div
-                  key={d.k || 'x'}
-                  style={{
-                    background: 'var(--surface-card)',
-                    borderRadius: 'var(--radius-lg)',
-                    boxShadow: 'var(--shadow-card)',
-                    padding: '16px 18px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 10,
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                    <DS.Avatar name={nome} size={34} />
+                <div key={d.k || 'x'} className="ms7-card ms7m-op">
+                  <div className="ms7m-op-head">
+                    <DS.Avatar name={nome} size={36} />
                     <div style={{ flex: 1, minWidth: 160 }}>
-                      <b style={{ fontSize: 17 }}>{nome}</b>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      <div className="ms7m-op-name">{nome}</div>
+                      <div className="ms7m-op-sub">
                         {'Enviado ' +
                           MS7.brl(d.g.enviado + d.recebido) +
                           ' · devido depois da redução ' +
@@ -541,9 +589,13 @@
                       </div>
                     </div>
                     {d.falta > 0 ? (
-                      <b style={{ fontSize: 16, color: 'var(--ms7-orange)' }}>{'Devolver ' + MS7.brl(d.falta)}</b>
+                      <span className="ms7m-op-val ms7-num" style={{ color: 'var(--ms7-orange)' }}>
+                        {'Devolver ' + MS7.brl(d.falta)}
+                      </span>
                     ) : (
-                      <b style={{ fontSize: 14, color: 'var(--ms7-green)' }}>Nada a devolver</b>
+                      <DS.Badge variant="soft" tone="green">
+                        Nada a devolver
+                      </DS.Badge>
                     )}
                     {d.falta > 0 ? (
                       <DS.Button
@@ -559,36 +611,28 @@
                     ) : null}
                   </div>
                   {d.reds.length ? (
-                    <div style={{ overflowX: 'auto' }}>
-                      <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+                    <div className="ms7-table-wrap">
+                      <table className="ms7-table">
                         <thead>
-                          <tr
-                            style={{
-                              color: 'var(--text-secondary)',
-                              fontSize: 11,
-                              fontWeight: 700,
-                              letterSpacing: '.05em',
-                              textTransform: 'uppercase',
-                            }}
-                          >
-                            <th style={{ textAlign: 'left', padding: '6px 8px' }}>Meta</th>
-                            <th style={td({ padding: '6px 8px' })}>Contas</th>
-                            <th style={td({ padding: '6px 8px' })}>Contas a menos</th>
-                            <th style={td({ padding: '6px 8px' })}>Depósito</th>
-                            <th style={td({ padding: '6px 8px' })}>Comissão</th>
-                            <th style={td({ padding: '6px 8px' })}>Total</th>
+                          <tr>
+                            <th>Meta</th>
+                            <th style={td()}>Contas</th>
+                            <th style={td()}>Contas a menos</th>
+                            <th style={td()}>Depósito</th>
+                            <th style={td()}>Comissão</th>
+                            <th style={td()}>Total</th>
                           </tr>
                         </thead>
                         <tbody>
                           {d.reds.map(function (x) {
                             return (
-                              <tr key={x.m.id} style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                                <td style={{ padding: '10px 8px', fontWeight: 700 }}>{linha(x)}</td>
+                              <tr key={x.m.id}>
+                                <td style={{ fontWeight: 600 }}>{linha(x)}</td>
                                 <td style={td()}>{x.e.red.reduz ? x.e.red.de + ' → ' + x.e.red.para : 'Ajuste'}</td>
                                 <td style={td()}>{x.e.red.n || '—'}</td>
                                 <td style={td()}>{MS7.brl(x.e.red.dep)}</td>
                                 <td style={td()}>{MS7.brl(x.e.red.com)}</td>
-                                <td style={td({ fontWeight: 800 })}>{MS7.brl(x.e.red.total)}</td>
+                                <td style={td({ fontWeight: 600 })}>{MS7.brl(x.e.red.total)}</td>
                               </tr>
                             );
                           })}
@@ -597,13 +641,13 @@
                     </div>
                   ) : null}
                   {d.hist.length ? (
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: 4, borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: 2, borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
                       {d.hist.map(function (e) {
                         return (
-                          <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600 }}>
-                            <span style={{ color: 'var(--text-secondary)', width: 90 }}>{new Date(e.em).toLocaleDateString('pt-BR')}</span>
+                          <div key={e.id} className="ms7m-hist-row">
+                            <span className="ms7-num" style={{ color: 'var(--text-secondary)', width: 90 }}>{new Date(e.em).toLocaleDateString('pt-BR')}</span>
                             <span style={{ flex: 1 }}>Devolução recebida</span>
-                            <b style={{ color: 'var(--ms7-green)' }}>{MS7.brl(-e.v)}</b>
+                            <span className="ms7-num" style={{ fontWeight: 600, color: 'var(--ms7-green)' }}>{MS7.brl(-e.v)}</span>
                             <DS.IconButton
                               icon="trash-2"
                               size={26}
@@ -622,19 +666,12 @@
               );
             })
           ) : (
-            <div
-              style={{
-                padding: '48px 20px',
-                textAlign: 'center',
-                color: 'var(--text-secondary)',
-                fontSize: 14,
-                fontWeight: 600,
-                background: 'var(--surface-card)',
-                borderRadius: 'var(--radius-lg)',
-              }}
-            >
-              Nenhuma devolução. Quando uma meta é reduzida (ex.: 50 → 35 contas) e você já mandou mais do que o novo total, a devolução aparece aqui
-              sozinha.
+            <div className="ms7-card">
+              <Empty
+                art="Wallet"
+                title="Nenhuma devolução"
+                sub={'Quando uma meta é reduzida (ex.: 50 → 35 contas) e você já mandou mais do que o novo total, a devolução aparece aqui\u00A0sozinha.'}
+              />
             </div>
           )}
           {reg ? (
@@ -696,48 +733,31 @@
             const nome = k ? DB.opName(k) : 'Sem operador ainda';
             const aberto = hist === k;
             return (
-              <div
-                key={k || 'x'}
-                style={{
-                  background: 'var(--surface-card)',
-                  borderRadius: 'var(--radius-lg)',
-                  boxShadow: 'var(--shadow-card)',
-                  padding: '16px 18px',
-                  display: 'flex',
-                  flexDirection: 'column',
-                  gap: 10,
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  <DS.Avatar name={nome} size={34} />
+              <div key={k || 'x'} className="ms7-card ms7m-op">
+                <div className="ms7m-op-head">
+                  <DS.Avatar name={nome} size={36} />
                   <div style={{ flex: 1, minWidth: 160 }}>
-                    <b style={{ fontSize: 17 }}>{nome}</b>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    <div className="ms7m-op-name">{nome}</div>
+                    <div className="ms7m-op-sub">
                       {'Total ' + MS7.brl(g.devido) + ' · enviado ' + MS7.brl(g.enviado)}
                     </div>
                   </div>
                   {g.falta > 0 ? (
-                    <b style={{ fontSize: 16, color: 'var(--ms7-orange)' }}>{'Falta ' + MS7.brl(g.falta)}</b>
+                    <span className="ms7m-op-val ms7-num" style={{ color: 'var(--ms7-orange)' }}>
+                      {'Falta ' + MS7.brl(g.falta)}
+                    </span>
                   ) : (
-                    <b style={{ fontSize: 14, color: 'var(--ms7-green)' }}>Tudo enviado</b>
+                    <DS.Badge variant="soft" tone="green">
+                      Tudo enviado
+                    </DS.Badge>
                   )}
                   {g.credito > 0 ? (
                     g.l.some(function (x) {
                       return x.e.red;
                     }) ? (
                       <React.Fragment>
-                        <span
-                          title="A meta foi reduzida (contas não feitas). O operador tem que devolver o depósito e a comissão dessas contas."
-                          style={{
-                            fontSize: 13,
-                            fontWeight: 800,
-                            padding: '4px 10px',
-                            borderRadius: 8,
-                            background: 'color-mix(in oklab, var(--ms7-orange) 16%, transparent)',
-                            color: 'var(--text-primary)',
-                          }}
-                        >
-                          {'Devolver ' + MS7.brl(g.credito)}
+                        <span title="A meta foi reduzida (contas não feitas). O operador tem que devolver o depósito e a comissão dessas contas." style={{ display: 'inline-flex' }}>
+                          <DS.Badge tone="orange">{'Devolver ' + MS7.brl(g.credito)}</DS.Badge>
                         </span>
                         <DS.Button
                           size="sm"
@@ -751,18 +771,8 @@
                         </DS.Button>
                       </React.Fragment>
                     ) : (
-                      <span
-                        title="Enviado a mais ou de listas que foram apagadas. Abate na próxima lista."
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 700,
-                          padding: '4px 10px',
-                          borderRadius: 8,
-                          background: 'color-mix(in oklab, var(--ms7-green) 14%, transparent)',
-                          color: 'var(--text-primary)',
-                        }}
-                      >
-                        {'Crédito ' + MS7.brl(g.credito)}
+                      <span title="Enviado a mais ou de listas que foram apagadas. Abate na próxima lista." style={{ display: 'inline-flex' }}>
+                        <DS.Badge tone="green">{'Crédito ' + MS7.brl(g.credito)}</DS.Badge>
                       </span>
                     )
                   ) : null}
@@ -809,24 +819,15 @@
                   </DS.Button>
                 </div>
                 {aberto ? (
-                  <div
-                    style={{
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 4,
-                      padding: '10px 12px',
-                      borderRadius: 12,
-                      background: 'var(--surface-muted, var(--ms7-gray-100))',
-                    }}
-                  >
+                  <div className="ms7m-hist">
                     {g.led.length ? (
                       g.led.map(function (e) {
                         return (
-                          <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, minHeight: 32 }}>
-                            <span style={{ width: 120, color: 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
+                          <div key={e.id} className="ms7m-hist-row">
+                            <span className="ms7-num" style={{ width: 120, color: 'var(--text-secondary)' }}>
                               {new Date(e.em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            <b style={{ width: 110, fontVariantNumeric: 'tabular-nums' }}>{MS7.brl(e.v)}</b>
+                            <span className="ms7-num" style={{ width: 110, fontWeight: 600 }}>{MS7.brl(e.v)}</span>
                             <span
                               style={{
                                 flex: 1,
@@ -852,41 +853,33 @@
                         );
                       })
                     ) : (
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Nenhum envio anotado.</span>
+                      <Empty art="Wallet" compact title="Nenhum envio anotado" sub="Os envios registrados para este operador aparecem aqui." />
                     )}
                   </div>
                 ) : null}
                 {l.length ? (
-                  <div style={{ overflowX: 'auto' }}>
-                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+                  <div className="ms7-table-wrap">
+                    <table className="ms7-table">
                       <thead>
-                        <tr
-                          style={{
-                            color: 'var(--text-secondary)',
-                            fontSize: 11,
-                            fontWeight: 700,
-                            letterSpacing: '.05em',
-                            textTransform: 'uppercase',
-                          }}
-                        >
-                          <th style={{ textAlign: 'left', padding: '6px 8px' }}>Lista</th>
-                          <th style={td({ padding: '6px 8px' })}>Contas</th>
-                          <th style={td({ padding: '6px 8px' })}>Depósito</th>
-                          <th style={td({ padding: '6px 8px' })}>Comissão</th>
-                          <th style={td({ padding: '6px 8px' })}>Total</th>
-                          <th style={td({ padding: '6px 8px' })}>Enviado</th>
-                          <th style={td({ padding: '6px 8px' })}>Falta</th>
+                        <tr>
+                          <th>Lista</th>
+                          <th style={td()}>Contas</th>
+                          <th style={td()}>Depósito</th>
+                          <th style={td()}>Comissão</th>
+                          <th style={td()}>Total</th>
+                          <th style={td()}>Enviado</th>
+                          <th style={td()}>Falta</th>
                           <th></th>
                         </tr>
                       </thead>
                       <tbody>
                         {l.map(function (x) {
                           return (
-                            <tr key={x.m.id} style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                              <td style={{ padding: '10px 8px', fontWeight: 700 }}>
+                            <tr key={x.m.id}>
+                              <td style={{ fontWeight: 600 }}>
                                 {linha(x)}
                                 {x.e.red ? (
-                                  <div style={{ marginTop: 3, fontSize: 12, fontWeight: 600, color: 'var(--ms7-orange)', whiteSpace: 'normal' }}>
+                                  <div style={{ marginTop: 3, fontSize: 12, fontWeight: 500, color: 'var(--ms7-orange)', whiteSpace: 'normal' }}>
                                     {(x.e.red.reduz
                                       ? 'Reduzida ' + x.e.red.de + ' → ' + x.e.red.para + ' contas · '
                                       : 'Depósitos mudaram na cooperação · ') +
@@ -905,14 +898,14 @@
                               <td style={td()} title={x.e.comTxt}>
                                 {x.e.com == null ? '—' : MS7.brl(x.e.com)}
                               </td>
-                              <td style={td({ fontWeight: 800 })}>{MS7.brl(x.e.total)}</td>
+                              <td style={td({ fontWeight: 600 })}>{MS7.brl(x.e.total)}</td>
                               <td style={td({ color: x.e.env ? 'var(--ms7-green)' : 'var(--text-secondary)' })}>
                                 {x.e.env ? MS7.brl(x.e.env) : '—'}
                               </td>
-                              <td style={td({ fontWeight: 800, color: x.e.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
+                              <td style={td({ fontWeight: 600, color: x.e.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
                                 {x.e.falta > 0 ? MS7.brl(x.e.falta) : 'OK'}
                               </td>
-                              <td style={{ padding: '6px 0 6px 8px', width: 72, whiteSpace: 'nowrap' }}>
+                              <td style={{ padding: '6px 0 6px 8px', width: 72, whiteSpace: 'nowrap', textAlign: 'right' }}>
                                 <DS.IconButton
                                   icon="copy"
                                   size={30}
@@ -940,47 +933,39 @@
                       </tbody>
                       {l.length > 1 ? (
                         <tfoot>
-                          <tr style={{ borderTop: '2px solid var(--border-default)' }}>
-                            <td style={{ padding: '10px 8px', fontWeight: 800 }}>Total</td>
-                            <td style={td({ fontWeight: 700 })}>
+                          <tr style={{ background: 'var(--surface-muted)' }}>
+                            <td style={{ fontWeight: 600, borderTop: '1px solid var(--line)', borderRadius: '10px 0 0 10px' }}>Total</td>
+                            <td style={td({ fontWeight: 600, borderTop: '1px solid var(--line)' })}>
                               {l.reduce(function (a, x) {
                                 return a + x.e.rows.length;
                               }, 0)}
                             </td>
-                            <td style={td({ fontWeight: 800 })}>{MS7.brl(sm(l, 'dep'))}</td>
-                            <td style={td({ fontWeight: 800 })}>{MS7.brl(sm(l, 'com'))}</td>
-                            <td style={td({ fontWeight: 800 })}>{MS7.brl(sm(l, 'total'))}</td>
-                            <td style={td({ fontWeight: 800 })}>{MS7.brl(sm(l, 'env'))}</td>
-                            <td style={td({ fontWeight: 800, fontSize: 16, color: sm(l, 'falta') > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
+                            <td style={td({ fontWeight: 600, borderTop: '1px solid var(--line)' })}>{MS7.brl(sm(l, 'dep'))}</td>
+                            <td style={td({ fontWeight: 600, borderTop: '1px solid var(--line)' })}>{MS7.brl(sm(l, 'com'))}</td>
+                            <td style={td({ fontWeight: 600, borderTop: '1px solid var(--line)' })}>{MS7.brl(sm(l, 'total'))}</td>
+                            <td style={td({ fontWeight: 600, borderTop: '1px solid var(--line)' })}>{MS7.brl(sm(l, 'env'))}</td>
+                            <td style={td({ fontWeight: 600, fontSize: 15, borderTop: '1px solid var(--line)', color: sm(l, 'falta') > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
                               {sm(l, 'falta') > 0 ? MS7.brl(sm(l, 'falta')) : 'OK'}
                             </td>
-                            <td></td>
+                            <td style={{ borderTop: '1px solid var(--line)', borderRadius: '0 10px 10px 0' }}></td>
                           </tr>
                         </tfoot>
                       ) : null}
                     </table>
                   </div>
                 ) : (
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                    {g.l.length ? 'Nenhuma lista neste filtro.' : 'Sem lista no momento. Os envios continuam anotados.'}
-                  </span>
+                  <Empty art="Inbox" compact title={g.l.length ? 'Nenhuma lista neste filtro' : 'Sem lista no momento'} sub={g.l.length ? null : 'Os envios continuam anotados.'} />
                 )}
               </div>
             );
           })
         ) : (
-          <div
-            style={{
-              padding: '48px 20px',
-              textAlign: 'center',
-              color: 'var(--text-secondary)',
-              fontSize: 14,
-              fontWeight: 600,
-              background: 'var(--surface-card)',
-              borderRadius: 'var(--radius-lg)',
-            }}
-          >
-            {st === 'pend' ? 'Nada falta enviar.' : 'Nenhum envio aqui.'}
+          <div className="ms7-card">
+            <Empty
+              art="Wallet"
+              title={st === 'pend' ? 'Nada falta enviar' : 'Nenhum envio aqui'}
+              sub={st === 'pend' ? 'Quando uma meta com lista de depósitos for enviada, o valor a pagar aparece\u00A0aqui.' : 'Troque o filtro ou o operador para ver os\u00A0outros.'}
+            />
           </div>
         )}
         {reg ? (
@@ -1309,27 +1294,11 @@
     const destino = f.opId === '__eu' ? 'Eu (admin)' : f.opId ? DB.opName(f.opId) : '';
     const H = function (n, t, sub) {
       return (
-        <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 10, marginTop: n > 1 ? 6 : 0 }}>
-          <span
-            style={{
-              width: 24,
-              height: 24,
-              borderRadius: 12,
-              background: 'var(--ms7-green-900, #005D3B)',
-              color: '#fff',
-              fontSize: 12,
-              fontWeight: 800,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            {n}
-          </span>
-          <b style={{ fontSize: 15 }}>{t}</b>
-          {sub ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{sub}</span> : null}
-          <span style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }}></span>
+        <div style={{ gridColumn: '1 / -1', display: 'flex', alignItems: 'center', gap: 10, marginTop: n > 1 ? 8 : 0 }}>
+          <span className="ms7m-step ms7-num">{n}</span>
+          <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em' }}>{t}</span>
+          {sub ? <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)' }}>{sub}</span> : null}
+          <span style={{ flex: 1, height: 1, background: 'var(--line)' }}></span>
         </div>
       );
     };
@@ -1406,40 +1375,19 @@
                 {platRec.map(function (p) {
                   const on = DB.platNorm(p) === DB.platNorm(f.plataforma);
                   return (
-                    <span
-                      key={p}
-                      style={{
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        height: 30,
-                        borderRadius: 15,
-                        border: '1px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-default)'),
-                        background: on ? 'color-mix(in oklab, var(--ms7-lime-500) 22%, transparent)' : 'var(--surface-card)',
-                        overflow: 'hidden',
-                      }}
-                    >
+                    <span key={p} className={'ms7m-chip' + (on ? ' is-on' : '')}>
                       <button
                         type="button"
                         onClick={function () {
                           set('plataforma')(p);
                         }}
-                        style={{
-                          height: '100%',
-                          padding: '0 4px 0 12px',
-                          border: 0,
-                          background: 'transparent',
-                          color: 'var(--text-primary)',
-                          fontFamily: 'inherit',
-                          fontSize: 13,
-                          fontWeight: 700,
-                          lineHeight: 1,
-                          cursor: 'pointer',
-                        }}
+                        style={{ padding: '0 4px 0 12px' }}
                       >
                         {p}
                       </button>
                       <button
                         type="button"
+                        className="x"
                         aria-label={'Tirar ' + p}
                         title="Tirar da lista"
                         onClick={function () {
@@ -1449,19 +1397,8 @@
                             }),
                           );
                         }}
-                        style={{
-                          width: 28,
-                          height: '100%',
-                          border: 0,
-                          background: 'transparent',
-                          color: 'var(--text-secondary)',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
                       >
-                        <DS.Icon name="x" size={14} />
+                        <DS.Icon name="x" size={13} />
                       </button>
                     </span>
                   );
@@ -1563,7 +1500,7 @@
             hint={!f.mediaDep && rows.length ? 'Média da lista: ' + MS7.brl(totDep / rows.length) : null}
           />
           <div style={{ gridColumn: '1 / -1', display: 'flex', flexDirection: 'column', gap: 8 }}>
-            <span style={{ fontSize: 13, fontWeight: 600 }}>Apostas válidas (multiplicador)</span>
+            <span className="ms7-label">Apostas válidas (multiplicador)</span>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
               {['N/A', '2x', '2.5x', '3x', '3.5x', '4x', '5x'].map(function (x) {
                 const on = (f.rollover || 'N/A') === x;
@@ -1571,23 +1508,11 @@
                   <button
                     key={x}
                     type="button"
+                    className={'ms7m-roll ms7-num' + (on ? ' is-on' : '')}
                     onClick={function () {
                       setF(function (p) {
                         return Object.assign({}, p, { rollover: x === 'N/A' ? '' : x });
                       });
-                    }}
-                    style={{
-                      height: 40,
-                      minWidth: 60,
-                      padding: '0 14px',
-                      borderRadius: 10,
-                      border: '2px solid ' + (on ? 'var(--ms7-green-900, #005D3B)' : 'var(--border-default)'),
-                      background: on ? 'var(--ms7-lime-100)' : 'transparent',
-                      color: on ? 'var(--ms7-green-ink, #005D3B)' : 'var(--text-primary)',
-                      fontFamily: 'inherit',
-                      fontSize: 15,
-                      fontWeight: 700,
-                      cursor: 'pointer',
                     }}
                   >
                     {x}
@@ -1606,9 +1531,9 @@
                           .replace(',', '.'),
                       ) || 0) * (+f.qtd || 0);
                   return base ? (
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>
+                    <span className="ms7-hint">
                       {'Apostas válidas alvo: ' + MS7.brl(base) + ' × ' + f.rollover + ' = '}
-                      <b style={{ color: 'var(--text-primary)' }}>{MS7.brl(base * mult)}</b>
+                      <span className="ms7-num" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{MS7.brl(base * mult)}</span>
                     </span>
                   ) : null;
                 })()
@@ -1628,7 +1553,7 @@
                 : 'digite a plataforma primeiro',
           )}
           {f.plataforma ? (
-            <div style={{ gridColumn: '1 / -1', marginTop: -6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+            <div style={{ gridColumn: '1 / -1', marginTop: -6, fontSize: 12.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
               {'Grupos que já estão com outro operador na ' +
                 f.plataforma +
                 ' aparecem apagados e não podem ser escolhidos. O mesmo operador pode usar os mesmos grupos em Link 1, Link 2…'}
@@ -1658,65 +1583,31 @@
                     <button
                       key={g.id}
                       type="button"
+                      className={'ms7m-gp' + (on ? ' is-on' : '')}
                       disabled={!!uso}
                       title={uso ? 'Já usado nesta plataforma: ' + uso : ''}
                       onClick={function () {
                         if (!uso) togG(g.id);
                       }}
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: 10,
-                        padding: '10px 12px',
-                        borderRadius: 12,
-                        border: '2px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-default)'),
-                        background: on ? 'color-mix(in oklab, var(--ms7-green) 10%, var(--surface-card))' : 'var(--surface-card)',
-                        color: 'var(--text-primary)',
-                        fontFamily: 'inherit',
-                        textAlign: 'left',
-                        cursor: uso ? 'not-allowed' : 'pointer',
-                        opacity: uso ? 0.5 : 1,
-                      }}
                     >
-                      <span
-                        style={{
-                          width: 20,
-                          height: 20,
-                          borderRadius: 6,
-                          flexShrink: 0,
-                          border: '2px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-default)'),
-                          background: on ? 'var(--ms7-green)' : 'transparent',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {on ? <DS.Icon name="check" size={13} color="#fff" strokeWidth={3} /> : null}
+                      <span role="checkbox" aria-checked={on} className={'ms7-checkbox' + (on ? ' is-on' : '')}>
+                        {on ? (
+                          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--text-inverse)" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M4 12.5l5 5L20 6.5" />
+                          </svg>
+                        ) : null}
                       </span>
                       <span style={{ flex: 1, minWidth: 0 }}>
-                        <b
-                          style={{
-                            display: 'block',
-                            fontSize: 13,
-                            textTransform: 'uppercase',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {g.nome || 'Sem nome'}
-                        </b>
-                        <span style={{ fontSize: 12, fontWeight: 600, color: uso ? 'var(--ms7-error)' : 'var(--text-secondary)' }}>
-                          {uso ? 'Usado: ' + uso : (g.pagamento ? g.pagamento + ' · ' : '') + d + ' disponíveis'}
-                        </span>
+                        <span className="t">{g.nome || 'Sem nome'}</span>
+                        <span className={'s' + (uso ? ' is-bad' : '')}>{uso ? 'Usado: ' + uso : (g.pagamento ? g.pagamento + ' · ' : '') + d + ' disponíveis'}</span>
                       </span>
                     </button>
                   );
                 })
             ) : (
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                Nenhum grupo de chaves. Cadastre em Gestão → Chaves PIX.
-              </span>
+              <div style={{ gridColumn: '1 / -1' }}>
+                <Empty art="Keys" compact title="Nenhum grupo de chaves" sub="Cadastre em Gestão → Chaves PIX." />
+              </div>
             )}
           </div>
           {H(5, 'Para quem enviar')}
@@ -1770,17 +1661,7 @@
             <DS.Input label="Observação" multiline rows={2} value={f.obs} onChange={set('obs')} />
           </div>
           {f.opId && !enviada ? (
-            <div
-              style={{
-                gridColumn: '1 / -1',
-                padding: '12px 14px',
-                borderRadius: 12,
-                background: 'var(--surface-muted, var(--ms7-gray-100))',
-                fontSize: 13,
-                fontWeight: 600,
-                lineHeight: 1.5,
-              }}
-            >
+            <div className="ms7m-note" style={{ gridColumn: '1 / -1' }}>
               {'Ao enviar, cria a cooperação de ' +
                 destino +
                 ' com ' +
@@ -1883,70 +1764,54 @@
   function MetaCard({ m, p, onEdit, onToggle, onIniciar, onDel, onOpen, ro, sel, onSel }) {
     const u = link(m.link);
     const [ver, setVer] = React.useState(false);
+    const copiar = function (t, msg) {
+      (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(
+        function () {
+          toast(msg);
+        },
+        function () {
+          window.prompt('Copie:', t);
+        },
+      );
+    };
+    const linkLabel = p.c && p.c.linkN ? p.c.linkN : m.linkN || 'Link a definir';
+    const fatos = [
+      ['ID', m.idMeta || DB.linkId(m.link), 'id'],
+      ['Usuário', m.muser, 'user'],
+      ['Senha', m.msenha, 'senha'],
+      ['Apostas', m.rollover, 'txt'],
+      ['Chaves', (m.pixGrupos || []).length ? m.pixGrupos.length + (m.pixGrupos.length === 1 ? ' grupo' : ' grupos') : '', 'txt'],
+    ].filter(function (r) {
+      return r[1];
+    });
+    const temEnviar = !p.c && m.plataforma && !ro;
     return (
-      <div
-        style={{
-          background: 'var(--surface-card)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-card)',
-          padding: 18,
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
-          opacity: p.done ? 0.85 : 1,
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'flex-start', gap: 10 }}>
+      <div className={'ms7-card ms7-hover-card ms7m-card' + (p.done ? ' is-done' : '')}>
+        <div className="ms7m-head">
           {onSel ? (
-            <button
-              type="button"
-              aria-label={sel ? 'Desmarcar' : 'Selecionar para enviar'}
-              onClick={onSel}
-              style={{
-                width: 24,
-                height: 24,
-                marginTop: 6,
-                flexShrink: 0,
-                borderRadius: 7,
-                border: '2px solid ' + (sel ? 'var(--ms7-green)' : 'var(--border-default)'),
-                background: sel ? 'var(--ms7-green)' : 'transparent',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                cursor: 'pointer',
-                padding: 0,
-              }}
-            >
-              {sel ? <DS.Icon name="check" size={14} color="#fff" strokeWidth={3} /> : null}
-            </button>
+            <span className="ms7m-sel">
+              <DS.Checkbox checked={!!sel} onChange={onSel} />
+            </span>
           ) : null}
-          <span
-            style={{
-              width: 36,
-              height: 36,
-              borderRadius: 10,
-              flexShrink: 0,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              background: p.done ? 'var(--ms7-green)' : 'var(--ms7-lime-100)',
-              color: p.done ? '#fff' : 'var(--ms7-green-ink, #005D3B)',
-            }}
-          >
-            <DS.Icon name={p.done ? 'check' : 'target'} size={18} />
+          <span className={'ms7m-tile' + (p.done ? ' is-done' : '')}>
+            <DS.Icon name={p.done ? 'check' : 'target'} size={15} strokeWidth={2} />
           </span>
           <div style={{ flex: 1, minWidth: 0 }}>
-            <b style={{ fontSize: 15, display: 'block', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {m.plataforma || m.nome || String(m.link || '').replace(/^https?:\/\//, '') || 'Meta'}
-            </b>
+            <div className="ms7m-name">{m.plataforma || m.nome || String(m.link || '').replace(/^https?:\/\//, '') || 'Meta'}</div>
             {m.plataforma ? (
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>
-                {p.c && p.c.linkN ? p.c.linkN : m.linkN || 'Link a definir'}
-              </span>
+              <div style={{ marginTop: 4 }}>
+                <DS.Badge size="sm" variant="soft" tone="gray">
+                  {linkLabel}
+                </DS.Badge>
+              </div>
             ) : null}
           </div>
-          {ro ? null : <DS.IconButton icon="pencil" size={30} iconSize={14} label="Editar" onClick={onEdit} />}
-          {ro ? null : <DS.IconButton icon="trash-2" size={30} iconSize={14} label="Apagar" onClick={onDel} />}
+          {ro ? null : (
+            <div className="ms7m-act">
+              <DS.IconButton icon="pencil" size={30} iconSize={14} label="Editar" onClick={onEdit} />
+              <DS.IconButton icon="trash-2" size={30} iconSize={14} label="Apagar" onClick={onDel} />
+            </div>
+          )}
         </div>
         <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
           {window.ms7SemOp ? null : (
@@ -1983,20 +1848,16 @@
             </DS.Badge>
           )}
         </div>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
-          <span style={{ fontSize: 22, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{p.atual + ' de ' + p.alvo}</span>
-          <b style={{ fontSize: 15, color: p.done ? 'var(--ms7-green)' : 'var(--text-primary)' }}>{p.pct + '%'}</b>
-        </div>
-        <div style={{ height: 8, borderRadius: 4, background: 'var(--ms7-gray-100)' }}>
-          <div
-            style={{
-              width: p.pct + '%',
-              height: '100%',
-              borderRadius: 4,
-              background: p.done ? 'var(--ms7-green)' : 'var(--ms7-lime-600)',
-              transition: 'width .4s',
-            }}
-          ></div>
+        <div>
+          <div className="ms7m-prog">
+            <span className="ms7m-big ms7-num">{p.atual + ' de ' + p.alvo}</span>
+            <span className="ms7m-pct ms7-num" style={{ color: p.done ? 'var(--ms7-green)' : 'var(--text-secondary)' }}>
+              {p.pct + '%'}
+            </span>
+          </div>
+          <div className="ms7-bar">
+            <i style={{ width: p.pct + '%', background: p.done ? 'var(--ms7-green)' : 'var(--ms7-lime-600)' }} />
+          </div>
         </div>
         {u ? (
           <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
@@ -2019,7 +1880,7 @@
             </DS.Button>
             <DS.Button
               size="sm"
-              variant="secondary"
+              variant="ghost"
               iconLeft="external-link"
               onClick={function () {
                 window.open(u, '_blank', 'noopener');
@@ -2029,45 +1890,16 @@
             </DS.Button>
           </div>
         ) : null}
-        {m.idMeta || DB.linkId(m.link) || m.muser || m.msenha || m.rollover || (m.pixGrupos || []).length ? (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 6,
-              padding: '10px 12px',
-              borderRadius: 12,
-              background: 'var(--surface-muted, var(--ms7-gray-100))',
-              fontSize: 13,
-              fontWeight: 600,
-            }}
-          >
-            {[
-              ['ID', m.idMeta || DB.linkId(m.link)],
-              ['Usuário', m.muser],
-              ['Senha', m.msenha],
-            ]
-              .filter(function (r) {
-                return r[1];
-              })
-              .map(function (r) {
-                const sen = r[0] === 'Senha';
-                return (
-                  <div key={r[0]} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                    <span style={{ width: 58, color: 'var(--text-secondary)' }}>{r[0]}</span>
-                    <b
-                      style={{
-                        flex: 1,
-                        minWidth: 0,
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                        fontVariantNumeric: 'tabular-nums',
-                        fontFamily: r[0] === 'ID' ? 'ui-monospace, monospace' : 'inherit',
-                      }}
-                    >
-                      {sen && !ver ? '••••••••' : r[1]}
-                    </b>
+        {fatos.length ? (
+          <div className="ms7m-facts">
+            {fatos.map(function (r) {
+              const sen = r[2] === 'senha';
+              const copiavel = r[2] !== 'txt';
+              return (
+                <div key={r[0]} className="ms7m-fact">
+                  <span className="ms7-eyebrow">{r[0]}</span>
+                  <span className="ms7m-fact-row">
+                    <span className={'ms7m-fact-v' + (r[2] === 'id' ? ' is-mono' : '')}>{sen && !ver ? '••••••••' : r[1]}</span>
                     {sen ? (
                       <DS.IconButton
                         icon={ver ? 'eye-off' : 'eye'}
@@ -2079,71 +1911,42 @@
                         }}
                       />
                     ) : null}
-                    <DS.IconButton
-                      icon="copy"
-                      size={26}
-                      iconSize={13}
-                      label={'Copiar ' + r[0]}
-                      onClick={function () {
-                        const t = String(r[1]);
-                        (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(
-                          function () {
-                            toast(r[0] + ' copiado');
-                          },
-                          function () {
-                            window.prompt('Copie:', t);
-                          },
-                        );
-                      }}
-                    />
-                  </div>
-                );
-              })}
-            {m.rollover ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ width: 58, color: 'var(--text-secondary)' }}>Apostas</span>
-                <b>{m.rollover}</b>
-              </div>
-            ) : null}
-            {(m.pixGrupos || []).length ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                <span style={{ width: 58, color: 'var(--text-secondary)' }}>Chaves</span>
-                <b>{m.pixGrupos.length + (m.pixGrupos.length === 1 ? ' grupo' : ' grupos')}</b>
-              </div>
-            ) : null}
+                    {copiavel ? (
+                      <DS.IconButton
+                        icon="copy"
+                        size={26}
+                        iconSize={13}
+                        label={'Copiar ' + r[0]}
+                        onClick={function () {
+                          copiar(String(r[1]), r[0] + ' copiado');
+                        }}
+                      />
+                    ) : null}
+                  </span>
+                </div>
+              );
+            })}
           </div>
         ) : null}
         {m.obs ? (
-          <div
-            style={{
-              display: 'flex',
-              gap: 8,
-              alignItems: 'flex-start',
-              padding: '8px 12px',
-              borderRadius: 10,
-              background: 'var(--ms7-lime-100)',
-              color: 'var(--ms7-green-ink, #005D3B)',
-              fontSize: 13,
-              fontWeight: 600,
-            }}
-          >
-            <DS.Icon name="megaphone" size={14} style={{ marginTop: 2, flexShrink: 0 }} />
+          <div className="ms7m-obs">
+            <DS.Icon name="megaphone" size={14} strokeWidth={2} style={{ marginTop: 2, flexShrink: 0 }} />
             <span style={{ whiteSpace: 'pre-line', minWidth: 0 }}>{m.obs}</span>
           </div>
         ) : null}
-        <div style={{ display: 'flex', gap: 6, borderTop: '1px solid var(--border-subtle)', paddingTop: 10, flexWrap: 'wrap' }}>
+        <div className="ms7m-foot">
           {p.c ? (
-            <DS.Button size="sm" variant="secondary" iconLeft="briefcase" onClick={onOpen}>
+            <DS.Button size="sm" variant="outline" iconLeft="briefcase" onClick={onOpen}>
               Abrir cooperação
             </DS.Button>
           ) : null}
-          {!p.c && m.plataforma && !ro ? (
+          {temEnviar ? (
             <DS.Button size="sm" variant="brand" iconLeft="send" onClick={onEdit}>
               Enviar para…
             </DS.Button>
           ) : null}
           {!p.done && !p.ini && (p.c || !m.plataforma) ? (
-            <DS.Button size="sm" variant="outline" iconLeft="play" onClick={onIniciar}>
+            <DS.Button size="sm" variant="primary" iconLeft="play" onClick={onIniciar}>
               Iniciar
             </DS.Button>
           ) : null}
@@ -2154,7 +1957,7 @@
               </DS.Button>
             ) : null
           ) : (
-            <DS.Button size="sm" variant="brand" iconLeft="check" onClick={onToggle}>
+            <DS.Button size="sm" variant={temEnviar ? 'outline' : 'brand'} iconLeft="check" onClick={onToggle}>
               Finalizar
             </DS.Button>
           )}
@@ -2405,24 +2208,9 @@
           )}
         </div>
         {!ro && selIds.length ? (
-          <div
-            style={{
-              position: 'sticky',
-              top: 8,
-              zIndex: 5,
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              flexWrap: 'wrap',
-              padding: '12px 16px',
-              borderRadius: 14,
-              background: 'var(--surface-card)',
-              boxShadow: 'var(--shadow-raised)',
-              border: '2px solid var(--ms7-green)',
-            }}
-          >
-            <b style={{ fontSize: 15 }}>{selIds.length + (selIds.length === 1 ? ' meta selecionada' : ' metas selecionadas')}</b>
-            <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+          <div className="ms7m-bar">
+            <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em' }}>{selIds.length + (selIds.length === 1 ? ' meta selecionada' : ' metas selecionadas')}</span>
+            <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>
               {'Viram Link ' +
                 (opL && opL !== '__eu'
                   ? (function () {
@@ -2490,7 +2278,7 @@
           </div>
         ) : null}
         {vis.length ? (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,300px),1fr))', gap: 20 }}>
+          <div className="ms7m-grid">
             {vis.map(function (x) {
               const m = x.m;
               return (
@@ -2567,24 +2355,33 @@
             })}
           </div>
         ) : (
-          <div
-            style={{
-              padding: '48px 20px',
-              textAlign: 'center',
-              color: 'var(--text-secondary)',
-              fontSize: 14,
-              fontWeight: 600,
-              background: 'var(--surface-card)',
-              borderRadius: 'var(--radius-lg)',
-            }}
-          >
-            {L.length
-              ? 'Nenhuma meta neste filtro.'
-              : ro
-                ? 'Nenhuma meta para você ainda.'
-                : bau
-                  ? 'Nenhuma meta de baú ainda. Clique em Nova meta de baú ou importe do bloco de notas.'
-                  : 'Nenhuma meta ainda. Clique em Nova meta ou importe do bloco de notas.'}
+          <div className="ms7-card">
+            <Empty
+              art="Target"
+              title={L.length ? 'Nenhuma meta neste filtro' : ro ? 'Nenhuma meta para você ainda' : bau ? 'Nenhuma meta de baú ainda' : 'Nenhuma meta ainda'}
+              sub={
+                L.length
+                  ? 'Troque o filtro ou o operador para ver as outras.'
+                  : ro
+                    ? 'Quando a gestão enviar uma meta para você, ela aparece aqui.'
+                    : bau
+                      ? 'Clique em Nova meta de baú ou importe do bloco de notas.'
+                      : 'Clique em Nova meta ou importe do bloco de notas.'
+              }
+              action={
+                ro ? null : (
+                  <DS.Button
+                    variant="brand"
+                    iconLeft="plus"
+                    onClick={function () {
+                      setEd({ tipo: bau ? 'bau' : 'coop' });
+                    }}
+                  >
+                    {bau ? 'Nova meta de baú' : 'Nova meta'}
+                  </DS.Button>
+                )
+              }
+            />
           </div>
         )}
         {ed ? (

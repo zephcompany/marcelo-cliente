@@ -1,5 +1,124 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
+  /* CSS próprio da tela (só tokens) */
+  (function () {
+    if (document.getElementById('ms7-coop-css')) return;
+    const s = document.createElement('style');
+    s.id = 'ms7-coop-css';
+    s.textContent = [
+      '.ms7c-kpis{display:grid;grid-template-columns:repeat(auto-fill,minmax(max(180px,calc((100% - 42px) / 4)),1fr));gap:14px}',
+      '.ms7c-kpis-d{gap:12px}.ms7c-kpis-d .ms7-stat-value{white-space:nowrap}',
+      /* modais (position:fixed) dentro de cards/filhos da página: nada de transform/filter residual no ancestral, senão o modal fica preso */
+      '.ms7-hover-card:has(.ms7-modal-bg),.ms7-card:has(.ms7-modal-bg){transform:none!important;transition:none!important;will-change:auto!important}',
+      '.ms7-page > *,.ms7-page > *:only-child > *{animation-fill-mode:backwards!important}',
+      '[data-reveal].is-in:has(.ms7-modal-bg){filter:none!important;will-change:auto!important;transform:none!important}',
+      '.ms7c-kpi{display:flex;flex-direction:column;gap:12px;padding:16px 18px;min-width:0}',
+      '.ms7c-kpi-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}',
+      '.ms7c-kpi-head .ms7-eyebrow{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}',
+      '.ms7c-tile{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center}',
+      '.ms7c-kpi-val{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.ms7c-bar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap}',
+      '.ms7c-bar-dates{display:flex;align-items:center;gap:8px;flex-wrap:wrap}',
+      '.ms7c-bar-sep{font-size:13px;font-weight:500;color:var(--text-secondary)}',
+      '.ms7c-bar-note{font-size:12.5px;font-weight:500;color:var(--text-secondary)}',
+      '.ms7c-rule{display:flex;align-items:flex-start;gap:7px;margin:-10px 0 0;font-size:12.5px;font-weight:500;line-height:1.5;color:var(--text-secondary)}',
+      '.ms7c-rule svg{flex-shrink:0;margin-top:2px}',
+      '.ms7c-facts{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}',
+      '.ms7c-fact{display:flex;align-items:center;gap:4px;min-height:54px;padding:8px 6px 8px 12px;border-radius:10px;background:var(--surface-muted);min-width:0}',
+      '.ms7c-fact-v{font-size:14px;font-weight:600;letter-spacing:-.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;margin-top:2px}',
+      '.ms7c-fact-v.is-mono{font-family:var(--font-mono);font-size:13px}',
+      '.ms7c-fact-v.is-soft{font-weight:500;color:var(--text-secondary)}',
+      '.ms7c-note{display:flex;gap:10px;align-items:flex-start;padding:10px 14px;border-radius:10px;background:var(--ms7-lime-100);color:var(--ms7-green-ink);font-size:13px;font-weight:500;line-height:1.5}',
+      '.ms7c-note svg{flex-shrink:0;margin-top:2px}',
+      '.ms7c-nums{display:flex;gap:6px 22px;flex-wrap:wrap;justify-content:flex-end}',
+      '.ms7c-stat{text-align:right;min-width:0}',
+      '.ms7c-stat-l{font-size:11.5px;font-weight:600;color:var(--text-secondary);margin-bottom:2px;white-space:nowrap}',
+      '.ms7c-stat-v{font-size:15px;font-weight:600;letter-spacing:-.01em;white-space:nowrap}',
+      '.ms7c-title{font-size:21px;font-weight:600;letter-spacing:-.02em;line-height:1.15;border:0;background:transparent;padding:0;cursor:pointer;color:var(--text-primary);font-family:inherit;text-align:left}',
+      '.ms7c-title:hover{color:var(--text-brand)}',
+      '.ms7c-foot{display:flex;gap:10px 8px;align-items:center;flex-wrap:wrap;border-top:1px solid var(--border-subtle);padding-top:12px}',
+      '.ms7c-acts{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto}',
+      '.ms7c-fin{color:var(--ms7-green-ink)!important;border-color:color-mix(in oklab,var(--ms7-green) 30%,transparent)!important;background:color-mix(in oklab,var(--ms7-green) 8%,var(--surface-card))!important}',
+      '.ms7c-head{display:flex;align-items:flex-start;gap:12px 14px;flex-wrap:wrap}',
+      '.ms7c-head-acts{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-left:auto}',
+      '.ms7c-cycle{display:inline-flex;align-items:center;gap:6px;height:34px;padding:0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);font-size:12.5px;font-weight:500;color:var(--text-secondary);white-space:nowrap;max-width:100%}',
+      '.ms7c-cycle span{overflow:hidden;text-overflow:ellipsis}',
+      '.ms7c-sec-title{display:flex;align-items:center;gap:10px;font-size:16px;font-weight:600;letter-spacing:-.015em}',
+      '.ms7c-grp{display:flex;flex-direction:column;gap:8px;padding:12px 14px;border-radius:12px;background:var(--surface-muted);min-width:0}',
+      '.ms7c-grp-bank{font-size:12.5px;font-weight:500;color:var(--text-secondary)}',
+      '.ms7c-box{display:flex;align-items:center;gap:8px;height:36px;padding:0 10px;border-radius:10px;border:1px solid var(--line);background:var(--surface-card);transition:border-color var(--dur-fast),box-shadow var(--dur-base)}',
+      '.ms7c-box:hover{border-color:var(--line-strong)}',
+      '.ms7c-box:focus-within{border-color:var(--ms7-green-900);box-shadow:0 0 0 3px color-mix(in oklab,var(--ms7-green-900) 16%,transparent)}',
+      '.ms7c-box input{flex:1;min-width:0;height:30px;border:0;background:transparent;font-family:inherit;font-size:13px;font-weight:500;color:var(--text-primary);outline:none}',
+      '.ms7c-box input::placeholder{color:var(--ms7-gray-400)}',
+      '.ms7c-qd{width:46px;height:26px;border:0;border-radius:7px;background:var(--surface-muted);text-align:center;font-family:inherit;font-size:13px;font-weight:600;color:var(--text-primary);outline:none}',
+      '.ms7c-link{display:inline-flex;align-items:center;gap:4px;height:28px;padding:0 10px;border-radius:8px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font:600 12px var(--font-sans);cursor:pointer;white-space:nowrap;transition:border-color var(--dur-fast),background var(--dur-fast)}',
+      '.ms7c-link:hover{border-color:var(--line-strong);background:var(--surface-muted)}',
+      '.ms7c-wrap{overflow:auto;max-height:calc(100vh - 220px)}',
+      '.ms7c-table{width:100%;border-collapse:separate;border-spacing:0;table-layout:fixed;font-family:var(--font-sans)}',
+      '.ms7c-table th{height:38px;padding:0 8px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);text-align:left;border-bottom:1px solid var(--line);white-space:nowrap;background:var(--surface-card);position:sticky;top:0;z-index:1}',
+      '.ms7c-table td{padding:5px 5px;border-bottom:1px solid var(--border-subtle);white-space:nowrap;vertical-align:middle;transition:background var(--dur-fast)}',
+      '.ms7c-table tbody tr:not(.is-on):not(.is-ck):hover td{background:var(--surface-muted)}',
+      '.ms7c-table tbody tr.is-on td{background:var(--ms7-lime-100)}',
+      '.ms7c-table tbody tr.is-on td:first-child{box-shadow:inset 3px 0 0 var(--ms7-green-900)}',
+      '.ms7c-table tbody tr.is-ck td{background:color-mix(in oklab,var(--ms7-lime-500) 12%,var(--surface-card))}',
+      '.ms7c-table tbody tr.is-bloq:not(.is-on) td{background:color-mix(in oklab,var(--ms7-error) 6%,var(--surface-card))}',
+      '.ms7c-table tfoot td{height:44px;padding:0 10px;font-size:13px;font-weight:600;background:var(--surface-muted);position:sticky;bottom:0;border-top:1px solid var(--line);border-bottom:0;font-variant-numeric:tabular-nums}',
+      '.ms7c-n{font-size:12px;font-weight:600;color:var(--text-secondary);font-variant-numeric:tabular-nums}',
+      '.ms7c-r{display:inline-flex;width:18px;height:18px;border-radius:5px;align-items:center;justify-content:center;background:var(--ms7-lime-500);color:var(--text-on-lime);font-size:10px;font-weight:700}',
+      '.ms7c-cell{width:100%;box-sizing:border-box;height:34px;padding:0 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-card);font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--text-primary);text-align:left;outline:none;font-variant-numeric:tabular-nums;transition:border-color var(--dur-fast),box-shadow var(--dur-base)}',
+      '.ms7c-cell:hover{border-color:var(--line-strong)}',
+      '.ms7c-cell:focus{border-color:var(--ms7-green-900);box-shadow:0 0 0 3px color-mix(in oklab,var(--ms7-green-900) 16%,transparent)}',
+      '.ms7c-cell::placeholder{color:var(--ms7-gray-400)}',
+      '.ms7c-cell.is-b{font-weight:600}.ms7c-cell.is-r{text-align:right}.ms7c-cell.is-muted{color:var(--text-secondary)}',
+      '.ms7c-cell.is-ro,.ms7c-cell.is-ro:hover,.ms7c-cell.is-ro:focus{border-color:transparent!important;box-shadow:none!important;background:transparent;cursor:default}',
+      '.ms7c-selw{position:relative;display:flex;align-items:center;min-width:0}',
+      '.ms7c-sel{width:100%;box-sizing:border-box;height:34px;padding:0 26px 0 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface-card);font-family:var(--font-sans);font-size:12.5px;font-weight:600;color:var(--text-primary);cursor:pointer;outline:none;text-overflow:ellipsis;appearance:none;-webkit-appearance:none;transition:border-color var(--dur-fast),box-shadow var(--dur-base)}',
+      '.ms7c-sel:hover{border-color:var(--line-strong)}',
+      '.ms7c-sel:focus{border-color:var(--ms7-green-900);box-shadow:0 0 0 3px color-mix(in oklab,var(--ms7-green-900) 16%,transparent)}',
+      '.ms7c-selw .ms7c-chev{position:absolute;right:8px;pointer-events:none;display:flex;color:var(--text-secondary)}',
+      '.ms7c-res{text-align:right;padding:0 6px;font-size:13.5px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}',
+      '.ms7c-eye{position:absolute;right:4px;border:0;background:transparent;cursor:pointer;display:flex;padding:4px;color:var(--text-secondary);border-radius:6px}',
+      '.ms7c-eye:hover{background:var(--surface-muted)}',
+      '.ms7c-add{width:100%;box-sizing:border-box;height:40px;padding:0 10px;border:0;background:transparent;font-family:var(--font-sans);font-size:13px;font-weight:500;color:var(--text-primary);outline:none}',
+      '.ms7c-add::placeholder{color:var(--ms7-gray-400)}',
+      '.ms7c-blk{padding:8px 10px 10px;border-bottom:1px solid var(--border-subtle)}',
+      '.ms7c-blk.is-on{background:var(--ms7-lime-100);box-shadow:inset 3px 0 0 var(--ms7-green-900)}',
+      '.ms7c-blk.is-bloq:not(.is-on){background:color-mix(in oklab,var(--ms7-error) 6%,var(--surface-card))}',
+      '.ms7c-blk-k{font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);padding:4px 10px 0}',
+      '.ms7c-chip{display:inline-flex;align-items:center;height:32px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);overflow:hidden;transition:border-color var(--dur-fast),background var(--dur-fast)}',
+      '.ms7c-chip.is-on{border-color:var(--ms7-green-900);background:var(--ms7-lime-100)}',
+      '.ms7c-chip>button{height:100%;border:0;background:transparent;font-family:inherit;cursor:pointer;color:var(--text-primary)}',
+      '.ms7c-chip>button:first-child{padding:0 4px 0 12px;font-size:13px;font-weight:600;line-height:1}',
+      '.ms7c-chip>button:last-child{width:28px;display:flex;align-items:center;justify-content:center;color:var(--text-secondary)}',
+      '.ms7c-chip.is-on>button:first-child{color:var(--ms7-green-ink)}',
+      '.ms7c-opt{height:38px;min-width:60px;padding:0 14px;border-radius:10px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:border-color var(--dur-fast),background var(--dur-fast)}',
+      '.ms7c-opt:hover{border-color:var(--line-strong)}',
+      '.ms7c-opt.is-on{border-color:var(--ms7-green-900);background:var(--ms7-lime-100);color:var(--ms7-green-ink)}',
+      '.ms7c-grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px}',
+      '.ms7c-hint{font-size:12.5px;font-weight:500;line-height:1.5;color:var(--text-secondary)}',
+      '.ms7c-step{margin:18px 0 14px;font-size:17px;font-weight:600;letter-spacing:-.02em}',
+      '.ms7c-mini{padding:10px 12px;border-radius:10px;background:var(--surface-muted);min-width:0}',
+      '.ms7c-mini-v{font-size:16px;font-weight:600;letter-spacing:-.02em;font-variant-numeric:tabular-nums;margin-top:2px}',
+      '.ms7c-ta{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-muted);color:var(--text-primary);font:500 13.5px/1.7 var(--font-mono);resize:vertical;outline:none}',
+      '.ms7c-ta:focus{border-color:var(--ms7-green-900);box-shadow:0 0 0 3px color-mix(in oklab,var(--ms7-green-900) 16%,transparent)}',
+      '.ms7c-gname{font-size:13px;font-weight:600;letter-spacing:-.005em;color:var(--ms7-green-ink)}',
+      '.ms7c-sum{position:sticky;top:0;z-index:2;margin-bottom:12px;padding:14px 16px;border-radius:12px;background:var(--ms7-lime-100);color:var(--ms7-green-ink);display:flex;flex-direction:column;gap:8px}',
+      '.ms7c-lote{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--line);border-radius:12px;transition:border-color var(--dur-fast),background var(--dur-fast)}',
+      '.ms7c-lote.is-on{border-color:var(--ms7-green-900);background:var(--ms7-lime-100)}',
+      '.ms7c-av{display:flex;gap:12px;align-items:flex-start;margin:0 -12px;padding:12px;border-radius:10px;border-bottom:1px solid var(--border-subtle);transition:background var(--dur-fast)}',
+      '.ms7c-av:last-child{border-bottom:0}.ms7c-av:hover{background:var(--surface-muted)}',
+      '.ms7c-av .ms7c-av-del{opacity:0;color:var(--text-secondary);transition:opacity var(--dur-fast),background var(--dur-fast)}',
+      '.ms7c-av:hover .ms7c-av-del,.ms7c-av .ms7c-av-del:focus-visible{opacity:1}',
+      '@media (hover:none){.ms7c-av .ms7c-av-del{opacity:1}}',
+      '.ms7c-lista{display:flex;flex-direction:column;gap:10px;padding:14px 16px;border-radius:12px;background:var(--surface-muted);min-width:0}',
+      '.ms7c-lista-t{font-size:14px;font-weight:600;letter-spacing:-.005em;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '@media (max-width:760px){.ms7c-kpis{grid-template-columns:repeat(2,minmax(0,1fr))}.ms7c-kpi{padding:14px 16px}.ms7c-kpi-val{font-size:20px}.ms7c-nums{justify-content:flex-start}.ms7c-stat{text-align:left}.ms7c-acts{margin-left:0;width:100%}.ms7c-head-acts{margin-left:0;width:100%}.ms7c-title{font-size:19px}}',
+    ].join('');
+    document.head.appendChild(s);
+  })();
+  const ST_TONE = { Ativa: 'blue', 'Em andamento': 'turquoise', Finalizada: 'purple', 'Concluída': 'green', Lixeira: 'gray' };
+  const ST_ICON = { 'Em andamento': 'play', 'Concluída': 'circle-check', Finalizada: 'flag', Ativa: 'circle-dot', Lixeira: 'trash-2' };
   function soX(fn) {
     return function (e) {
       if (e && e.currentTarget && e.currentTarget.tagName === 'BUTTON') fn();
@@ -153,10 +272,8 @@
               <div key={x.g.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase', color: 'var(--ms7-green-ink, var(--ms7-green))' }}>
-                      {x.g.pagamento || x.g.nome}
-                    </div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    <div className="ms7c-gname">{x.g.pagamento || x.g.nome}</div>
+                    <div className="ms7c-hint">
                       {(x.g.pagamento ? x.g.nome + ' · ' : '') + x.ks.length + (x.ks.length === 1 ? ' chave' : ' chaves')}
                     </div>
                   </div>
@@ -172,31 +289,19 @@
                   </Button>
                 </div>
                 <textarea
+                  className="ms7c-ta"
                   readOnly
                   value={t}
                   onFocus={function (e) {
                     e.target.select();
                   }}
                   rows={Math.min(14, Math.max(3, x.ks.length))}
-                  style={{
-                    width: '100%',
-                    boxSizing: 'border-box',
-                    padding: '10px 12px',
-                    border: '1px solid var(--border-default)',
-                    borderRadius: 12,
-                    background: 'var(--surface-sunken, var(--surface-card))',
-                    color: 'var(--text-primary)',
-                    font: '500 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace',
-                    resize: 'vertical',
-                  }}
                 ></textarea>
               </div>
             );
           })}
           {!tot ? (
-            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
-              Nenhuma chave disponível para esta cooperação. Escolha os grupos de chaves PIX dentro da cooperação.
-            </div>
+            <Empty art="Keys" compact title="Nenhuma chave disponível para esta cooperação" sub={'Escolha os grupos de chaves PIX dentro da cooperação.'} />
           ) : null}
         </div>
       </Modal>
@@ -264,39 +369,15 @@
               : [['flag', 'Finalizar', 'Finalizada']];
     const cm = c.contaMae || {};
     const lk = cm.link ? (/^https?:/i.test(cm.link) ? cm.link : 'https://' + cm.link) : '';
-    const STC = {
-      Ativa: 'var(--ms7-blue)',
-      'Em andamento': 'var(--ms7-orange)',
-      Finalizada: 'var(--ms7-purple)',
-      Concluída: 'var(--ms7-green)',
-      Lixeira: 'var(--ms7-gray-500)',
-    };
-    const stc = STC[c.status] || 'var(--ms7-gray-500)';
-    const pill = function (txt, col, icon) {
+    const stTone = ST_TONE[c.status] || 'gray';
+    const pill = function (txt, tone, icon) {
       return (
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 5,
-            height: 26,
-            padding: '0 10px',
-            borderRadius: 8,
-            background: 'color-mix(in oklab, ' + col + ' 8%, transparent)',
-            border: '1px solid color-mix(in oklab, ' + col + ' 24%, transparent)',
-            color: 'var(--text-primary)',
-            fontSize: 13,
-            fontWeight: 700,
-            whiteSpace: 'nowrap',
-          }}
-        >
-          {icon ? <DS.Icon name={icon} size={13} color={col} /> : null}
+        <DS.Badge tone={tone}>
+          {icon ? <DS.Icon name={icon} size={12} strokeWidth={2.2} /> : null}
           {txt}
-        </span>
+        </DS.Badge>
       );
     };
-    const lbl = { color: 'var(--text-secondary)', fontWeight: 600 };
-    const val = { fontWeight: 700 };
     const V = DB.contasValidas(c);
     const grp = function (st) {
       const l = V.filter(function (x) {
@@ -321,10 +402,8 @@
     });
     return (
       <div
+        className="ms7-card ms7-hover-card"
         style={{
-          background: 'var(--surface-card)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-card)',
           padding: '20px 22px',
           display: 'flex',
           flexDirection: 'column',
@@ -334,37 +413,19 @@
       >
         <div style={{ display: 'flex', gap: '12px 24px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
           <div style={{ flex: '1 1 320px', minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-            <button
-              type="button"
-              onClick={onOpen}
-              style={{
-                border: 0,
-                background: 'transparent',
-                padding: 0,
-                cursor: 'pointer',
-                color: 'var(--text-primary)',
-                fontFamily: 'inherit',
-                fontSize: 20,
-                fontWeight: 800,
-                textAlign: 'left',
-              }}
-            >
+            <button type="button" className="ms7c-title" onClick={onOpen}>
               {DB.coopNome(c)}
             </button>
-            {c.linkN ? pill(c.linkN, 'var(--ms7-blue)', 'link') : null}
-            {pill(
-              c.status,
-              stc,
-              c.status === 'Em andamento' ? 'play' : c.status === 'Concluída' ? 'circle-check' : c.status === 'Finalizada' ? 'flag' : null,
-            )}
-            {pill((c.depositantes || c.contas.length) + ' depositantes', 'var(--ms7-error)')}
-            {c.rollover ? pill(c.rollover, 'var(--ms7-yellow)') : null}
-            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+            {c.linkN ? pill(c.linkN, 'blue', 'link') : null}
+            {pill(c.status, stTone, ST_ICON[c.status] || null)}
+            {pill((c.depositantes || c.contas.length) + ' depositantes', 'gray', 'users')}
+            {c.rollover ? pill(c.rollover, 'yellow', 'target') : null}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)' }}>
               <DS.Icon name="calendar" size={13} />
               {DB.fmtDate(c.inicio) + (hora ? ' ' + hora : '')}
             </span>
           </div>
-          <div style={{ display: 'flex', gap: '6px 22px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+          <div className="ms7c-nums">
             {[
               ['Depósito', k.dep, null],
               ['Re-depósito', k.red, null],
@@ -372,9 +433,9 @@
               [k.lucro >= 0 ? 'Resultado' : 'Resultado', k.lucro, k.lucro >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)'],
             ].map(function (x) {
               return (
-                <div key={x[0]} style={{ textAlign: 'right' }}>
-                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{x[0]}</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: x[2] || 'var(--text-primary)' }}>
+                <div key={x[0]} className="ms7c-stat">
+                  <div className="ms7c-stat-l">{x[0]}</div>
+                  <div className="ms7c-stat-v ms7-num" style={{ color: x[2] || 'var(--text-primary)' }}>
                     {MS7.brl(x[1])}
                   </div>
                 </div>
@@ -385,30 +446,7 @@
         {(function () {
           const cid = cm.id || DB.linkId(cm.link);
           const icb = function (icon, label, fn) {
-            return (
-              <button
-                key={label}
-                type="button"
-                title={label}
-                aria-label={label}
-                onClick={fn}
-                style={{
-                  width: 30,
-                  height: 30,
-                  flexShrink: 0,
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  borderRadius: 8,
-                  border: 0,
-                  background: 'transparent',
-                  color: 'var(--text-secondary)',
-                  cursor: 'pointer',
-                }}
-              >
-                <DS.Icon name={icon} size={15} />
-              </button>
-            );
+            return <DS.IconButton key={label} icon={icon} label={label} size={28} iconSize={14} onClick={fn} style={{ color: 'var(--text-secondary)' }} />;
           };
           const F = [['Operador', DB.opName(c.opId), null, []]];
           if (!c.proprio) F.push(['Comissão', MS7.brl(k.com), null, []]);
@@ -475,47 +513,19 @@
               ],
             ]);
           return (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', gap: 8 }}>
+            <div className="ms7c-facts">
               {F.map(function (x) {
                 return (
-                  <div
-                    key={x[0]}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 4,
-                      minHeight: 52,
-                      padding: '6px 6px 6px 12px',
-                      borderRadius: 10,
-                      background: 'color-mix(in oklab, var(--surface-muted, var(--ms7-gray-100)) 55%, transparent)',
-                      border: '1px solid var(--border-subtle)',
-                      minWidth: 0,
-                    }}
-                  >
+                  <div key={x[0]} className="ms7c-fact">
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <div
-                        style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}
-                      >
-                        {x[0]}
-                      </div>
+                      <div className="ms7-eyebrow">{x[0]}</div>
                       {x[1] ? (
-                        <div
-                          style={{
-                            fontSize: 14,
-                            fontWeight: 700,
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                            fontFamily: x[4] ? 'ui-monospace, monospace' : 'inherit',
-                            fontVariantNumeric: 'tabular-nums',
-                          }}
-                          title={x[0] === 'Senha' ? '' : x[1]}
-                        >
+                        <div className={'ms7c-fact-v ms7-num' + (x[4] ? ' is-mono' : '')} title={x[0] === 'Senha' ? '' : x[1]}>
                           {x[1]}
-                          {x[2] ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{' · ' + x[2]}</span> : null}
+                          {x[2] ? <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>{' · ' + x[2]}</span> : null}
                         </div>
                       ) : (
-                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Abrir ou copiar</div>
+                        <div className="ms7c-fact-v is-soft">Abrir ou copiar</div>
                       )}
                     </div>
                     {x[3]}
@@ -526,69 +536,32 @@
           );
         })()}
         {c.descricao ? (
-          <div
-            style={{
-              display: 'flex',
-              gap: 10,
-              alignItems: 'flex-start',
-              padding: '10px 14px',
-              borderRadius: 12,
-              background: 'var(--ms7-lime-100)',
-              color: 'var(--ms7-green-ink, #005D3B)',
-              fontSize: 14,
-              fontWeight: 600,
-            }}
-          >
-            <DS.Icon name="megaphone" size={16} style={{ marginTop: 2, flexShrink: 0 }} />
+          <div className="ms7c-note">
+            <DS.Icon name="megaphone" size={15} />
             <span style={{ whiteSpace: 'pre-line', minWidth: 0 }}>{c.descricao}</span>
           </div>
         ) : null}
-        <div
-          style={{
-            display: 'flex',
-            gap: '10px 8px',
-            alignItems: 'center',
-            flexWrap: 'wrap',
-            borderTop: '1px solid var(--border-subtle)',
-            paddingTop: 12,
-          }}
-        >
-          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.06em', color: 'var(--text-secondary)' }}>CONTAS</span>
+        <div className="ms7c-foot">
+          <span className="ms7-eyebrow">Contas</span>
           {[
-            ['À sacar', gA, 'var(--ms7-orange)'],
-            ['Sacado', gS, 'var(--ms7-green)'],
-            ['Bloqueado', gB, 'var(--ms7-error)'],
+            ['À sacar', gA, 'orange'],
+            ['Sacado', gS, 'green'],
+            ['Bloqueado', gB, 'error'],
           ].map(function (x) {
             return (
-              <span
-                key={x[0]}
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: 6,
-                  height: 30,
-                  padding: '0 10px',
-                  borderRadius: 8,
-                  background: 'color-mix(in oklab, ' + x[2] + ' 7%, transparent)',
-                  border: '1px solid color-mix(in oklab, ' + x[2] + ' 22%, transparent)',
-                  fontSize: 13,
-                  fontWeight: 700,
-                  color: 'var(--text-primary)',
-                }}
-              >
-                <span style={{ width: 7, height: 7, borderRadius: 4, background: x[2] }}></span>
+              <DS.Badge key={x[0]} tone={x[2]} variant="soft">
                 {x[0] + ' ' + x[1][0]}
-                <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{'· ' + MS7.brl(x[1][1])}</span>
-              </span>
+                <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{'· ' + MS7.brl(x[1][1])}</span>
+              </DS.Badge>
             );
           })}
-          <span style={{ flex: 1, minWidth: 8 }}></span>
           {c.status === 'Finalizada' && !canAdmin ? (
-            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ms7-orange)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <span style={{ fontSize: 12.5, fontWeight: 600, color: 'var(--ms7-orange)', display: 'flex', alignItems: 'center', gap: 6 }}>
               <DS.Icon name="hourglass" size={14} />
               Aguardando análise do admin
             </span>
           ) : null}
+          <div className="ms7c-acts">
           {c.status !== 'Lixeira' ? (
             <IconButton
               icon="key-round"
@@ -657,34 +630,22 @@
             );
           })}
           {fin ? (
-            <button
-              type="button"
+            <DS.Button
+              size="sm"
+              variant="outline"
+              className="ms7c-fin"
+              iconLeft={fin[0]}
               onClick={function () {
                 DB.A.setStatus(c.id, fin[2]);
               }}
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 8,
-                height: 36,
-                padding: '0 16px',
-                borderRadius: 10,
-                border: '1px solid color-mix(in oklab, var(--ms7-green) 30%, transparent)',
-                background: 'color-mix(in oklab, var(--ms7-green) 8%, transparent)',
-                color: 'var(--text-primary)',
-                fontFamily: 'inherit',
-                fontSize: 14,
-                fontWeight: 800,
-                cursor: 'pointer',
-              }}
             >
-              <DS.Icon name={fin[0]} size={16} color="var(--ms7-green)" />
               {fin[1]}
-            </button>
+            </DS.Button>
           ) : null}
           <DS.Button size="sm" variant="outline" iconRight="arrow-right" onClick={onOpen}>
             Abrir
           </DS.Button>
+          </div>
           {chv ? (
             <ChavesModal
               c={c}
@@ -854,9 +815,10 @@
             display: 'flex',
             gap: 8,
             alignItems: 'flex-end',
+            flexWrap: 'wrap',
             padding: 12,
             borderRadius: 12,
-            background: 'var(--ms7-gray-50)',
+            background: 'var(--surface-muted)',
           }}
         >
           <div
@@ -924,36 +886,6 @@
       setF(init());
       onClose();
     }
-    const lb = { fontSize: 13, fontWeight: 600, marginBottom: 6 };
-    const hn = { fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginTop: 6 };
-    const inS = {
-      width: '100%',
-      boxSizing: 'border-box',
-      height: 44,
-      padding: '0 12px',
-      border: '1px solid var(--border-default)',
-      borderRadius: 12,
-      background: 'var(--surface-card)',
-      color: 'var(--text-primary)',
-      fontFamily: 'inherit',
-      fontSize: 14,
-      fontWeight: 600,
-    };
-    const chip = function (on) {
-      return {
-        height: 34,
-        minWidth: 48,
-        padding: '0 12px',
-        borderRadius: 10,
-        border: '1px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-default)'),
-        background: on ? 'color-mix(in oklab, var(--ms7-lime-500) 28%, transparent)' : 'transparent',
-        color: on ? 'var(--ms7-green-ink, var(--ms7-green))' : 'var(--text-primary)',
-        fontFamily: 'inherit',
-        fontSize: 13,
-        fontWeight: 700,
-        cursor: 'pointer',
-      };
-    };
     const est = (+f.qtd || 0) * (parseFloat(String(f.mediaDep || '').replace(',', '.')) || 0);
     const falta = [!String(f.plataforma || '').trim() ? 'plataforma' : null, !f.rede ? 'rede' : null].filter(Boolean);
     const prev =
@@ -979,8 +911,8 @@
         footer={
           <React.Fragment>
             <Button
-              variant="secondary"
-              iconLeft="chevron-left"
+              variant={step === st0 ? 'ghost' : 'outline'}
+              iconLeft={step === st0 ? undefined : 'arrow-left'}
               onClick={function () {
                 step === st0 ? close() : setStep(step - 1);
               }}
@@ -988,7 +920,7 @@
               {step === st0 ? 'Cancelar' : 'Voltar'}
             </Button>
             {step < 3 ? (
-              <Button iconRight="chevron-right" onClick={next}>
+              <Button variant="primary" iconRight="arrow-right" onClick={next}>
                 Próxima etapa
               </Button>
             ) : (
@@ -1019,7 +951,7 @@
         }
       >
         {semOp ? null : <Stepper steps={3} current={step} />}
-        <h4 style={{ margin: '18px 0 14px', fontSize: 18, fontWeight: 700 }}>{['Comissão', 'Informações', 'Valores'][step - 1]}</h4>
+        <h4 className="ms7c-step">{['Comissão', 'Informações', 'Valores'][step - 1]}</h4>
         {step === 1 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             {session.role !== 'operador' ? (
@@ -1040,11 +972,12 @@
               />
             ) : null}
             {f.opId === '__eu' ? (
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-                Cooperação sua: sem operador e sem comissão. Fica junto das outras em Cooperações e entra no lucro total.
+              <div className="ms7c-note">
+                <DS.Icon name="info" size={15} />
+                <span>Cooperação sua: sem operador e sem comissão. Fica junto das outras em Cooperações e entra no lucro total.</span>
               </div>
             ) : null}
-            {f.opId === '__eu' ? null : <div style={{ fontSize: 13, fontWeight: 600 }}>Tipo de comissão</div>}
+            {f.opId === '__eu' ? null : <div className="ms7-label">Tipo de comissão</div>}
             {f.opId === '__eu' ? null : (
               <Tabs
                 value={f.comTipo}
@@ -1057,10 +990,12 @@
               />
             )}
             {f.opId === '__eu' ? null : f.comTipo === 'misto' ? (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+              <div className="ms7c-grid2" style={{ gap: 12 }}>
                 <Input label="Valor fixo" prefix="R$" value={f.comValor} onChange={u('comValor')} />
                 <Input label="Mais por conta" prefix="R$" value={f.comConta || ''} onChange={u('comConta')} />
-                <div style={{ gridColumn: '1 / -1', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{prev}</div>
+                <div className="ms7c-hint" style={{ gridColumn: '1 / -1' }}>
+                  {prev}
+                </div>
               </div>
             ) : (
               <Input
@@ -1074,7 +1009,7 @@
           </div>
         ) : null}
         {step === 2 ? (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <div className="ms7c-grid2">
             <Select
               label="Rede"
               value={f.rede}
@@ -1099,7 +1034,7 @@
                 hint={
                   redeDe(f.plataforma)
                     ? 'Rede escolhida sozinha: ' + redeDe(f.plataforma) + ' (usada antes nesta plataforma)'
-                    : 'Primeira vez: escolha a rede. Nas próximas ela vem sozinha.'
+                    : 'Primeira vez: escolha a rede. Nas próximas ela\u00a0vem\u00a0sozinha.'
                 }
               />
               {platRec.length ? (
@@ -1107,34 +1042,11 @@
                   {platRec.map(function (p) {
                     const on = DB.platNorm(p) === DB.platNorm(f.plataforma);
                     return (
-                      <span
-                        key={p}
-                        style={{
-                          display: 'inline-flex',
-                          alignItems: 'center',
-                          height: 30,
-                          borderRadius: 15,
-                          border: '1px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-default)'),
-                          background: on ? 'color-mix(in oklab, var(--ms7-lime-500) 22%, transparent)' : 'var(--surface-card)',
-                          overflow: 'hidden',
-                        }}
-                      >
+                      <span key={p} className={'ms7c-chip' + (on ? ' is-on' : '')}>
                         <button
                           type="button"
                           onClick={function () {
                             setPlat(p);
-                          }}
-                          style={{
-                            height: '100%',
-                            padding: '0 4px 0 12px',
-                            border: 0,
-                            background: 'transparent',
-                            color: 'var(--text-primary)',
-                            fontFamily: 'inherit',
-                            fontSize: 13,
-                            fontWeight: 700,
-                            lineHeight: 1,
-                            cursor: 'pointer',
                           }}
                         >
                           {p}
@@ -1145,17 +1057,6 @@
                           title="Tirar da lista"
                           onClick={function () {
                             tiraPlat(p);
-                          }}
-                          style={{
-                            width: 28,
-                            height: '100%',
-                            border: 0,
-                            background: 'transparent',
-                            color: 'var(--text-secondary)',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
                           }}
                         >
                           <DS.Icon name="x" size={14} />
@@ -1193,35 +1094,22 @@
               onChange={u('salario')}
               hint="Opcional (R$ 0,00 para comissão pura)"
             />
-            <div
-              style={{ border: '1px solid var(--border-default)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}
-            >
+            <div style={{ border: '1px solid var(--line)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
               <Input label="Média de depósito" prefix="R$" placeholder="0,00" value={f.mediaDep || ''} onChange={u('mediaDep')} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
-                <span style={{ fontSize: 13, fontWeight: 600 }}>Apostas válidas (multiplicador)</span>
+                <span className="ms7-label">Apostas válidas (multiplicador)</span>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {['N/A', '2x', '2.5x', '3x', '3.5x', '4x'].map(function (x) {
                     const on = (f.rollover || 'N/A') === x;
                     return (
                       <button
                         key={x}
+                        type="button"
+                        className={'ms7c-opt' + (on ? ' is-on' : '')}
                         onClick={function () {
                           setF(function (p) {
                             return Object.assign({}, p, { rollover: x === 'N/A' ? '' : x });
                           });
-                        }}
-                        style={{
-                          height: 40,
-                          minWidth: 60,
-                          padding: '0 14px',
-                          borderRadius: 10,
-                          border: '2px solid ' + (on ? 'var(--ms7-green-900)' : 'var(--border-default)'),
-                          background: on ? 'var(--ms7-lime-100)' : 'transparent',
-                          color: 'var(--text-primary)',
-                          fontFamily: 'inherit',
-                          fontSize: 15,
-                          fontWeight: 700,
-                          cursor: 'pointer',
                         }}
                       >
                         {x}
@@ -1230,7 +1118,7 @@
                   })}
                 </div>
                 {f.rollover && f.mediaDep ? (
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  <span className="ms7c-hint">
                     {'Cada conta precisa apostar ' +
                       MS7.brl((parseFloat(String(f.mediaDep).replace(',', '.')) || 0) * (parseFloat(f.rollover) || 0)) +
                       ' em apostas válidas'}
@@ -1289,7 +1177,7 @@
           </React.Fragment>
         }
       >
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+        <div className="ms7c-grid2">
           <Input label="Usuário" required value={f.usuario} onChange={u('usuario')} />
           <Input label="Senha" type="password" value={f.senha} onChange={u('senha')} />
           <Input label="Depósito" prefix="R$" type="number" value={f.deposito} onChange={u('deposito')} />
@@ -1300,9 +1188,9 @@
             <Input label="Observação" value={f.obs} onChange={u('obs')} />
           </div>
         </div>
-        <div style={{ marginTop: 14, fontSize: 14, fontWeight: 600 }}>
+        <div className="ms7c-mini" style={{ marginTop: 14, fontSize: 13.5, fontWeight: 500 }}>
           {'Resultado da conta: '}
-          <span style={{ color: res >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>{MS7.brl(res)}</span>
+          <span className="ms7-num" style={{ fontWeight: 600, color: res >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>{MS7.brl(res)}</span>
           {f.status === 'Bloqueado' ? <span style={{ color: 'var(--ms7-error)' }}> · vai gerar alerta de conta bloqueada</span> : null}
         </div>
       </Modal>
@@ -1374,41 +1262,23 @@
                 inp.select && inp.select();
               }, 0);
           }}
-          style={{
-            width: '100%',
-            boxSizing: 'border-box',
-            height: 36,
-            padding: secret ? '0 30px 0 12px' : '0 12px',
-            border: '1px solid ' + (ro ? 'transparent' : 'var(--border-default)'),
-            borderRadius: 10,
-            background: ro ? 'transparent' : 'var(--surface-page)',
-            cursor: ro ? 'default' : 'text',
-            transition: 'border-color .15s, box-shadow .15s',
-            fontFamily: 'var(--font-sans)',
-            fontSize: 13,
-            fontWeight: bold ? 700 : 600,
-            color: money && !+String(v).replace(',', '.') ? 'var(--text-secondary)' : 'var(--text-primary)',
-            textAlign: align || 'left',
-            fontVariantNumeric: 'tabular-nums',
-            outline: 'none',
-          }}
+          className={
+            'ms7c-cell' +
+            (ro ? ' is-ro' : '') +
+            (bold ? ' is-b' : '') +
+            ((align || 'left') === 'right' ? ' is-r' : '') +
+            (money && !+String(v).replace(',', '.') ? ' is-muted' : '')
+          }
+          style={secret ? { paddingRight: 30 } : undefined}
         />
         {secret && v ? (
           <button
+            type="button"
+            className="ms7c-eye"
             onClick={function () {
               setShow(!show);
             }}
             aria-label={show ? 'Ocultar' : 'Mostrar'}
-            style={{
-              position: 'absolute',
-              right: 4,
-              border: 'none',
-              background: 'none',
-              cursor: 'pointer',
-              display: 'flex',
-              padding: 4,
-              color: 'var(--text-secondary)',
-            }}
           >
             <DS.Icon name={show ? 'eye-off' : 'eye'} size={14} />
           </button>
@@ -1472,11 +1342,9 @@
               ['Depósito', MS7.brl(dep)],
             ].map(function (x) {
               return (
-                <div key={x[0]} style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--surface-muted, var(--ms7-gray-100))' }}>
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
-                    {x[0]}
-                  </div>
-                  <div style={{ fontSize: 16, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{x[1]}</div>
+                <div key={x[0]} className="ms7c-mini">
+                  <div className="ms7-eyebrow">{x[0]}</div>
+                  <div className="ms7c-mini-v">{x[1]}</div>
                 </div>
               );
             })}
@@ -1497,51 +1365,46 @@
             )}
           />
           {c.status === 'Ativa' || c.status === 'Em andamento' ? (
-            <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
               <input
                 type="checkbox"
                 checked={fin}
                 onChange={function (e) {
                   setFin(e.target.checked);
                 }}
-                style={{ width: 18, height: 18 }}
+                style={{ width: 18, height: 18, margin: 0, accentColor: 'var(--ms7-green-900)' }}
               />
               {'Finalizar a cooperação de ' + DB.opName(c.opId) + ' com ' + feitas + ' contas'}
             </label>
           ) : null}
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.45 }}>
-            Cria uma cooperação nova com a mesma plataforma, conta mãe, link, comissão e os depósitos das contas que faltam. A cooperação atual fica
-            com as contas feitas, e a devolução recalcula sozinha. Escolha os grupos de chaves PIX na cooperação nova.
+          <div className="ms7c-hint" style={{ fontSize: 13 }}>
+            {'Cria uma cooperação nova com a mesma plataforma, conta mãe, link, comissão e os depósitos das contas que faltam. A cooperação atual fica com as contas feitas, e a devolução recalcula sozinha. Escolha os grupos de chaves PIX na\u00a0cooperação\u00a0nova.'}
           </div>
         </div>
       </DS.Modal>
     );
   }
   function CellSelect({ value, options, onChange, color, pill }) {
+    const col = color || 'var(--text-secondary)';
     return (
+      <div className="ms7c-selw">
       <select
         value={value || ''}
         onChange={function (e) {
           onChange(e.target.value);
         }}
-        style={{
-          width: '100%',
-          boxSizing: 'border-box',
-          height: 36,
-          padding: '0 10px',
-          border:
-            '1px solid ' +
-            (pill ? 'color-mix(in oklab, ' + (color || 'var(--text-secondary)') + ' 35%, var(--border-default))' : 'var(--border-default)'),
-          borderRadius: 10,
-          background: pill ? 'color-mix(in oklab, ' + (color || 'var(--text-secondary)') + ' 10%, var(--surface-page))' : 'var(--surface-page)',
-          fontFamily: 'var(--font-sans)',
-          fontSize: 12,
-          fontWeight: 700,
-          color: color || 'var(--text-primary)',
-          cursor: 'pointer',
-          outline: 'none',
-          textOverflow: 'ellipsis',
-        }}
+        className="ms7c-sel"
+        style={
+          pill
+            ? {
+                borderColor: 'color-mix(in oklab, ' + col + ' 28%, var(--line))',
+                background: 'color-mix(in oklab, ' + col + ' 10%, var(--surface-card))',
+                color: 'color-mix(in oklab, ' + col + ' 88%, var(--text-primary))',
+              }
+            : color
+              ? { color: color }
+              : undefined
+        }
       >
         {options.map(function (o) {
           if (o && o.group)
@@ -1549,7 +1412,7 @@
               <optgroup
                 key={'g' + o.group}
                 label={'■ ' + String(o.group).toUpperCase()}
-                style={{ color: 'var(--ms7-green-ink, #005D3B)', fontWeight: 800, background: 'var(--ms7-lime-100, #E9F7D9)' }}
+                style={{ color: 'var(--ms7-green-ink)', fontWeight: 600, background: 'var(--ms7-lime-100)' }}
               >
                 {o.items.map(function (it) {
                   return (
@@ -1569,6 +1432,10 @@
           );
         })}
       </select>
+      <span className="ms7c-chev">
+        <DS.Icon name="chevron-down" size={14} strokeWidth={2} />
+      </span>
+      </div>
     );
   }
   function cpPix(r, keyInfo) {
@@ -1586,45 +1453,32 @@
   function PixCopyBtn({ r, keyInfo }) {
     if (!r.pix) return null;
     return (
-      <button
-        type="button"
-        title="Copiar chave"
-        aria-label="Copiar chave"
+      <DS.IconButton
+        icon="copy"
+        label="Copiar chave"
+        size={26}
+        iconSize={13}
+        style={{ flexShrink: 0, color: 'var(--text-secondary)', borderRadius: 7 }}
         onClick={function (e) {
           e.stopPropagation();
           cpPix(r, keyInfo);
         }}
-        style={{
-          width: 26,
-          height: 26,
-          flexShrink: 0,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          border: 0,
-          borderRadius: 6,
-          background: 'transparent',
-          color: 'var(--text-secondary)',
-          cursor: 'pointer',
-        }}
-      >
-        <DS.Icon name="copy" size={14} />
-      </button>
+      />
     );
   }
   const COLS_DEF = [
-    { id: 'usuario', l: 'Usuário', w: 150 },
-    { id: 'senha', l: 'Senha', w: 100 },
-    { id: 'senhaSaque', l: 'Senha saque', w: 100 },
-    { id: 'deposito', l: 'Depósito', w: 110, r: 1 },
-    { id: 'redeposito', l: 'Re-dep.', w: 104, r: 1 },
-    { id: 'saque', l: 'Saque', w: 110, r: 1 },
-    { id: 'aposta', l: 'Aposta válida', w: 116, r: 1 },
-    { id: 'bau', l: 'Baú', w: 96, r: 1 },
-    { id: 'pix', l: 'Chave PIX', w: 180 },
-    { id: 'res', l: 'Resultado', w: 100, r: 1 },
-    { id: 'status', l: 'Status', w: 130 },
-    { id: 'obs', l: 'Observação', w: 170 },
+    { id: 'usuario', l: 'Usuário', w: 122 },
+    { id: 'senha', l: 'Senha', w: 86 },
+    { id: 'senhaSaque', l: 'Senha saque', w: 106 },
+    { id: 'deposito', l: 'Depósito', w: 108, r: 1 },
+    { id: 'redeposito', l: 'Re-dep.', w: 100, r: 1 },
+    { id: 'saque', l: 'Saque', w: 108, r: 1 },
+    { id: 'aposta', l: 'Aposta válida', w: 118, r: 1 },
+    { id: 'bau', l: 'Baú', w: 90, r: 1 },
+    { id: 'pix', l: 'Chave PIX', w: 156 },
+    { id: 'res', l: 'Resultado', w: 108, r: 1 },
+    { id: 'status', l: 'Status', w: 118 },
+    { id: 'obs', l: 'Observação', w: 124 },
   ];
   function alvoAposta(c, lst) {
     const t = String(c.rollover || '').trim();
@@ -1917,22 +1771,22 @@
     const apFalta = Math.max(0, apAlvo - tot.aposta);
     const apPct = apAlvo ? Math.min(100, Math.round((tot.aposta / apAlvo) * 100)) : 0;
     const th = {
-      height: 36,
-      padding: '0 8px',
-      fontSize: 10.5,
-      fontWeight: 700,
-      letterSpacing: '.05em',
+      height: 38,
+      padding: '0 10px',
+      fontSize: 11,
+      fontWeight: 600,
+      letterSpacing: '.08em',
       textTransform: 'uppercase',
       color: 'var(--text-secondary)',
       textAlign: 'left',
-      borderBottom: '1px solid var(--border-default)',
+      borderBottom: '1px solid var(--line)',
       whiteSpace: 'nowrap',
-      background: 'var(--ms7-gray-50)',
+      background: 'var(--surface-card)',
       position: 'sticky',
       top: 0,
       zIndex: 1,
     };
-    const td = { padding: '5px 5px', borderBottom: '1px solid var(--border-subtle)' };
+    const td = {};
     const [tgR, setTgR] = React.useState(String(c.comR != null ? c.comR : 2).replace('.', ','));
     const [tgS, setTgS] = React.useState(String(c.comS != null ? c.comS : 1.5).replace('.', ','));
     function parseTg(t) {
@@ -2058,16 +1912,7 @@
         );
       if (col.id === 'res')
         return (
-          <div
-            style={{
-              textAlign: 'right',
-              padding: '0 6px',
-              fontSize: 14,
-              fontWeight: 800,
-              color: res > 0 ? 'var(--ms7-green)' : res < 0 ? 'var(--ms7-error)' : 'var(--text-secondary)',
-              fontVariantNumeric: 'tabular-nums',
-            }}
-          >
+          <div className="ms7c-res" style={{ color: res > 0 ? 'var(--ms7-green)' : res < 0 ? 'var(--ms7-error)' : 'var(--text-secondary)' }}>
             {MS7.brl(res)}
           </div>
         );
@@ -2124,10 +1969,7 @@
         );
     }
     return (
-      <div
-        ref={wrapRef}
-        style={{ background: 'var(--surface-card)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}
-      >
+      <div ref={wrapRef} className="ms7-card" style={{ overflow: 'hidden' }}>
         <div
           style={{
             display: 'flex',
@@ -2139,17 +1981,15 @@
           }}
         >
           <div style={{ flex: '1 1 220px', minWidth: 0 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <b style={{ fontSize: 17 }}>Tabela de contas</b>
-              <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: 'var(--ms7-gray-100)' }}>
-                {c.contas.length}
-              </span>
+            <div className="ms7c-sec-title" style={{ gap: 8 }}>
+              Tabela de contas
+              <DS.CountDot tone="muted">{c.contas.length}</DS.CountDot>
             </div>
             <div
               style={{
-                fontSize: 12,
-                fontWeight: 600,
-                marginTop: 2,
+                fontSize: 12.5,
+                fontWeight: 500,
+                marginTop: 4,
                 color: dispCount ? 'var(--text-secondary)' : 'var(--ms7-error)',
                 display: 'flex',
                 alignItems: 'center',
@@ -2162,24 +2002,10 @@
               {dispCount ? (
                 <button
                   type="button"
+                  className="ms7c-link"
+                  style={{ marginLeft: 4 }}
                   onClick={function () {
                     setBlocoCh(true);
-                  }}
-                  style={{
-                    whiteSpace: 'nowrap',
-                    flexShrink: 0,
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 4,
-                    marginLeft: 4,
-                    height: 24,
-                    padding: '0 9px',
-                    border: '1px solid var(--border-default)',
-                    borderRadius: 7,
-                    background: 'var(--surface-card)',
-                    color: 'var(--text-primary)',
-                    font: '700 12px var(--font-sans)',
-                    cursor: 'pointer',
                   }}
                 >
                   <DS.Icon name="list" size={12} />
@@ -2188,19 +2014,7 @@
               ) : null}
             </div>
           </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              height: 36,
-              padding: '0 10px',
-              border: '1px solid var(--border-default)',
-              borderRadius: 10,
-              flex: '0 1 260px',
-              minWidth: 180,
-            }}
-          >
+          <div className="ms7c-box" style={{ flex: '0 1 260px', minWidth: 180 }}>
             <DS.Icon name="search" size={15} color="var(--text-secondary)" />
             <input
               value={busca}
@@ -2208,20 +2022,8 @@
                 setBusca(e.target.value);
               }}
               placeholder="Buscar usuário ou valor"
-              style={{
-                flex: 1,
-                minWidth: 0,
-                height: 30,
-                border: 'none',
-                background: 'transparent',
-                fontFamily: 'inherit',
-                fontSize: 13,
-                fontWeight: 600,
-                color: 'var(--text-primary)',
-                outline: 'none',
-              }}
             />
-            {bq ? <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{achados}</span> : null}
+            {bq ? <span className="ms7c-n" style={{ whiteSpace: 'nowrap' }}>{achados}</span> : null}
             {bq ? (
               <IconButton
                 icon="x"
@@ -2234,38 +2036,16 @@
               />
             ) : null}
           </div>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              height: 36,
-              padding: '0 4px 0 12px',
-              border: '1px solid var(--border-default)',
-              borderRadius: 10,
-            }}
-          >
-            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>Depositantes</span>
+          <div className="ms7c-box" style={{ padding: '0 4px 0 12px', gap: 6 }}>
+            <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>Depositantes</span>
             <input
+              className="ms7c-qd"
               value={qd}
               onChange={function (e) {
                 setQd(e.target.value.replace(/\D/g, ''));
               }}
               onKeyDown={function (e) {
                 if (e.key === 'Enter') DB.A.setDepositantes(c.id, qd);
-              }}
-              style={{
-                width: 48,
-                height: 28,
-                border: 'none',
-                background: 'var(--ms7-gray-100)',
-                borderRadius: 6,
-                textAlign: 'center',
-                fontFamily: 'inherit',
-                fontSize: 13,
-                fontWeight: 700,
-                color: 'var(--text-primary)',
-                outline: 'none',
               }}
             />
             <IconButton
@@ -2281,9 +2061,11 @@
           </div>
           <IconButton
             icon={compacto ? 'table-2' : 'notebook-pen'}
-            size={34}
+            variant="outline"
+            size={36}
             iconSize={16}
             label={compacto ? 'Ver como tabela' : 'Ver como bloco de notas (pequeno)'}
+            style={{ borderRadius: 10 }}
             onClick={function () {
               setModoP(compacto ? 'tabela' : 'bloco');
             }}
@@ -2292,7 +2074,7 @@
             <div style={{ position: 'relative' }}>
               <Button
                 size="sm"
-                variant="ghost"
+                variant="outline"
                 iconLeft="columns-3"
                 onClick={function () {
                   setColsOpen(!colsOpen);
@@ -2307,17 +2089,17 @@
                     right: 0,
                     top: 40,
                     zIndex: 20,
-                    width: 200,
-                    padding: 10,
-                    borderRadius: 12,
-                    background: 'var(--surface-card, #fff)',
+                    width: 210,
+                    padding: 12,
+                    borderRadius: 14,
+                    background: 'var(--surface-card)',
                     boxShadow: 'var(--shadow-pop)',
                     display: 'flex',
                     flexDirection: 'column',
                     gap: 8,
                   }}
                 >
-                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                  <div className="ms7-eyebrow" style={{ marginBottom: 2 }}>
                     Vale para você e o operador
                   </div>
                   {COLS_DEF.map(function (x) {
@@ -2344,7 +2126,7 @@
           <Button
             size="sm"
             variant="outline"
-            iconLeft="send"
+            iconLeft="upload"
             onClick={function () {
               setImp(true);
             }}
@@ -2384,35 +2166,26 @@
               flexWrap: 'wrap',
             }}
           >
-            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700 }}>
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 600 }}>
               <DS.Icon name="target" size={15} color="var(--ms7-green)" />
               Aposta válida
             </span>
-            <span style={{ fontSize: 14, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>
+            <span className="ms7-num" style={{ fontSize: 14, fontWeight: 600 }}>
               {MS7.brl(tot.aposta) + (apAlvo ? ' de ' + MS7.brl(apAlvo) : '')}
             </span>
             {apAlvo ? (
-              <div style={{ flex: '1 1 160px', height: 8, borderRadius: 4, background: 'var(--ms7-gray-100)', overflow: 'hidden', minWidth: 120 }}>
-                <div
-                  style={{
-                    width: apPct + '%',
-                    height: '100%',
-                    background: apFalta ? 'var(--ms7-green)' : 'var(--ms7-lime-500)',
-                    transition: 'width .4s',
-                  }}
-                ></div>
+              <div className="ms7-bar" style={{ flex: '1 1 160px', minWidth: 120 }}>
+                <i style={{ width: apPct + '%', background: apFalta ? 'var(--ms7-green)' : 'var(--ms7-lime-500)', transition: 'width .4s' }} />
               </div>
             ) : (
               <span style={{ flex: 1 }}></span>
             )}
             {apAlvo ? (
-              <b style={{ fontSize: 14, fontVariantNumeric: 'tabular-nums', color: apFalta ? 'var(--ms7-orange)' : 'var(--ms7-green)' }}>
+              <b className="ms7-num" style={{ fontSize: 14, fontWeight: 600, color: apFalta ? 'var(--ms7-orange)' : 'var(--ms7-green)' }}>
                 {apFalta ? 'Falta ' + MS7.brl(apFalta) : 'Meta batida'}
               </b>
             ) : (
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                Coloque o rollover (ex.: 10000 ou 3x) no lápis da cooperação para ver quanto falta
-              </span>
+              <span className="ms7c-hint">Coloque o rollover (ex.: 10000 ou 3x) no lápis da cooperação para ver quanto falta</span>
             )}
           </div>
         ) : null}
@@ -2424,11 +2197,11 @@
               gap: 10,
               padding: '10px 20px',
               background: 'var(--ms7-lime-100)',
-              color: 'var(--ms7-green-ink, #005D3B)',
+              color: 'var(--ms7-green-ink)',
               flexWrap: 'wrap',
             }}
           >
-            <b style={{ fontSize: 13 }}>{ids.length + ' selecionada(s)'}</b>
+            <b style={{ fontSize: 13, fontWeight: 600 }}>{ids.length + ' selecionada(s)'}</b>
             <span style={{ flex: 1 }}></span>
             <div style={{ width: 170 }}>
               <Select
@@ -2481,55 +2254,20 @@
               return (
                 <div
                   key={r.id}
+                  className={'ms7c-blk' + (on ? ' is-on' : '') + (r.status === 'Bloqueado' ? ' is-bloq' : '')}
                   onFocusCapture={function () {
                     setAtiva(r.id);
                   }}
                   onMouseDown={function () {
                     setAtiva(r.id);
                   }}
-                  style={{
-                    padding: '6px 8px 8px',
-                    borderBottom: '1px solid var(--border-subtle)',
-                    background: on
-                      ? 'color-mix(in oklab, var(--ms7-lime-500) 26%, transparent)'
-                      : r.status === 'Bloqueado'
-                        ? 'color-mix(in oklab, var(--ms7-error) 6%, transparent)'
-                        : 'transparent',
-                    boxShadow: on ? 'inset 3px 0 0 var(--ms7-green)' : 'none',
-                    opacity: fora && !on ? 0.45 : 1,
-                  }}
+                  style={{ opacity: fora && !on ? 0.45 : 1 }}
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                    <span
-                      style={{
-                        width: 34,
-                        flexShrink: 0,
-                        display: 'inline-flex',
-                        alignItems: 'center',
-                        gap: 3,
-                        fontSize: 12,
-                        fontWeight: 700,
-                        color: 'var(--text-secondary)',
-                        fontVariantNumeric: 'tabular-nums',
-                        paddingLeft: 2,
-                      }}
-                    >
+                    <span className="ms7c-n" style={{ width: 34, flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 3, paddingLeft: 2 }}>
                       {i + 1}
                       {r.rolo ? (
-                        <span
-                          style={{
-                            display: 'inline-flex',
-                            width: 15,
-                            height: 15,
-                            borderRadius: 4,
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            background: 'var(--ms7-lime-500, #C9F76A)',
-                            color: 'var(--text-on-lime, #0C3B26)',
-                            fontSize: 9,
-                            fontWeight: 800,
-                          }}
-                        >
+                        <span className="ms7c-r" style={{ width: 15, height: 15, fontSize: 9 }}>
                           R
                         </span>
                       ) : null}
@@ -2563,19 +2301,8 @@
                       ['aposta', 'Aposta'],
                     ].map(function (x) {
                       return (
-                        <div key={x[0]} style={{ minWidth: 0, borderRadius: 8, background: 'var(--surface-sunken, var(--ms7-gray-50))' }}>
-                          <div
-                            style={{
-                              fontSize: 10,
-                              fontWeight: 700,
-                              letterSpacing: '.04em',
-                              textTransform: 'uppercase',
-                              color: 'var(--text-secondary)',
-                              padding: '0 8px',
-                            }}
-                          >
-                            {x[1]}
-                          </div>
+                        <div key={x[0]} style={{ minWidth: 0, borderRadius: 8, background: 'var(--surface-muted)' }}>
+                          <div className="ms7c-blk-k">{x[1]}</div>
                           <Cell
                             value={r[x[0]] || ''}
                             ro={x[0] === 'deposito' && !superAdm}
@@ -2602,10 +2329,10 @@
                     </div>
                     <PixCopyBtn r={r} keyInfo={keyInfo} />
                     <span
+                      className="ms7-num"
                       style={{
-                        fontSize: 12,
-                        fontWeight: 800,
-                        fontVariantNumeric: 'tabular-nums',
+                        fontSize: 12.5,
+                        fontWeight: 600,
                         whiteSpace: 'nowrap',
                         color: res > 0 ? 'var(--ms7-green)' : res < 0 ? 'var(--ms7-error)' : 'var(--text-secondary)',
                       }}
@@ -2630,6 +2357,7 @@
             <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px' }}>
               <DS.Icon name="plus" size={14} color="var(--text-secondary)" />
               <input
+                className="ms7c-add"
                 value={nu}
                 onChange={function (e) {
                   setNu(e.target.value);
@@ -2639,18 +2367,7 @@
                 }}
                 onBlur={add}
                 placeholder="Novo usuário + Enter"
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  height: 34,
-                  border: 'none',
-                  background: 'transparent',
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: 'var(--text-primary)',
-                  outline: 'none',
-                }}
+                style={{ flex: 1, minWidth: 0, width: 'auto', height: 34, padding: 0 }}
               />
             </div>
             <div
@@ -2661,8 +2378,8 @@
                 gridTemplateColumns: 'repeat(4,minmax(0,1fr))',
                 gap: 4,
                 padding: '8px 10px',
-                background: 'var(--ms7-gray-50)',
-                borderTop: '1px solid var(--border-default)',
+                background: 'var(--surface-muted)',
+                borderTop: '1px solid var(--line)',
               }}
             >
               {[
@@ -2673,11 +2390,12 @@
               ].map(function (x) {
                 return (
                   <div key={x[0]} style={{ minWidth: 0 }}>
-                    <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>{x[0]}</div>
+                    <div className="ms7c-blk-k" style={{ padding: 0 }}>{x[0]}</div>
                     <b
+                      className="ms7-num"
                       style={{
                         fontSize: 13,
-                        fontVariantNumeric: 'tabular-nums',
+                        fontWeight: 600,
                         color: x[0] === 'Resultado' ? (x[1] >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)') : 'var(--text-primary)',
                       }}
                     >
@@ -2689,20 +2407,14 @@
             </div>
           </div>
         ) : (
-          <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 220px)' }}>
+          <div className="ms7c-wrap">
             <table
+              className="ms7c-table"
               style={{
-                width: '100%',
-                borderCollapse: 'separate',
-                borderSpacing: 0,
-                tableLayout: 'fixed',
                 minWidth:
-                  Math.round(
-                    cols.reduce(function (a, x) {
-                      return a + x.w;
-                    }, 0) * 0.62,
-                  ) + 112,
-                fontFamily: 'var(--font-sans)',
+                  cols.reduce(function (a, x) {
+                    return a + x.w;
+                  }, 0) + 112,
               }}
             >
               <colgroup>
@@ -2721,7 +2433,7 @@
               </colgroup>
               <thead>
                 <tr>
-                  <th style={Object.assign({}, th, { padding: '0 0 0 14px' })}>
+                  <th style={{ padding: '0 0 0 14px' }}>
                     <Checkbox
                       checked={!!allOn}
                       onChange={function (v) {
@@ -2734,18 +2446,31 @@
                       }}
                     />
                   </th>
-                  <th style={th}>#</th>
+                  <th>#</th>
                   {cols.map(function (x) {
                     return (
-                      <th key={x.id} style={Object.assign({}, th, { textAlign: x.r ? 'right' : 'left' })}>
+                      <th key={x.id} style={{ textAlign: x.r ? 'right' : 'left' }}>
                         {x.l}
                       </th>
                     );
                   })}
-                  <th style={th}></th>
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
+                {!c.contas.length ? (
+                  <tr>
+                    <td colSpan={cols.length + 3} style={{ whiteSpace: 'normal' }}>
+                      <Empty art="Coop" compact title="Nenhuma conta ainda" sub={'Adicione uma conta, importe uma lista ou cole as chaves PIX.'} />
+                    </td>
+                  </tr>
+                ) : bq && !achados ? (
+                  <tr>
+                    <td colSpan={cols.length + 3} style={{ whiteSpace: 'normal' }}>
+                      <Empty art="Search" compact title="Nenhuma conta encontrada" sub={'Nenhum usuário, chave ou valor bate com a busca.'} />
+                    </td>
+                  </tr>
+                ) : null}
                 {c.contas.map(function (r, i) {
                   if (!bateBusca(r)) return null;
                   const ck = !!sel[r.id],
@@ -2754,23 +2479,14 @@
                   return (
                     <tr
                       key={r.id}
+                      className={(on ? 'is-on ' : '') + (ck ? 'is-ck ' : '') + (r.status === 'Bloqueado' ? 'is-bloq' : '')}
                       onFocusCapture={function () {
                         setAtiva(r.id);
                       }}
                       onMouseDown={function () {
                         setAtiva(r.id);
                       }}
-                      style={{
-                        background: on
-                          ? 'color-mix(in oklab, var(--ms7-lime-500) 30%, transparent)'
-                          : ck
-                            ? 'color-mix(in oklab, var(--ms7-lime-500) 14%, transparent)'
-                            : r.status === 'Bloqueado'
-                              ? 'color-mix(in oklab, var(--ms7-error) 6%, transparent)'
-                              : 'transparent',
-                        boxShadow: on ? 'inset 4px 0 0 var(--ms7-green)' : 'none',
-                        opacity: fora && !on ? 0.4 : 1,
-                      }}
+                      style={{ opacity: fora && !on ? 0.4 : 1 }}
                       title={fora ? 'Fora da conta: acima do número de depositantes' : undefined}
                     >
                       <td style={Object.assign({}, td, { padding: '0 0 0 14px' })}>
@@ -2786,33 +2502,11 @@
                           }}
                         />
                       </td>
-                      <td
-                        style={Object.assign({}, td, {
-                          padding: '0 10px',
-                          fontSize: 12,
-                          fontWeight: 700,
-                          color: 'var(--text-secondary)',
-                          fontVariantNumeric: 'tabular-nums',
-                        })}
-                      >
+                      <td className="ms7c-n" style={Object.assign({}, td, { padding: '0 10px' })}>
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
                           {i + 1}
                           {r.rolo ? (
-                            <span
-                              title="Conta de rolo"
-                              style={{
-                                display: 'inline-flex',
-                                width: 18,
-                                height: 18,
-                                borderRadius: 5,
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                background: 'var(--ms7-lime-500, #C9F76A)',
-                                color: 'var(--text-on-lime, #0C3B26)',
-                                fontSize: 10,
-                                fontWeight: 800,
-                              }}
-                            >
+                            <span className="ms7c-r" title="Conta de rolo">
                               R
                             </span>
                           ) : null}
@@ -2831,6 +2525,7 @@
                           size={26}
                           iconSize={13}
                           label="Remover"
+                          style={{ color: 'var(--text-secondary)' }}
                           onClick={function () {
                             DB.A.removeConta(c.id, r.id);
                           }}
@@ -2846,6 +2541,7 @@
                   </td>
                   <td style={td} colSpan={cols.length + 1}>
                     <input
+                      className="ms7c-add"
                       value={nu}
                       onChange={function (e) {
                         setNu(e.target.value);
@@ -2855,19 +2551,6 @@
                       }}
                       onBlur={add}
                       placeholder="Digite um usuário e aperte Enter para adicionar mais uma linha"
-                      style={{
-                        width: '100%',
-                        boxSizing: 'border-box',
-                        height: 40,
-                        padding: '0 10px',
-                        border: 'none',
-                        background: 'transparent',
-                        fontFamily: 'var(--font-sans)',
-                        fontSize: 13,
-                        fontWeight: 600,
-                        color: 'var(--text-primary)',
-                        outline: 'none',
-                      }}
                     />
                   </td>
                 </tr>
@@ -2875,7 +2558,7 @@
               <tfoot>
                 <tr>
                   {[0, 1].map(function (i) {
-                    return <td key={i} style={{ background: 'var(--ms7-gray-50)', position: 'sticky', bottom: 0 }}></td>;
+                    return <td key={i}></td>;
                   })}
                   {cols.map(function (x, i) {
                     const v = tot[x.id];
@@ -2883,15 +2566,7 @@
                       <td
                         key={x.id}
                         style={{
-                          height: 44,
-                          padding: '0 10px',
                           textAlign: x.r ? 'right' : 'left',
-                          fontSize: 13,
-                          fontWeight: 800,
-                          fontVariantNumeric: 'tabular-nums',
-                          background: 'var(--ms7-gray-50)',
-                          position: 'sticky',
-                          bottom: 0,
                           color: x.id === 'res' ? (v >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)') : 'var(--text-primary)',
                         }}
                       >
@@ -2899,7 +2574,7 @@
                       </td>
                     );
                   })}
-                  <td style={{ background: 'var(--ms7-gray-50)', position: 'sticky', bottom: 0 }}></td>
+                  <td></td>
                 </tr>
               </tfoot>
             </table>
@@ -2987,7 +2662,7 @@
                   }}
                   placeholder={'529.982.247-25\n(11) 98888-1020\npix@email.com'}
                 />
-                <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+                <div className="ms7c-hint" style={{ fontSize: 13 }}>
                   {alvo.length
                     ? alvo.length +
                       (alvo.length === 1 ? ' conta com saque e sem chave: ' : ' contas com saque e sem chave: ') +
@@ -3007,14 +2682,18 @@
                 {keys.some(function (k) {
                   return !k.ok;
                 }) ? (
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ms7-orange)' }}>
-                    {keys.filter(function (k) {
-                      return !k.ok;
-                    }).length + ' chave(s) não foram achadas nos grupos de chaves PIX. Elas entram na conta, mas não ficam marcadas como usadas.'}
+                  <div style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.5, color: 'var(--soft-warn-fg)', display: 'flex', gap: 8 }}>
+                    <DS.Icon name="triangle-alert" size={14} style={{ flexShrink: 0, marginTop: 2 }} />
+                    <span>
+                      {keys.filter(function (k) {
+                        return !k.ok;
+                      }).length + ' chave(s) não foram achadas nos grupos de chaves PIX. Elas entram na conta, mas não ficam marcadas como usadas.'}
+                    </span>
                   </div>
                 ) : null}
                 {keys.length > alvo.length && alvo.length ? (
-                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ms7-orange)' }}>
+                  <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--soft-warn-fg)', display: 'flex', gap: 8, alignItems: 'center' }}>
+                    <DS.Icon name="triangle-alert" size={14} style={{ flexShrink: 0 }} />
                     {keys.length - alvo.length + ' chave(s) a mais serão ignoradas.'}
                   </div>
                 ) : null}
@@ -3059,12 +2738,8 @@
                         <div key={x.g.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
-                              <div
-                                style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase', color: 'var(--ms7-green-ink, var(--ms7-green))' }}
-                              >
-                                {x.g.pagamento || x.g.nome}
-                              </div>
-                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                              <div className="ms7c-gname">{x.g.pagamento || x.g.nome}</div>
+                              <div className="ms7c-hint">
                                 {(x.g.pagamento ? x.g.nome + ' · ' : '') + x.ks.length + (x.ks.length === 1 ? ' chave' : ' chaves')}
                               </div>
                             </div>
@@ -3080,29 +2755,19 @@
                             </DS.Button>
                           </div>
                           <textarea
+                            className="ms7c-ta"
                             readOnly
                             value={t}
                             onFocus={function (e) {
                               e.target.select();
                             }}
                             rows={Math.min(14, Math.max(3, x.ks.length))}
-                            style={{
-                              width: '100%',
-                              boxSizing: 'border-box',
-                              padding: '10px 12px',
-                              border: '1px solid var(--border-default)',
-                              borderRadius: 12,
-                              background: 'var(--surface-sunken, var(--surface-card))',
-                              color: 'var(--text-primary)',
-                              font: '500 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace',
-                              resize: 'vertical',
-                            }}
                           ></textarea>
                         </div>
                       );
                     })}
                     {!L.length ? (
-                      <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Nenhuma chave disponível nos grupos desta cooperação.</div>
+                      <Empty art="Keys" compact title="Sem chaves livres" sub={'Nenhuma chave disponível nos grupos desta cooperação.'} />
                     ) : null}
                   </div>
                 </Modal>
@@ -3185,18 +2850,20 @@
               const kp = function (l, v, hl) {
                 return (
                   <div
+                    className="ms7c-mini"
                     style={{
                       flex: '1 1 130px',
                       padding: '12px 14px',
-                      borderRadius: 12,
-                      background: hl ? 'var(--ms7-green)' : 'var(--ms7-gray-50)',
-                      color: hl ? '#fff' : 'var(--text-primary)',
+                      background: hl ? 'var(--ms7-lime-100)' : 'var(--surface-muted)',
+                      color: hl ? 'var(--ms7-green-ink)' : 'var(--text-primary)',
                     }}
                   >
-                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', opacity: hl ? 0.85 : 0.7 }}>
+                    <div className="ms7-eyebrow" style={hl ? { color: 'inherit', opacity: 0.8 } : undefined}>
                       {l}
                     </div>
-                    <div style={{ fontSize: 18, fontWeight: 800, fontVariantNumeric: 'tabular-nums', marginTop: 2 }}>{v}</div>
+                    <div className="ms7c-mini-v" style={{ fontSize: 18 }}>
+                      {v}
+                    </div>
                   </div>
                 );
               };
@@ -3213,7 +2880,7 @@
                     }}
                     hint="O número diz a linha da tabela. As linhas de total do Telegram são ignoradas. O operador preenche depois só usuário, saque e chave PIX."
                   />
-                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                  <div className="ms7c-grid2" style={{ gap: 12 }}>
                     <Input
                       label="Comissão por conta com R"
                       prefix="R$"
@@ -3233,7 +2900,7 @@
                   </div>
                   {rows.length ? (
                     <React.Fragment>
-                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      <div className="ms7c-hint ms7-num" style={{ fontSize: 13 }}>
                         {rows.length +
                           ' contas · ' +
                           nr +
@@ -3253,7 +2920,7 @@
                         {kp('Comissão', MS7.brl(com))}
                         {kp('Total p/ envio', MS7.brl(dep + com), true)}
                       </div>
-                      <div style={{ maxHeight: 240, overflow: 'auto', border: '1px solid var(--border-subtle)', borderRadius: 12 }}>
+                      <div style={{ maxHeight: 240, overflow: 'auto', border: '1px solid var(--line)', borderRadius: 12 }}>
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                           <thead>
                             <tr>
@@ -3267,42 +2934,28 @@
                               return (
                                 <tr key={i}>
                                   <td
+                                    className="ms7c-n"
                                     style={{
                                       padding: '7px 10px',
                                       borderBottom: '1px solid var(--border-subtle)',
-                                      fontWeight: 700,
-                                      color: 'var(--text-secondary)',
                                     }}
                                   >
                                     {r.n}
                                   </td>
                                   <td
+                                    className="ms7-num"
                                     style={{
                                       padding: '7px 10px',
                                       borderBottom: '1px solid var(--border-subtle)',
                                       textAlign: 'right',
-                                      fontWeight: 700,
-                                      fontVariantNumeric: 'tabular-nums',
+                                      fontWeight: 600,
                                     }}
                                   >
                                     {MS7.brl(r.valor)}
                                   </td>
                                   <td style={{ padding: '7px 10px', borderBottom: '1px solid var(--border-subtle)', textAlign: 'center' }}>
                                     {r.rolo ? (
-                                      <span
-                                        style={{
-                                          display: 'inline-flex',
-                                          width: 22,
-                                          height: 22,
-                                          borderRadius: 6,
-                                          alignItems: 'center',
-                                          justifyContent: 'center',
-                                          background: 'var(--ms7-lime-500, #C9F76A)',
-                                          color: 'var(--text-on-lime, #0C3B26)',
-                                          fontSize: 12,
-                                          fontWeight: 800,
-                                        }}
-                                      >
+                                      <span className="ms7c-r" style={{ width: 22, height: 22, fontSize: 12 }}>
                                         R
                                       </span>
                                     ) : null}
@@ -3421,71 +3074,47 @@
         t.conta = t.grupos > 1 && igual ? t.grupos + ' × ' + t.cada[0] + ' = ' + t.disp : t.cada.join(' + ') + (t.grupos > 1 ? ' = ' + t.disp : '');
         return t;
       });
-    return (
-      <div
-        style={{
-          background: 'var(--surface-card)',
-          borderRadius: 'var(--radius-lg)',
-          boxShadow: 'var(--shadow-card)',
-          padding: '16px 20px',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 12,
+    const escolher = (
+      <Button
+        size="sm"
+        variant={meus.length ? 'outline' : 'brand'}
+        iconLeft={meus.length ? 'pencil' : 'key-round'}
+        onClick={function () {
+          setSel(sel0.slice());
+          setEd(true);
         }}
       >
+        {meus.length ? 'Trocar grupos' : 'Escolher grupos'}
+      </Button>
+    );
+    return (
+      <div className="ms7-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <DS.Icon name="key-round" size={18} />
-          <b style={{ fontSize: 17, flex: 1 }}>{'Grupos de chaves PIX' + (meus.length ? ' · ' + meus.length : '')}</b>
-          {canAdmin && !fim ? (
-            <Button
-              size="sm"
-              variant="outline"
-              iconLeft="pencil"
-              onClick={function () {
-                setSel(sel0.slice());
-                setEd(true);
-              }}
-            >
-              {meus.length ? 'Trocar grupos' : 'Escolher grupos'}
-            </Button>
-          ) : null}
+          <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}>
+            <DS.Icon name="key-round" size={15} strokeWidth={2} />
+          </span>
+          <span className="ms7c-sec-title" style={{ flex: 1 }}>
+            Grupos de chaves PIX
+            {meus.length ? <DS.CountDot tone="muted">{meus.length}</DS.CountDot> : null}
+          </span>
+          {canAdmin && !fim && meus.length ? escolher : null}
         </div>
         {!meus.length ? (
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Nenhum grupo escolhido. O operador vê os lotes do operador e da plataforma. Escolha os grupos para ele trabalhar só com eles.
-          </div>
+          <Empty
+            art="Keys"
+            compact
+            title="Nenhum grupo escolhido"
+            sub={'O operador vê os lotes do operador e da plataforma. Escolha os grupos para ele trabalhar só com eles.'}
+            action={canAdmin && !fim ? escolher : null}
+          />
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,240px),1fr))', gap: 10 }}>
             {meus.map(function (g) {
               const s = st(g);
               return (
-                <div
-                  key={g.id}
-                  style={{
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 12,
-                    padding: '10px 12px',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 6,
-                  }}
-                >
+                <div key={g.id} className="ms7c-grp">
                   <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
-                    <span
-                      style={{
-                        alignSelf: 'flex-start',
-                        padding: '4px 10px',
-                        borderRadius: 8,
-                        background: '#005D3B',
-                        color: '#fff',
-                        fontSize: 13,
-                        fontWeight: 800,
-                        letterSpacing: '.02em',
-                        textTransform: 'uppercase',
-                      }}
-                    >
-                      {g.nome}
-                    </span>
+                    <DS.Badge tone="green">{g.nome}</DS.Badge>
                     <span style={{ flex: 1 }}></span>
                     {canAdmin && !fim ? (
                       <IconButton
@@ -3513,9 +3142,7 @@
                       />
                     ) : null}
                   </div>
-                  {g.pagamento ? (
-                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginTop: -4 }}>{g.pagamento}</span>
-                  ) : null}
+                  {g.pagamento ? <span className="ms7c-grp-bank">{g.pagamento}</span> : null}
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     <Badge size="sm" variant="soft" tone="blue">
                       {s.aqui + ' usadas aqui'}
@@ -3540,7 +3167,8 @@
           </div>
         )}
         {meus.length && fim ? (
-          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ms7-green)' }}>
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--ms7-green)', display: 'flex', alignItems: 'center', gap: 6 }}>
+            <DS.Icon name="circle-check" size={14} />
             Cooperação encerrada: as chaves que sobraram estão livres para mandar para outro operador.
           </div>
         ) : null}
@@ -3574,26 +3202,12 @@
             </React.Fragment>
           }
         >
-          <div
-            style={{
-              position: 'sticky',
-              top: 0,
-              zIndex: 2,
-              marginBottom: 12,
-              padding: '14px 16px',
-              borderRadius: 14,
-              background: 'var(--ms7-lime-100, #E9F7D9)',
-              color: 'var(--ms7-green-ink, #005D3B)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 8,
-            }}
-          >
+          <div className="ms7c-sum">
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-              <b style={{ fontSize: 30, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{totDisp}</b>
-              <b style={{ fontSize: 15 }}>{totDisp === 1 ? 'chave disponível para enviar' : 'chaves disponíveis para enviar'}</b>
+              <b className="ms7-num" style={{ fontSize: 30, lineHeight: 1, fontWeight: 600, letterSpacing: '-0.03em' }}>{totDisp}</b>
+              <b style={{ fontSize: 15, fontWeight: 600 }}>{totDisp === 1 ? 'chave disponível para enviar' : 'chaves disponíveis para enviar'}</b>
               <span style={{ flex: 1 }}></span>
-              <span style={{ fontSize: 13, fontWeight: 700 }}>
+              <span style={{ fontSize: 13, fontWeight: 600 }}>
                 {selG.length + (selG.length === 1 ? ' grupo selecionado' : ' grupos selecionados')}
               </span>
             </div>
@@ -3609,20 +3223,20 @@
               >
                 {titList.map(function (t) {
                   return (
-                    <div key={t.nome} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontSize: 14, fontWeight: 700 }}>
-                      <span style={{ textTransform: 'uppercase' }}>{t.nome}</span>
-                      <span style={{ fontWeight: 600, opacity: 0.85 }}>{t.grupos + (t.grupos === 1 ? ' grupo' : ' grupos')}</span>
+                    <div key={t.nome} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontSize: 14, fontWeight: 600 }}>
+                      <span>{t.nome}</span>
+                      <span style={{ fontWeight: 500, opacity: 0.85 }}>{t.grupos + (t.grupos === 1 ? ' grupo' : ' grupos')}</span>
                       <span style={{ flex: 1 }}></span>
-                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{t.conta + ' chaves'}</span>
+                      <span className="ms7-num">{t.conta + ' chaves'}</span>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <span style={{ fontSize: 13, fontWeight: 600 }}>Marque os grupos abaixo para ver o total.</span>
+              <span style={{ fontSize: 13, fontWeight: 500 }}>Marque os grupos abaixo para ver o total.</span>
             )}
             {totAll > totDisp ? (
-              <span style={{ fontSize: 12, fontWeight: 600, opacity: 0.85 }}>
+              <span style={{ fontSize: 12.5, fontWeight: 500, opacity: 0.85 }}>
                 {totAll - totDisp + ' chaves desses grupos já estão em uso ou bloqueadas e não entram na conta.'}
               </span>
             ) : null}
@@ -3635,18 +3249,7 @@
                 const on = sel.indexOf(g.id) >= 0;
                 const trav = !!o && !on;
                 return (
-                  <div
-                    key={g.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '10px 12px',
-                      border: '1px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-subtle)'),
-                      borderRadius: 12,
-                      opacity: trav ? 0.55 : 1,
-                    }}
-                  >
+                  <div key={g.id} className={'ms7c-lote' + (on ? ' is-on' : '')} style={{ opacity: trav ? 0.55 : 1 }}>
                     {trav ? (
                       <span
                         title="Reservado para outra cooperação"
@@ -3669,19 +3272,19 @@
                       />
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <b style={{ fontSize: 14 }}>{g.nome}</b>
+                      <b style={{ fontSize: 14, fontWeight: 600 }}>{g.nome}</b>
                       {g.pagamento ? (
-                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>{' · ' + g.pagamento}</span>
+                        <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)' }}>{' · ' + g.pagamento}</span>
                       ) : null}
-                      <div style={{ fontSize: 12, fontWeight: 700, color: s.disp ? 'var(--ms7-green)' : 'var(--text-secondary)' }}>
+                      <div className="ms7-num" style={{ fontSize: 12.5, fontWeight: 500, color: s.disp ? 'var(--ms7-green)' : 'var(--text-secondary)' }}>
                         {s.disp + ' de ' + s.total + ' chaves livres para usar'}
                       </div>
                       {o ? (
                         <div
                           style={{
-                            fontSize: 12,
-                            fontWeight: 600,
-                            color: 'var(--soft-warn-fg, #8A3B00)',
+                            fontSize: 12.5,
+                            fontWeight: 500,
+                            color: 'var(--soft-warn-fg)',
                             display: 'flex',
                             alignItems: 'center',
                             gap: 4,
@@ -3696,9 +3299,7 @@
                 );
               })
             ) : (
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                Nenhum lote cadastrado. Cadastre em Gestão → Chaves PIX.
-              </div>
+              <Empty art="Keys" compact title="Nenhum lote cadastrado" sub="Cadastre em Gestão → Chaves PIX." />
             )}
           </div>
         </Modal>
@@ -3768,15 +3369,7 @@
       }),
     );
     const grid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 };
-    const sec = {
-      fontSize: 12,
-      fontWeight: 700,
-      letterSpacing: '.06em',
-      textTransform: 'uppercase',
-      color: 'var(--text-secondary)',
-      gridColumn: '1 / -1',
-      marginTop: 6,
-    };
+    const sec = { gridColumn: '1 / -1', marginTop: 8, paddingBottom: 6, borderBottom: '1px solid var(--line)' };
     return (
       <Modal
         open={open}
@@ -3802,7 +3395,7 @@
         }
       >
         <div style={grid}>
-          <div style={sec}>Informações</div>
+          <div className="ms7-eyebrow" style={sec}>Informações</div>
           <div style={{ gridColumn: '1 / -1' }}>
             <Input label="Nome da cooperação" value={f.cliente} onChange={u('cliente')} />
           </div>
@@ -3810,7 +3403,7 @@
           <Select label="Rede" value={f.rede} onChange={u('rede')} options={rds} />
           <Input label="Plataforma" placeholder="Ex.: Azul 777" value={f.plataforma} onChange={u('plataforma')} />
           <Input label="Link" placeholder="Ex.: Link 1" value={f.linkN || ''} onChange={u('linkN')} />
-          <div style={sec}>Comissão</div>
+          <div className="ms7-eyebrow" style={sec}>Comissão</div>
           <Select
             label="Tipo"
             value={f.comTipo}
@@ -3834,13 +3427,13 @@
           )}
           {f.comTipo === 'rolo' ? <Input label="Por conta sem R (R$)" value={f.comS} onChange={u('comS')} /> : null}
           {f.comTipo === 'misto' ? <Input label="Mais por conta (R$)" value={f.comConta} onChange={u('comConta')} /> : null}
-          <div style={sec}>Conta mãe</div>
+          <div className="ms7-eyebrow" style={sec}>Conta mãe</div>
           <div style={{ gridColumn: '1 / -1' }}>
             <Input label="Link" value={f.link} onChange={u('link')} />
           </div>
           <Input label="Usuário" value={f.muser} onChange={u('muser')} />
           <Input label="Senha" value={f.msenha} onChange={u('msenha')} />
-          <div style={sec}>Metas</div>
+          <div className="ms7-eyebrow" style={sec}>Metas</div>
           <Input label="Média de depósito (R$)" value={f.mediaDep} onChange={u('mediaDep')} />
           <Input label="Rollover" value={f.rollover} onChange={u('rollover')} placeholder="Ex.: 10x" />
           <Input label="Salário (R$)" value={f.salario} onChange={u('salario')} />
@@ -3922,16 +3515,19 @@
               : [];
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20, width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
-          <IconButton icon="arrow-left" size={40} iconSize={18} label="Voltar" onClick={onClose} />
+        <div className="ms7c-head">
+          <IconButton icon="arrow-left" variant="outline" size={40} iconSize={18} label="Voltar" onClick={onClose} />
           <div style={{ flex: '1 1 260px', minWidth: 0 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800 }}>{DB.coopNome(c)}</h2>
-              <Badge size="sm" tone={MS7.statusTone[c.status] || 'gray'}>
+              <h2 className="ms7-balance" style={{ margin: 0, fontSize: 26, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                {DB.coopNome(c)}
+              </h2>
+              <Badge tone={ST_TONE[c.status] || 'gray'}>
+                {ST_ICON[c.status] ? <DS.Icon name={ST_ICON[c.status]} size={12} strokeWidth={2.2} /> : null}
                 {c.status}
               </Badge>
             </div>
-            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginTop: 2 }}>
+            <div style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>
               {[c.plataforma, c.linkN, c.rede, DB.opName(c.opId)].filter(Boolean).join(' · ')}
             </div>
             {c.linkDiv ? (
@@ -3944,9 +3540,9 @@
                   alignItems: 'center',
                   gap: 4,
                   marginTop: 4,
-                  fontSize: 12,
-                  fontWeight: 700,
-                  color: 'var(--ms7-green)',
+                  fontSize: 12.5,
+                  fontWeight: 600,
+                  color: 'var(--text-brand)',
                   wordBreak: 'break-all',
                 }}
               >
@@ -3955,6 +3551,7 @@
               </a>
             ) : null}
           </div>
+          <div className="ms7c-head-acts">
           {canAdmin && c.status !== 'Lixeira' ? (
             <Button
               size="sm"
@@ -3998,7 +3595,7 @@
           ) : null}
           <Button
             size="sm"
-            variant="ghost"
+            variant="outline"
             iconLeft="download"
             onClick={function () {
               exportCSV(
@@ -4055,45 +3652,36 @@
             CSV
           </Button>
           <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 6,
-              height: 36,
-              padding: '0 12px',
-              borderRadius: 18,
-              border: '1px solid var(--border-subtle)',
-              fontSize: 12,
-              fontWeight: 700,
-              color: 'var(--text-secondary)',
-            }}
+            className="ms7c-cycle"
             title="Toda conta nova com usuário entra no ciclo. Depois de 5 min sem mexer, o admin recebe: quantas contas, o depósito de todas e o saque das que tiveram."
           >
             <DS.Icon name="bell-ring" size={14} />
-            {(function () {
-              const fe = function (k) {
-                return (
-                  String(k.usuario || '').trim() &&
-                  ((k.status === 'Sacado' && (+k.saque || 0) > 0) || k.status === 'Bloqueado' || k.status === 'Não sacado')
-                );
-              };
-              const pf = c.contas.filter(function (k) {
-                return !k.ciclo && fe(k);
-              }).length;
-              const p =
-                pf ||
-                c.contas.filter(function (k) {
-                  return !k.ciclo && String(k.usuario || '').trim();
+            <span>
+              {(function () {
+                const fe = function (k) {
+                  return (
+                    String(k.usuario || '').trim() &&
+                    ((k.status === 'Sacado' && (+k.saque || 0) > 0) || k.status === 'Bloqueado' || k.status === 'Não sacado')
+                  );
+                };
+                const pf = c.contas.filter(function (k) {
+                  return !k.ciclo && fe(k);
                 }).length;
-              return !p
-                ? 'Envia ao admin 5 min depois que você parar de mexer'
-                : 'Ciclo ' +
-                    ((c.ciclos || 0) + 1) +
-                    ': ' +
-                    p +
-                    (p === 1 ? ' conta registrada' : ' contas registradas') +
-                    ' · envia 5 min depois da última mudança';
-            })()}
+                const p =
+                  pf ||
+                  c.contas.filter(function (k) {
+                    return !k.ciclo && String(k.usuario || '').trim();
+                  }).length;
+                return !p
+                  ? 'Envia ao admin 5 min depois que você parar de mexer'
+                  : 'Ciclo ' +
+                      ((c.ciclos || 0) + 1) +
+                      ': ' +
+                      p +
+                      (p === 1 ? ' conta registrada' : ' contas registradas') +
+                      ' · envia 5 min depois da última mudança';
+              })()}
+            </span>
           </div>
           {(function () {
             const fe = function (k) {
@@ -4139,162 +3727,112 @@
               </Button>
             );
           })}
+          </div>
         </div>
         {c.descricao ? (
-          <div
-            style={{
-              display: 'flex',
-              gap: 10,
-              alignItems: 'center',
-              padding: '12px 16px',
-              borderRadius: 12,
-              background: 'var(--ms7-lime-100)',
-              color: 'var(--ms7-green-ink, #005D3B)',
-              fontSize: 14,
-              fontWeight: 600,
-            }}
-          >
-            <DS.Icon name="megaphone" size={16} />
+          <div className="ms7c-note">
+            <DS.Icon name="megaphone" size={15} />
             <span style={{ whiteSpace: 'pre-line' }}>{c.descricao}</span>
           </div>
         ) : null}
         {info.length || meta.length ? (
-          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
-            {info.map(function (x) {
-              return (
-                <div
-                  key={x[0]}
-                  style={{
-                    flex: '1 1 200px',
-                    minWidth: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                    padding: '10px 12px',
-                    borderRadius: 12,
-                    background: 'var(--surface-card)',
-                    boxShadow: 'var(--shadow-card)',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 32,
-                      height: 32,
-                      borderRadius: 8,
-                      background: 'var(--ms7-gray-100)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <DS.Icon name={x[2]} size={15} />
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)' }}>{x[0]}</div>
-                    {x[4] ? null : (
-                      <div
-                        style={{
-                          fontSize: 13,
-                          fontWeight: 700,
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                          whiteSpace: 'nowrap',
-                          fontFamily: x[2] === 'hash' ? 'ui-monospace, monospace' : 'inherit',
+          <div className="ms7-card" style={{ padding: 14 }} data-reveal="up">
+            <div className="ms7c-facts" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(210px,1fr))' }}>
+              {info.map(function (x) {
+                return (
+                  <div key={x[0]} className="ms7c-fact">
+                    <span className="ms7c-tile" style={{ background: 'var(--surface-card)', color: 'var(--text-secondary)', marginRight: 6 }}>
+                      <DS.Icon name={x[2]} size={15} />
+                    </span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="ms7-eyebrow">{x[0]}</div>
+                      {x[4] ? (
+                        <div className="ms7c-fact-v is-soft">Abrir ou copiar</div>
+                      ) : (
+                        <div className={'ms7c-fact-v' + (x[2] === 'hash' ? ' is-mono' : '')}>{x[3] && !verSen ? '••••••••' : x[1]}</div>
+                      )}
+                    </div>
+                    {x[4] ? (
+                      <IconButton
+                        icon="external-link"
+                        size={28}
+                        iconSize={14}
+                        label="Abrir link"
+                        onClick={function () {
+                          window.open(/^https?:/i.test(x[1]) ? x[1] : 'https://' + x[1], '_blank', 'noopener');
                         }}
-                      >
-                        {x[3] && !verSen ? '••••••••' : x[1]}
-                      </div>
-                    )}
+                      />
+                    ) : null}
+                    {x[3] ? (
+                      <IconButton
+                        icon={verSen ? 'eye-off' : 'eye'}
+                        size={28}
+                        iconSize={14}
+                        label={verSen ? 'Esconder senha' : 'Ver senha'}
+                        onClick={function () {
+                          setVerSen(!verSen);
+                        }}
+                      />
+                    ) : null}
+                    <IconButton
+                      icon="copy"
+                      size={28}
+                      iconSize={14}
+                      label="Copiar"
+                      onClick={function () {
+                        copy(x[0], x[1]);
+                      }}
+                    />
                   </div>
-                  {x[4] ? (
-                    <IconButton
-                      icon="external-link"
-                      size={28}
-                      iconSize={14}
-                      label="Abrir link"
-                      onClick={function () {
-                        window.open(/^https?:/i.test(x[1]) ? x[1] : 'https://' + x[1], '_blank', 'noopener');
-                      }}
-                    />
-                  ) : null}
-                  {x[3] ? (
-                    <IconButton
-                      icon={verSen ? 'eye-off' : 'eye'}
-                      size={28}
-                      iconSize={14}
-                      label={verSen ? 'Esconder senha' : 'Ver senha'}
-                      onClick={function () {
-                        setVerSen(!verSen);
-                      }}
-                    />
-                  ) : null}
-                  <IconButton
-                    icon="copy"
-                    size={28}
-                    iconSize={14}
-                    label="Copiar"
-                    onClick={function () {
-                      copy(x[0], x[1]);
-                    }}
-                  />
-                </div>
-              );
-            })}
-            {meta.map(function (x) {
-              return (
-                <div
-                  key={x[0]}
-                  style={{
-                    flex: '1 1 170px',
-                    padding: '10px 14px',
-                    borderRadius: 12,
-                    background: 'var(--surface-card)',
-                    boxShadow: 'var(--shadow-card)',
-                  }}
-                >
-                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)' }}>{x[0]}</div>
-                  <div style={{ fontSize: 16, fontWeight: 800, color: x[2] ? 'var(--ms7-green)' : 'var(--text-primary)' }}>{x[1]}</div>
-                </div>
-              );
-            })}
+                );
+              })}
+              {meta.map(function (x) {
+                return (
+                  <div key={x[0]} className="ms7c-fact">
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div className="ms7-eyebrow">{x[0]}</div>
+                      <div className="ms7c-fact-v ms7-num" style={{ color: x[2] ? 'var(--ms7-green)' : 'var(--text-primary)' }}>
+                        {x[1]}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
           </div>
         ) : null}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12 }}>
+        <div className="ms7-stagger ms7c-kpis ms7c-kpis-d">
           {kpis.map(function (x) {
+            const KI = {
+              Contas: ['users', 'black'],
+              'Fora da conta': ['user-minus', 'orange'],
+              'Depósito': ['arrow-down-to-line', 'blue'],
+              'Re-depósito': ['circle-dollar-sign', 'blue'],
+              Saque: ['arrow-up-from-line', 'blue'],
+              'Depósito × Saque': ['arrow-left-right', 'black'],
+              'Saque não contado': ['clock', 'orange'],
+              'Salário': ['wallet', 'green'],
+              'Comissão do operador': ['percent', 'purple'],
+              'Lucro final': ['trending-up', 'green'],
+              'Prejuízo final': ['trending-down', 'error'],
+            }[x[0]] || ['circle', 'gray'];
+            const signed = /final$/.test(x[0]) || x[0] === 'Fora da conta';
             return (
-              <div
+              <DS.StatCard
                 key={x[0]}
-                style={{
-                  padding: '14px 16px',
-                  borderRadius: 14,
-                  background: 'var(--surface-card)',
-                  boxShadow: 'var(--shadow-card)',
-                  borderTop: x[2] ? '3px solid ' + x[2] : '3px solid transparent',
-                }}
-              >
-                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
-                  {x[0]}
-                </div>
-                <div
-                  style={{
-                    fontSize: 20,
-                    fontWeight: 800,
-                    marginTop: 4,
-                    color: x[2] || 'var(--text-primary)',
-                    fontVariantNumeric: 'tabular-nums',
-                    whiteSpace: 'nowrap',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                  }}
-                >
-                  {x[1]}
-                </div>
-              </div>
+                variant="compact"
+                icon={KI[0]}
+                tone={x[2] ? KI[1] : x[0] === 'Fora da conta' ? 'gray' : KI[1]}
+                label={x[0]}
+                value={x[1]}
+                valueColor={signed && x[2] ? x[2] : undefined}
+              />
             );
           })}
         </div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+        <p className="ms7c-rule" style={{ margin: '-8px 0 0' }}>
+          <DS.Icon name="calculator" size={14} />
+          <span>
           {'Conta do resultado: saque ' +
             MS7.brl(k.saq) +
             (k.bau ? ' + baú ' + MS7.brl(k.saq - k.saq + (k.ds - (k.saq - k.dep - k.red))) : '') +
@@ -4308,7 +3846,8 @@
             ') = ' +
             MS7.brl(k.lucro) +
             (k.pend ? ' · ' + MS7.brl(k.pend) + ' de saque fora da conta (contas que não estão como Sacado)' : '')}
-        </div>
+          </span>
+        </p>
         <LotesPix c={c} canAdmin={canAdmin} />
         <Planilha c={c} canAdmin={canAdmin} superAdm={!session || session.role === 'super' || session.role === 'cliente'} />
       </div>
@@ -4476,66 +4015,44 @@
       );
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <input
-                type="date"
-                aria-label="De"
-                value={de0}
-                max={ate0 || undefined}
-                onChange={function (e) {
-                  setDe0(e.target.value);
-                  setDt('');
-                }}
-                style={{
-                  height: 34,
-                  padding: '0 10px',
-                  border: '1px solid var(--border-default)',
-                  borderRadius: 10,
-                  background: 'var(--surface-card)',
-                  color: 'var(--text-primary)',
-                  fontFamily: 'inherit',
-                  fontSize: 14,
-                  fontWeight: 600,
-                }}
-              />
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>até</span>
-              <input
-                type="date"
-                aria-label="Até"
-                value={ate0}
-                min={de0 || undefined}
-                onChange={function (e) {
-                  setAte0(e.target.value);
-                  setDt('');
-                }}
-                style={{
-                  height: 34,
-                  padding: '0 10px',
-                  border: '1px solid var(--border-default)',
-                  borderRadius: 10,
-                  background: 'var(--surface-card)',
-                  color: 'var(--text-primary)',
-                  fontFamily: 'inherit',
-                  fontSize: 14,
-                  fontWeight: 600,
-                }}
-              />
-              {rng ? (
-                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                  {st === 'ativas' && !qq
-                    ? 'Ativas: pela data de início'
-                    : st === 'concluidas' && !qq
-                      ? 'Pela data em que foi concluída'
-                      : st === 'finalizadas' && !qq
-                        ? 'Pela data em que foi finalizada'
-                        : 'Fechadas pela data de fechamento; ativas pela de início'}
-                </span>
-              ) : null}
-            </div>
-            <Tabs variant="chips" value={rng ? dt : 'Todos'} onChange={escolhe} items={['Diário', 'Semanal', 'Mensal', 'Todos']} />
+        <div className="ms7c-bar">
+          <div className="ms7c-bar-dates">
+            <input
+              type="date"
+              className="ms7-native"
+              aria-label="De"
+              value={de0}
+              max={ate0 || undefined}
+              onChange={function (e) {
+                setDe0(e.target.value);
+                setDt('');
+              }}
+            />
+            <span className="ms7c-bar-sep">até</span>
+            <input
+              type="date"
+              className="ms7-native"
+              aria-label="Até"
+              value={ate0}
+              min={de0 || undefined}
+              onChange={function (e) {
+                setAte0(e.target.value);
+                setDt('');
+              }}
+            />
           </div>
+          <Tabs variant="chips" value={rng ? dt : 'Todos'} onChange={escolhe} items={['Diário', 'Semanal', 'Mensal', 'Todos']} />
+          {rng ? (
+            <span className="ms7c-bar-note">
+              {st === 'ativas' && !qq
+                ? 'Ativas: pela data de início'
+                : st === 'concluidas' && !qq
+                  ? 'Pela data em que foi concluída'
+                  : st === 'finalizadas' && !qq
+                    ? 'Pela data em que foi finalizada'
+                    : 'Fechadas pela data de fechamento; ativas pela de início'}
+            </span>
+          ) : null}
           <Button
             size="sm"
             variant="ghost"
@@ -4560,6 +4077,7 @@
             },
             { dep: 0, red: 0, bau: 0, depos: 0 },
           );
+          const resV = isOp ? tk.com : fimV;
           const Q = [
             [
               'Total ativas',
@@ -4568,7 +4086,7 @@
               }),
               'cooperações em andamento',
               'activity',
-              '#1FA971',
+              'var(--ms7-green)',
             ],
             [
               'Concluídas',
@@ -4577,81 +4095,28 @@
               }),
               'cooperações fechadas',
               'circle-check',
-              '#2F6BFF',
+              'var(--ms7-blue)',
             ],
-            ['Depositantes', tq.depos, abaNome.toLowerCase(), 'users', '#B8406E'],
-            ['Depósito', MS7.brl(tq.dep), null, 'arrow-down-to-line', '#3B5FC4'],
-            ['Re-depósito', MS7.brl(tq.red), null, 'circle-dollar-sign', '#3B5FC4'],
-            ['Saque', MS7.brl(tk.saq), null, 'arrow-up-from-line', '#3B5FC4'],
-            ['Baú', MS7.brl(tq.bau), null, 'package', '#C8901E'],
-            [isOp ? 'Minha comissão' : fimL, MS7.brl(isOp ? tk.com : fimV), null, 'trending-up', (isOp ? tk.com : fimV) >= 0 ? '#1FA971' : '#B8466A'],
+            ['Depositantes', tq.depos, abaNome.toLowerCase(), 'users', 'var(--ms7-purple)'],
+            ['Depósito', MS7.brl(tq.dep), null, 'arrow-down-to-line', 'var(--ms7-blue)'],
+            ['Re-depósito', MS7.brl(tq.red), null, 'circle-dollar-sign', 'var(--ms7-blue)'],
+            ['Saque', MS7.brl(tk.saq), null, 'arrow-up-from-line', 'var(--ms7-blue)'],
+            ['Baú', MS7.brl(tq.bau), null, 'package', 'var(--ms7-yellow)'],
+            [isOp ? 'Minha comissão' : fimL, MS7.brl(resV), null, resV >= 0 ? 'trending-up' : 'trending-down', resV >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)', 1],
           ];
           return (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(max(210px, calc((100% - 42px) / 4)),1fr))', gap: 14 }}>
+            <div className="ms7c-kpis ms7-stagger">
               {Q.map(function (x) {
                 return (
-                  <div
-                    key={x[0]}
-                    style={{
-                      padding: '14px 16px',
-                      borderRadius: 'var(--radius-lg)',
-                      border: '1px solid color-mix(in oklab, ' + x[4] + ' 42%, transparent)',
-                      background:
-                        'linear-gradient(135deg, color-mix(in oklab, ' +
-                        x[4] +
-                        ' 34%, var(--surface-card)) 0%, color-mix(in oklab, ' +
-                        x[4] +
-                        ' 11%, var(--surface-card)) 100%)',
-                      minWidth: 0,
-                      display: 'flex',
-                      flexDirection: 'column',
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <span
-                        style={{
-                          flex: 1,
-                          minWidth: 0,
-                          fontSize: 12,
-                          fontWeight: 700,
-                          letterSpacing: '.06em',
-                          textTransform: 'uppercase',
-                          color: 'var(--text-secondary)',
-                          whiteSpace: 'nowrap',
-                          overflow: 'hidden',
-                          textOverflow: 'ellipsis',
-                        }}
-                      >
-                        {x[0]}
-                      </span>
-                      <span
-                        style={{
-                          width: 30,
-                          height: 30,
-                          flexShrink: 0,
-                          borderRadius: 8,
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          background: 'color-mix(in oklab, var(--surface-page) 62%, transparent)',
-                        }}
-                      >
-                        <DS.Icon name={x[3]} size={16} color={'color-mix(in oklab, ' + x[4] + ' 75%, #fff)'} />
+                  <div key={x[0]} className="ms7-card ms7c-kpi">
+                    <div className="ms7c-kpi-head">
+                      <span className="ms7-eyebrow">{x[0]}</span>
+                      <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, ' + x[4] + ' 12%, var(--surface-card))', color: x[4] }}>
+                        <DS.Icon name={x[3]} size={15} strokeWidth={2} />
                       </span>
                     </div>
-                    <div
-                      style={{
-                        fontSize: 24,
-                        fontWeight: 800,
-                        marginTop: 8,
-                        fontVariantNumeric: 'tabular-nums',
-                        color: 'var(--text-primary)',
-                        overflow: 'hidden',
-                        textOverflow: 'ellipsis',
-                        whiteSpace: 'nowrap',
-                      }}
-                    >
-                      {x[1]}
+                    <div className="ms7c-kpi-val ms7-num" style={{ color: x[5] ? x[4] : 'var(--text-primary)' }}>
+                      <DS.CountUp value={x[1]} />
                     </div>
                   </div>
                 );
@@ -4660,22 +4125,28 @@
           );
         })()}
         {!isOp && final && vis.length ? (
-          <div style={{ marginTop: -12, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-            {'Dep. × Saque ' +
-              MS7.brl(tk.ds) +
-              (tk.sal ? ' + salário ' + MS7.brl(tk.sal) : '') +
-              ' − comissão ' +
-              MS7.brl(tk.com) +
-              ' = ' +
-              MS7.brl(tk.lucro)}
-          </div>
+          <p className="ms7c-rule">
+            <DS.Icon name="info" size={14} />
+            <span>
+              {'Dep. × Saque ' +
+                MS7.brl(tk.ds) +
+                (tk.sal ? ' + salário ' + MS7.brl(tk.sal) : '') +
+                ' − comissão ' +
+                MS7.brl(tk.com) +
+                ' = ' +
+                MS7.brl(tk.lucro)}
+            </span>
+          </p>
         ) : null}
         {!isOp && !final && !qq && st !== 'lixeira' && vis.length ? (
-          <div style={{ marginTop: -12, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-            {st === 'ativas'
-              ? 'Só depósito e saque lançados até agora. Salário, baú e comissão entram quando a cooperação for concluída.'
-              : 'Depósito × saque das finalizadas. Salário, baú e comissão entram quando você marcar como Concluída.'}
-          </div>
+          <p className="ms7c-rule">
+            <DS.Icon name="info" size={14} />
+            <span>
+              {st === 'ativas'
+                ? 'Só depósito e saque lançados até agora. Salário, baú e comissão entram quando a cooperação for concluída.'
+                : 'Depósito × saque das finalizadas. Salário, baú e comissão entram quando você marcar como Concluída.'}
+            </span>
+          </p>
         ) : null}
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
           <Tabs
@@ -4837,6 +4308,7 @@
             Exportar
           </Button>
           <Button
+            variant="brand"
             iconLeft="plus"
             onClick={function () {
               setWiz(true);
@@ -4861,11 +4333,23 @@
             })}
           </div>
         ) : (
-          <DS.Card>
+          <DS.Card padding={16}>
             <Empty
+              art="Coop"
               icon={bau ? 'package' : 'briefcase'}
               title={bau ? 'Nenhum baú encontrado' : 'Nenhuma cooperação encontrada'}
               sub={bau ? 'Ajuste os filtros ou crie um novo baú.' : 'Ajuste os filtros ou crie uma nova cooperação.'}
+              action={
+                <Button
+                  variant="brand"
+                  iconLeft="plus"
+                  onClick={function () {
+                    setWiz(true);
+                  }}
+                >
+                  {meu ? 'Nova cooperação minha' : bau ? 'Novo baú' : 'Nova cooperação'}
+                </Button>
+              }
             />
           </DS.Card>
         )}
@@ -4914,7 +4398,12 @@
         />
         {tab === 'geral' ? (
           <Card
-            title={'Lista geral de contas · ' + rows.length}
+            title={
+              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                Lista geral de contas
+                <DS.CountDot tone="muted">{rows.length}</DS.CountDot>
+              </span>
+            }
             action={
               <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
                 <Select
@@ -5022,7 +4511,7 @@
                   key: 'usuario',
                   label: 'Usuário',
                   render: function (r) {
-                    return <b>{r.usuario}</b>;
+                    return <span style={{ fontWeight: 600 }}>{r.usuario}</span>;
                   },
                 },
                 {
@@ -5071,7 +4560,7 @@
               ]}
             />
             {rows.length === 0 ? (
-              <Empty icon="list" title="Nenhum resultado." />
+              <Empty art="Coop" icon="list" title="Nenhum resultado." sub={'Nenhuma conta bate com o filtro ou a\u00a0busca.'} compact />
             ) : rows.length > 60 ? (
               <Hint>{'Mostrando 60 de ' + rows.length + '. Use a busca ou exporte para ver todas.'}</Hint>
             ) : null}
@@ -5093,6 +4582,7 @@
                 </Button>
                 <Button
                   size="sm"
+                  variant="brand"
                   iconLeft="plus"
                   onClick={function () {
                     setNova(true);
@@ -5104,49 +4594,47 @@
             }
           >
             <Hint>Catálogos reutilizáveis de contas.</Hint>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 }}>
-              {listas.map(function (l) {
-                return (
-                  <div
-                    key={l.id}
-                    style={{
-                      border: '1px solid var(--border-subtle)',
-                      borderRadius: 14,
-                      padding: 16,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 8,
-                    }}
-                  >
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <DS.Icon name="list-checks" size={18} />
-                      <b style={{ flex: 1, fontSize: 15 }}>{l.nome}</b>
-                      <IconButton
-                        icon="trash-2"
-                        size={28}
-                        iconSize={14}
-                        onClick={function () {
-                          setListas(
-                            listas.filter(function (x) {
-                              return x.id !== l.id;
-                            }),
-                          );
-                        }}
-                      />
+            {listas.length ? (
+              <div className="ms7-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 12 }}>
+                {listas.map(function (l) {
+                  return (
+                    <div key={l.id} className="ms7c-lista">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                        <span className="ms7c-tile" style={{ background: 'var(--surface-card)', color: 'var(--ms7-green-900)' }}>
+                          <DS.Icon name="list-checks" size={15} strokeWidth={2} />
+                        </span>
+                        <span className="ms7c-lista-t">{l.nome}</span>
+                        <IconButton
+                          icon="trash-2"
+                          size={30}
+                          iconSize={15}
+                          label="Remover lista"
+                          style={{ color: 'var(--text-secondary)' }}
+                          onClick={function () {
+                            setListas(
+                              listas.filter(function (x) {
+                                return x.id !== l.id;
+                              }),
+                            );
+                          }}
+                        />
+                      </div>
+                      <span style={{ fontSize: 13, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>{l.descricao}</span>
+                      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                        <Badge size="sm" variant="soft" tone="green">
+                          {l.contas + ' contas'}
+                        </Badge>
+                        <Badge size="sm" variant="soft" tone="gray">
+                          {l.dono}
+                        </Badge>
+                      </div>
                     </div>
-                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>{l.descricao}</span>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      <Badge size="sm" variant="soft" tone="green">
-                        {l.contas + ' contas'}
-                      </Badge>
-                      <Badge size="sm" variant="soft" tone="gray">
-                        {l.dono}
-                      </Badge>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <Empty art="Coop" title="Nenhuma lista global ainda" sub={'Crie uma lista ou importe uma do Telegram para reaproveitar\u00a0contas.'} compact />
+            )}
           </Card>
         )}
         <Modal
@@ -5251,32 +4739,24 @@
       toast('Aviso publicado');
     }
     const listCard = (
-      <Card title="Avisos publicados">
+      <Card title="Avisos publicados" subtitle={list.length ? list.length + (list.length === 1 ? ' aviso' : ' avisos') : null}>
         {list.length ? (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="ms7-stagger" style={{ display: 'flex', flexDirection: 'column' }}>
             {list.map(function (a) {
               return (
-                <div key={a.id} style={{ display: 'flex', gap: 12, padding: 14, border: '1px solid var(--border-subtle)', borderRadius: 12 }}>
-                  <span
-                    style={{
-                      width: 36,
-                      height: 36,
-                      borderRadius: 10,
-                      background: 'var(--ms7-lime-100)',
-                      color: 'var(--ms7-green-ink, #005D3B)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <DS.Icon name="megaphone" size={18} />
+                <div key={a.id} className="ms7c-av">
+                  <span className="ms7c-tile" style={{ width: 34, height: 34, background: 'var(--ms7-lime-100)', color: 'var(--ms7-green-ink)' }}>
+                    <DS.Icon name="megaphone" size={16} strokeWidth={2} />
                   </span>
                   <div style={{ flex: 1, minWidth: 0 }}>
-                    <b style={{ fontSize: 15 }}>{a.titulo}</b>
-                    <p style={{ margin: '4px 0 8px', fontSize: 13, fontWeight: 500, lineHeight: 1.45, whiteSpace: 'pre-line' }}>{a.conteudo}</p>
+                    <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.005em', lineHeight: 1.3 }}>{a.titulo}</div>
+                    <p style={{ margin: '3px 0 8px', fontSize: 13, fontWeight: 500, lineHeight: 1.5, whiteSpace: 'pre-line', color: 'var(--text-secondary)' }}>
+                      {a.conteudo}
+                    </p>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{a.data}</span>
+                      <span className="ms7-num" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
+                        {a.data}
+                      </span>
                       <Badge size="sm" variant="soft" tone="blue">
                         {a.publico}
                       </Badge>
@@ -5285,8 +4765,9 @@
                   {!isOp ? (
                     <IconButton
                       icon="trash-2"
-                      size={32}
-                      iconSize={16}
+                      className="ms7c-av-del"
+                      size={30}
+                      iconSize={15}
                       label="Remover aviso"
                       onClick={function () {
                         setList(
@@ -5302,7 +4783,7 @@
             })}
           </div>
         ) : (
-          <Empty icon="megaphone" title="Nenhum aviso publicado ainda" />
+          <Empty art="Bell" icon="megaphone" title="Nenhum aviso publicado ainda" sub={'Os avisos publicados ficam listados aqui.'} />
         )}
       </Card>
     );
@@ -5321,15 +4802,15 @@
             <Input
               label="Conteúdo"
               multiline
-              rows={6}
+              rows={5}
               placeholder="Escreva o aviso…"
               value={c}
               onChange={function (e) {
                 setC(e.target.value);
               }}
             />
-            <div style={{ background: 'var(--ms7-gray-50)', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <span style={{ fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+            <div style={{ background: 'var(--surface-muted)', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <span className="ms7-label" style={{ gap: 6 }}>
                 <DS.Icon name="users" size={14} />
                 Público-alvo
               </span>
@@ -5504,30 +4985,29 @@
             return (
               <div
                 key={k || 'x'}
+                className="ms7-card"
+                data-reveal="up"
                 style={{
-                  background: 'var(--surface-card)',
-                  borderRadius: 'var(--radius-lg)',
-                  boxShadow: 'var(--shadow-card)',
-                  padding: '14px 16px',
+                  padding: '16px 18px',
                   display: 'flex',
                   flexDirection: 'column',
-                  gap: 8,
+                  gap: 10,
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-                  <DS.Avatar name={nome} size={32} />
+                  <DS.Avatar name={nome} size={34} />
                   <div style={{ flex: 1, minWidth: 150 }}>
-                    <b style={{ fontSize: 16 }}>{nome}</b>
-                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    <b style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em' }}>{nome}</b>
+                    <div className="ms7-num" style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>
                       {'Total ' + MS7.brl(g.dev) + ' · enviado ' + MS7.brl(g.env)}
                     </div>
                   </div>
                   {g.falta > 0 ? (
-                    <b style={{ color: 'var(--ms7-orange)' }}>{'Falta ' + MS7.brl(g.falta)}</b>
+                    <DS.Badge tone="orange">{'Falta ' + MS7.brl(g.falta)}</DS.Badge>
                   ) : (
-                    <b style={{ color: 'var(--ms7-green)' }}>Tudo enviado</b>
+                    <DS.Badge tone="green">Tudo enviado</DS.Badge>
                   )}
-                  {g.cred > 0 ? <span style={{ fontSize: 13, fontWeight: 700 }}>{'Crédito ' + MS7.brl(g.cred)}</span> : null}
+                  {g.cred > 0 ? <span className="ms7-num" style={{ fontSize: 13, fontWeight: 600 }}>{'Crédito ' + MS7.brl(g.cred)}</span> : null}
                   <DS.Button
                     size="sm"
                     variant="secondary"
@@ -5551,15 +5031,15 @@
                   </DS.Button>
                 </div>
                 {hist === k ? (
-                  <div style={{ padding: '8px 12px', borderRadius: 10, background: 'var(--surface-muted, var(--ms7-gray-100))' }}>
+                  <div style={{ padding: '8px 12px', borderRadius: 10, background: 'var(--surface-muted)' }}>
                     {g.led.length ? (
                       g.led.map(function (e) {
                         return (
-                          <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, minHeight: 30 }}>
+                          <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 500, minHeight: 30 }}>
                             <span style={{ width: 110, color: 'var(--text-secondary)' }}>
                               {new Date(e.em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            <b style={{ width: 100 }}>{MS7.brl(e.v)}</b>
+                            <b className="ms7-num" style={{ width: 100, fontWeight: 600 }}>{MS7.brl(e.v)}</b>
                             <span
                               style={{
                                 flex: 1,
@@ -5598,7 +5078,7 @@
                   <div style={{ overflowX: 'auto' }}>
                     <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
                       <thead>
-                        <tr style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                        <tr style={{ fontSize: 11, fontWeight: 600, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
                           <th style={{ textAlign: 'left', padding: '6px 8px' }}>Baú</th>
                           <th style={td}>Depósito</th>
                           <th style={td}>Comissão</th>
@@ -5611,15 +5091,15 @@
                         {g.l.map(function (x) {
                           return (
                             <tr key={x.c.id} style={{ borderTop: '1px solid var(--border-subtle)' }}>
-                              <td style={{ padding: '9px 8px', fontWeight: 700 }}>
+                              <td style={{ padding: '9px 8px', fontWeight: 600 }}>
                                 {nm(x.c)}
                                 <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{x.c.status}</span>
                               </td>
                               <td style={td}>{MS7.brl(x.dep)}</td>
                               <td style={td}>{MS7.brl(x.com)}</td>
-                              <td style={Object.assign({}, td, { fontWeight: 800 })}>{MS7.brl(x.total)}</td>
+                              <td style={Object.assign({}, td, { fontWeight: 600 })}>{MS7.brl(x.total)}</td>
                               <td style={td}>{x.env ? MS7.brl(x.env) : '—'}</td>
-                              <td style={Object.assign({}, td, { fontWeight: 800, color: x.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
+                              <td style={Object.assign({}, td, { fontWeight: 600, color: x.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
                                 {x.falta > 0 ? MS7.brl(x.falta) : 'OK'}
                               </td>
                             </tr>
@@ -5635,18 +5115,9 @@
             );
           })
         ) : (
-          <div
-            style={{
-              padding: '40px 20px',
-              textAlign: 'center',
-              color: 'var(--text-secondary)',
-              fontWeight: 600,
-              background: 'var(--surface-card)',
-              borderRadius: 'var(--radius-lg)',
-            }}
-          >
-            {st === 'pend' ? 'Nada falta enviar nos baús.' : 'Nada aqui.'}
-          </div>
+          <DS.Card padding={16}>
+            <Empty art="Wallet" title={st === 'pend' ? 'Nada falta enviar nos baús.' : 'Nada aqui.'} sub={st === 'pend' ? 'Quando um baú tiver depósito ou comissão a enviar, ele aparece aqui.' : 'Mude o filtro acima para ver outros envios.'} />
+          </DS.Card>
         )}
         {reg ? (
           <DS.Modal

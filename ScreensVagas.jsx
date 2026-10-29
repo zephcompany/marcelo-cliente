@@ -1,5 +1,25 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
+  /* ---------- CSS só desta tela (tokens) ---------- */
+  const CSS = [
+    '.ms7v-qr{width:216px;height:216px;border-radius:12px;background:#fff;box-shadow:0 0 0 1px var(--line);padding:8px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;overflow:hidden}',
+    '.ms7v-qr img{width:100%;height:100%;border-radius:6px;display:block}',
+    '.ms7v-qr-ph{width:100%;height:100%;border-radius:8px;background:var(--surface-muted);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;color:var(--text-secondary);font-size:12.5px;font-weight:500;text-align:center;padding:12px;box-sizing:border-box}',
+    'html[data-theme="dark"] .ms7v-qr{box-shadow:0 0 0 1px var(--line-strong)}',
+    '.ms7v-code{width:100%;box-sizing:border-box;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--surface-muted);color:var(--text-primary);font:500 12.5px/1.5 var(--font-mono);resize:none;word-break:break-all;outline:0;transition:border-color var(--dur-fast),box-shadow var(--dur-base)}',
+    '.ms7v-code:focus{border-color:var(--ms7-green-900);box-shadow:0 0 0 3px color-mix(in oklab,var(--ms7-green-900) 16%,transparent)}',
+    '.ms7v-status{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border-radius:999px;font-size:12.5px;font-weight:600;line-height:1.35;text-align:center;animation:ms7-blink 1.9s ease-in-out infinite}',
+    '.ms7v-status>i{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:currentColor}',
+    '.ms7v-ok{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green) 14%,var(--surface-card));color:var(--ms7-green);animation:ms7-pop 420ms var(--ease-spring) both}',
+    '.ms7v-amount{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.1}',
+    '.ms7v-tile{width:40px;height:40px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900)}',
+  ].join('');
+  if (!document.getElementById('ms7-vagas-css')) {
+    const st = document.createElement('style');
+    st.id = 'ms7-vagas-css';
+    st.textContent = CSS;
+    document.head.appendChild(st);
+  }
   const DEMO_K = 'ms7op-vagas-demo';
   function demoGet() {
     try {
@@ -46,6 +66,23 @@
       };
     }, []);
     return v;
+  }
+  /* QR em moldura branca (ou skeleton enquanto gera) */
+  function QrFrame({ src, placeholder, loading }) {
+    return (
+      <div className="ms7v-qr">
+        {src ? (
+          <img src={src} alt="QR Code PIX" />
+        ) : loading ? (
+          <div className="ms7-skeleton" style={{ width: '100%', height: '100%', borderRadius: 8 }}></div>
+        ) : (
+          <div className="ms7v-qr-ph">
+            <DS.Icon name="qr-code" size={40} strokeWidth={1.2} />
+            {placeholder ? <span>{placeholder}</span> : null}
+          </div>
+        )}
+      </div>
+    );
   }
   function Comprar({ open, onClose, preco }) {
     const { Modal, Button } = DS;
@@ -120,67 +157,54 @@
         }
       >
         {st.fase === 'gerando' ? (
-          <div style={{ padding: '32px 0', textAlign: 'center', fontWeight: 600, color: 'var(--text-secondary)' }}>Gerando o PIX…</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, padding: '8px 0' }}>
+            <QrFrame loading />
+            <span className="ms7v-status" style={{ background: 'var(--surface-muted)', color: 'var(--text-secondary)' }}>
+              <i></i>Gerando o PIX…
+            </span>
+          </div>
         ) : null}
         {st.fase === 'erro' ? (
-          <div style={{ padding: '16px', borderRadius: 12, background: 'var(--ms7-gray-50)', fontWeight: 600 }}>{st.msg}</div>
+          <div
+            style={{
+              display: 'flex',
+              gap: 10,
+              alignItems: 'flex-start',
+              padding: '14px 16px',
+              borderRadius: 12,
+              background: 'color-mix(in oklab, var(--ms7-error) 8%, var(--surface-card))',
+              color: 'var(--ms7-error)',
+              fontSize: 14,
+              fontWeight: 600,
+              lineHeight: 1.45,
+            }}
+          >
+            <DS.Icon name="circle-alert" size={18} strokeWidth={2} style={{ marginTop: 1 }} />
+            <span>{st.msg}</span>
+          </div>
         ) : null}
         {st.fase === 'pix' ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14 }}>
-            {st.qr ? (
-              <img
-                src={'data:image/png;base64,' + st.qr}
-                alt="QR Code PIX"
-                width={200}
-                height={200}
-                style={{ borderRadius: 12, border: '1px solid var(--border-default)' }}
-              />
-            ) : (
-              <div
-                style={{
-                  width: 200,
-                  height: 200,
-                  borderRadius: 12,
-                  border: '1px dashed var(--border-default)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 13,
-                  fontWeight: 600,
-                  color: 'var(--text-secondary)',
-                  textAlign: 'center',
-                  padding: 16,
-                }}
-              >
-                QR Code do PIX aparece aqui
+            <QrFrame src={st.qr ? 'data:image/png;base64,' + st.qr : ''} placeholder="QR Code do PIX aparece aqui" />
+            <span className="ms7-num ms7v-amount">{MS7.brl(preco)}</span>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
+              <span className="ms7-eyebrow">PIX copia e cola</span>
+              <div style={{ display: 'flex', gap: 8, alignItems: 'stretch' }}>
+                <input readOnly value={st.copia || ''} className="ms7v-code" style={{ flex: 1, minWidth: 0, height: 40, padding: '0 12px' }} />
+                <Button variant="outline" iconLeft="copy" onClick={copiar}>
+                  Copiar
+                </Button>
               </div>
-            )}
-            <b style={{ fontSize: 24 }}>{MS7.brl(preco)}</b>
-            <div style={{ width: '100%', display: 'flex', gap: 8 }}>
-              <input
-                readOnly
-                value={st.copia || ''}
-                style={{
-                  flex: 1,
-                  minWidth: 0,
-                  font: '500 12px var(--font-mono, monospace)',
-                  padding: '10px 12px',
-                  borderRadius: 10,
-                  border: '1px solid var(--border-default)',
-                  background: 'var(--surface-muted, #F5F6F5)',
-                  color: 'var(--text-primary)',
-                }}
-              />
-              <Button variant="outline" iconLeft="copy" onClick={copiar}>
-                Copiar
-              </Button>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-              <DS.Icon name="loader" size={14} />
-              Aguardando pagamento. A vaga é liberada sozinha assim que o PIX cair.
-            </div>
+            <span
+              className="ms7v-status"
+              style={{ background: 'color-mix(in oklab, var(--ms7-orange) 12%, var(--surface-card))', color: 'color-mix(in oklab, var(--ms7-orange) 88%, var(--text-primary))' }}
+            >
+              <i></i>
+              <span>Aguardando pagamento. A vaga é liberada sozinha assim que o PIX&nbsp;cair.</span>
+            </span>
             {st.demo ? (
-              <Button variant="lime" size="sm" iconLeft="zap" onClick={simular}>
+              <Button variant="outline" size="sm" iconLeft="zap" onClick={simular}>
                 Simular pagamento (só na prévia)
               </Button>
             ) : null}
@@ -188,22 +212,11 @@
         ) : null}
         {st.fase === 'ok' ? (
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 10, padding: '16px 0', textAlign: 'center' }}>
-            <span
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: '50%',
-                background: '#005D3B',
-                color: '#C9F76A',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <DS.Icon name="check" size={28} />
+            <span className="ms7v-ok">
+              <DS.Icon name="check" size={32} strokeWidth={2.5} />
             </span>
-            <b style={{ fontSize: 18 }}>Pagamento confirmado</b>
-            <div style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)' }}>
+            <span style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.02em', marginTop: 4 }}>Pagamento confirmado</span>
+            <div className="ms7-balance" style={{ fontSize: 14, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)', maxWidth: 360 }}>
               Vaga liberada. Agora cadastre o operador em Gestão → Operadores e crie o login dele em Configurações → Acessos.
             </div>
           </div>
@@ -218,35 +231,23 @@
     const livres = Math.max(0, v.vagas - v.usadas);
     return (
       <div
+        className="ms7-card"
         style={{
-          background: 'var(--surface-card)',
-          borderRadius: 'var(--radius-lg, 16px)',
-          boxShadow: 'var(--shadow-card)',
-          padding: 18,
+          padding: 20,
           display: 'flex',
           alignItems: 'center',
           gap: 16,
           flexWrap: 'wrap',
         }}
       >
-        <span
-          style={{
-            width: 44,
-            height: 44,
-            borderRadius: 12,
-            background: 'var(--ms7-lime-100, #E9F7D9)',
-            color: 'var(--ms7-green-ink, #005D3B)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            flexShrink: 0,
-          }}
-        >
-          <DS.Icon name="user-plus" size={22} />
+        <span className="ms7v-tile">
+          <DS.Icon name="user-plus" size={19} />
         </span>
         <div style={{ flex: '1 1 240px', minWidth: 0 }}>
-          <b style={{ fontSize: 16 }}>{v.vagas ? 'Vagas de operador: ' + v.usadas + ' de ' + v.vagas + ' em uso' : 'Seu painel é só seu'}</b>
-          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 2 }}>
+          <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.25 }}>
+            {v.vagas ? 'Vagas de operador: ' + v.usadas + ' de ' + v.vagas + ' em uso' : 'Seu painel é só seu'}
+          </div>
+          <div style={{ fontSize: 13.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)', marginTop: 3, textWrap: 'pretty' }}>
             {v.vagas
               ? livres
                 ? livres + (livres === 1 ? ' vaga livre para cadastrar.' : ' vagas livres para cadastrar.')
@@ -370,6 +371,7 @@
               {st.demo ? (
                 <Button
                   variant="outline"
+                  iconLeft="zap"
                   onClick={function () {
                     setSt({ fase: 'ok' });
                     onOk && onOk({ demo: true });
@@ -386,37 +388,29 @@
         }
       >
         {st.fase === 'gerando' ? (
-          <div style={{ padding: '36px 0', textAlign: 'center', fontWeight: 700, color: 'var(--text-secondary)' }}>Gerando o PIX…</div>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 14, padding: '8px 0' }}>
+            <QrFrame loading />
+            <span className="ms7v-status" style={{ background: 'var(--surface-muted)', color: 'var(--text-secondary)' }}>
+              <i></i>Gerando o PIX…
+            </span>
+          </div>
         ) : null}
         {st.fase === 'erro' ? (
-          <div style={{ padding: '20px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 8, alignItems: 'center' }}>
-            <DS.Icon name="circle-alert" size={28} color="var(--ms7-error)" />
-            <b style={{ fontSize: 15 }}>{st.msg}</b>
+          <div style={{ padding: '20px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
+            <span className="ms7v-ok" style={{ background: 'color-mix(in oklab, var(--ms7-error) 12%, var(--surface-card))', color: 'var(--ms7-error)' }}>
+              <DS.Icon name="circle-alert" size={30} strokeWidth={2} />
+            </span>
+            <span className="ms7-balance" style={{ fontSize: 15, fontWeight: 600, lineHeight: 1.4, maxWidth: 320 }}>
+              {st.msg}
+            </span>
           </div>
         ) : null}
         {st.fase === 'pix' ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center' }}>
-            {st.qr ? (
-              <img src={st.qr} alt="QR Code PIX" style={{ width: 200, height: 200, borderRadius: 12, background: '#fff', padding: 8 }} />
-            ) : (
-              <div
-                style={{
-                  width: 200,
-                  height: 200,
-                  borderRadius: 12,
-                  background: 'var(--ms7-gray-100)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  color: 'var(--text-secondary)',
-                }}
-              >
-                <DS.Icon name="qr-code" size={64} strokeWidth={1.2} />
-              </div>
-            )}
-            <div style={{ fontSize: 24, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{MS7.brl(v || 0)}</div>
-            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 6 }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--text-secondary)' }}>PIX copia e cola</div>
+            <QrFrame src={st.qr || ''} />
+            <span className="ms7-num ms7v-amount">{MS7.brl(v || 0)}</span>
+            <div style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <span className="ms7-eyebrow">PIX copia e cola</span>
               <textarea
                 readOnly
                 value={st.copia || ''}
@@ -424,47 +418,31 @@
                   e.target.select();
                 }}
                 rows={3}
-                style={{
-                  width: '100%',
-                  boxSizing: 'border-box',
-                  padding: '10px 12px',
-                  border: '1px solid var(--border-default)',
-                  borderRadius: 12,
-                  background: 'var(--surface-muted, var(--surface-card))',
-                  color: 'var(--text-primary)',
-                  font: '500 12px/1.5 ui-monospace, SFMono-Regular, Menlo, monospace',
-                  resize: 'none',
-                  wordBreak: 'break-all',
-                }}
+                className="ms7v-code"
               ></textarea>
               <Button variant="brand" fullWidth iconLeft="copy" onClick={copiar}>
                 Copiar código PIX
               </Button>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-              <span
-                style={{ width: 8, height: 8, borderRadius: 4, background: 'var(--ms7-orange)', animation: 'ms7spin 1.2s linear infinite' }}
-              ></span>
-              {st.demo ? 'Prévia: aqui não cobra de verdade.' : 'Aguardando o pagamento. A confirmação aparece sozinha.'}
-            </div>
+            <span
+              className="ms7v-status"
+              style={
+                st.demo
+                  ? { background: 'var(--surface-muted)', color: 'var(--text-secondary)', animation: 'none' }
+                  : { background: 'color-mix(in oklab, var(--ms7-orange) 12%, var(--surface-card))', color: 'color-mix(in oklab, var(--ms7-orange) 88%, var(--text-primary))' }
+              }
+            >
+              <i></i>
+              <span>{st.demo ? 'Prévia: aqui não cobra de verdade.' : 'Aguardando o pagamento. A confirmação aparece sozinha.'}</span>
+            </span>
           </div>
         ) : null}
         {st.fase === 'ok' ? (
           <div style={{ padding: '24px 0', textAlign: 'center', display: 'flex', flexDirection: 'column', gap: 10, alignItems: 'center' }}>
-            <span
-              style={{
-                width: 56,
-                height: 56,
-                borderRadius: 28,
-                background: 'var(--ms7-green)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <DS.Icon name="check" size={28} color="#fff" strokeWidth={3} />
+            <span className="ms7v-ok">
+              <DS.Icon name="check" size={32} strokeWidth={2.5} />
             </span>
-            <b style={{ fontSize: 18 }}>Pagamento confirmado</b>
+            <span style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.02em', marginTop: 4 }}>Pagamento confirmado</span>
           </div>
         ) : null}
       </Modal>

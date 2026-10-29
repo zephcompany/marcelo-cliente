@@ -6,6 +6,34 @@
     bloqueada: { l: 'Bloqueada', tone: 'error', dot: 'var(--ms7-error)' },
   };
   const ALL = '__all';
+  /* ---------- CSS só desta tela (tokens) ---------- */
+  const CSS = [
+    '.ms7px-tile{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900)}',
+    '.ms7px-tit{position:relative;display:flex;flex-direction:column;gap:12px;padding:16px;cursor:pointer;text-align:left;font-family:inherit;color:var(--text-primary);transition:opacity var(--dur-base),transform var(--dur-base) var(--ease-standard),box-shadow var(--dur-base) var(--ease-standard),background var(--dur-base)}',
+    '.ms7px-tit.is-on{box-shadow:0 0 0 2px var(--ms7-green-900);background:color-mix(in oklab,var(--ms7-green-900) 5%,var(--surface-card))}',
+    '.ms7px-tit.is-dim{opacity:.55}',
+    '.ms7px-bank{display:flex;justify-content:space-between;gap:8px;padding:7px 0;font-size:12.5px;font-weight:500;border-top:1px solid var(--border-subtle)}',
+    '.ms7px-bank:first-child{border-top:0;padding-top:0}',
+    '.ms7px-mono{font-family:var(--font-mono);font-size:12.5px;font-weight:500}',
+    '.ms7px-key{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:12px;background:var(--surface-card);box-shadow:0 0 0 1px var(--line);transition:box-shadow var(--dur-base) var(--ease-standard)}',
+    '.ms7px-key:hover{box-shadow:0 0 0 1px var(--line-strong)}',
+    '.ms7px-key.is-block{box-shadow:0 0 0 1px color-mix(in oklab,var(--ms7-error) 35%,var(--line))}',
+    '.ms7px-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--border-subtle);font-size:12.5px}',
+    '.ms7px-row:first-child{border-top:0}',
+    '.ms7px-list{border:1px solid var(--line);border-radius:12px;overflow:hidden}',
+    '.ms7px-lote{display:flex;align-items:center;gap:12px;padding:14px 18px;flex-wrap:wrap}',
+    '.ms7px-pills{display:flex;align-items:center;gap:10px}',
+    /* chips numa linha só com rolagem lateral (o indicador do DS estica quando as pílulas quebram linha) */
+    '.ms7px-chips .ms7-tabs-chips,.ms7px-pills .ms7-tabs-chips{flex-wrap:nowrap;max-width:100%;min-width:0;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}',
+    '.ms7px-chips .ms7-tabs-chips::-webkit-scrollbar,.ms7px-pills .ms7-tabs-chips::-webkit-scrollbar{display:none}',
+    '.ms7px-pills .ms7-tabs-chips{flex:1 1 auto}',
+  ].join('');
+  if (!document.getElementById('ms7-pix-css')) {
+    const st = document.createElement('style');
+    st.id = 'ms7-pix-css';
+    st.textContent = CSS;
+    document.head.appendChild(st);
+  }
   function copy(t) {
     try {
       navigator.clipboard.writeText(t);
@@ -18,14 +46,15 @@
         style={{
           display: 'inline-flex',
           alignItems: 'center',
+          alignSelf: 'flex-start',
           gap: 6,
           height: 22,
           padding: '0 9px',
           borderRadius: 11,
           fontSize: 11,
-          fontWeight: 700,
-          background: 'color-mix(in oklab, ' + x.dot + ' 14%, transparent)',
-          color: x.dot,
+          fontWeight: 600,
+          background: 'color-mix(in oklab, ' + x.dot + ' 12%, var(--surface-card))',
+          color: 'color-mix(in oklab, ' + x.dot + ' 88%, var(--text-primary))',
           whiteSpace: 'nowrap',
         }}
       >
@@ -115,6 +144,7 @@
         open={open}
         onClose={onClose}
         title={g ? 'Editar lote de chaves' : 'Novo lote de chaves'}
+        subtitle={g ? undefined : 'Um lote agrupa as chaves de um titular e banco'}
         footer={
           <React.Fragment>
             <Button variant="secondary" onClick={onClose}>
@@ -122,6 +152,7 @@
             </Button>
             <Button
               variant="brand"
+              iconLeft={g ? 'check' : 'plus'}
               onClick={function () {
                 if (!String(f.nome || '').trim()) {
                   toast('Informe o nome do lote');
@@ -137,9 +168,9 @@
         }
       >
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-          <Input label="Nome do lote" required placeholder="ex: Chaves Mercado Pago — setembro" value={f.nome || ''} onChange={u('nome')} />
-          <Input label="Forma de pagamento" placeholder="ex: Mercado Pago" value={f.pagamento || ''} onChange={u('pagamento')} />
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <Input label="Nome do lote" required icon="folder-key" placeholder="ex: Chaves Mercado Pago — setembro" value={f.nome || ''} onChange={u('nome')} />
+          <Input label="Forma de pagamento" icon="landmark" placeholder="ex: Mercado Pago" value={f.pagamento || ''} onChange={u('pagamento')} />
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 }}>
             <Select
               label="Operador (opcional)"
               value={f.opId || ''}
@@ -153,8 +184,8 @@
             <Select label="Restringir a um grupo (opcional)" value={f.plataforma || ''} onChange={u('plataforma')} options={opts} />
           </div>
           <Switch checked={f.ativo !== false} onChange={u('ativo')} label="Ativo" />
-          <p style={{ margin: 0, fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
-            Deixe "Todas" para as chaves ficarem disponíveis em qualquer plataforma. Cada plataforma controla o uso da chave separadamente.
+          <p style={{ margin: 0, fontSize: 12.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+            Deixe "Todas" para as chaves ficarem disponíveis em qualquer plataforma. Cada plataforma controla o uso da chave&nbsp;separadamente.
           </p>
         </div>
       </Modal>
@@ -215,6 +246,7 @@
           >
             <Input
               label="Chave"
+              icon="key-round"
               placeholder="CPF, CNPJ, telefone, email ou aleatória"
               value={v}
               onChange={function (e) {
@@ -226,14 +258,17 @@
             <div
               style={{
                 fontSize: 13,
-                fontWeight: 700,
+                fontWeight: 600,
                 display: 'flex',
                 alignItems: 'center',
-                gap: 6,
+                gap: 8,
+                padding: '10px 12px',
+                borderRadius: 10,
+                background: 'color-mix(in oklab, ' + (ok ? 'var(--ms7-green)' : 'var(--ms7-error)') + ' 10%, var(--surface-card))',
                 color: ok ? 'var(--ms7-green)' : 'var(--ms7-error)',
               }}
             >
-              <DS.Icon name={ok ? 'circle-check' : 'circle-alert'} size={16} />
+              <DS.Icon name={ok ? 'circle-check' : 'circle-alert'} size={16} strokeWidth={2} />
               {ok
                 ? PIXV.LABEL[t] + ' válido · será salva como ' + PIXV.format(t, v)
                 : t
@@ -241,8 +276,8 @@
                   : 'Formato não reconhecido'}
             </div>
           ) : null}
-          <p style={{ margin: 0, fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
-            Enter adiciona e mantém a janela aberta para a próxima chave.
+          <p style={{ margin: 0, fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)' }}>
+            Enter adiciona e mantém a janela aberta para a próxima&nbsp;chave.
           </p>
         </div>
       </Modal>
@@ -340,6 +375,7 @@
               onChange={function (e) {
                 setTxt(e.target.value);
               }}
+              style={{ fontFamily: 'var(--font-mono)' }}
             />
             <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
               <Checkbox label="Detectar tipo automaticamente" checked={auto} onChange={setAuto} />
@@ -359,6 +395,7 @@
                 size="sm"
                 variant="ghost"
                 iconLeft="clipboard"
+                style={{ marginLeft: 'auto' }}
                 onClick={function () {
                   navigator.clipboard &&
                     navigator.clipboard
@@ -375,7 +412,7 @@
           </div>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+            <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'center' }}>
               {Object.keys(S).map(function (k) {
                 const n = prev.filter(function (x) {
                   return x.status === k;
@@ -398,17 +435,14 @@
                 Editar lista
               </Button>
             </div>
-            <div style={{ maxHeight: 320, overflowY: 'auto', border: '1px solid var(--border-default)', borderRadius: 10 }}>
+            <div className="ms7px-list" style={{ maxHeight: 320, overflowY: 'auto' }}>
               {prev.map(function (x, i) {
                 return (
-                  <div
-                    key={i}
-                    style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderBottom: '1px solid var(--border-subtle)' }}
-                  >
-                    <span style={{ width: 74, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                  <div key={i} className="ms7px-row">
+                    <span className="ms7-eyebrow" style={{ width: 74, letterSpacing: '.08em' }}>
                       {x.tipo ? PIXV.LABEL[x.tipo] : '—'}
                     </span>
-                    <span style={{ flex: 1, fontFamily: 'ui-monospace,monospace', fontSize: 12 }}>
+                    <span className="ms7px-mono" style={{ flex: 1 }}>
                       {x.tipo && x.status !== 'invalido' ? PIXV.format(x.tipo, x.valor) : x.valor}
                     </span>
                     <Badge size="sm" tone={S[x.status][0]}>
@@ -460,6 +494,7 @@
             </Button>
             <Button
               variant="brand"
+              iconLeft="check-check"
               disabled={!ids.length}
               onClick={function () {
                 DB.A.pixSetStatus(data.gid, ids, 'usada', data.gps);
@@ -471,13 +506,10 @@
           </React.Fragment>
         }
       >
-        <div style={{ maxHeight: 300, overflowY: 'auto', border: '1px solid var(--border-default)', borderRadius: 10 }}>
+        <div className="ms7px-list" style={{ maxHeight: 300, overflowY: 'auto' }}>
           {data.keys.map(function (k) {
             return (
-              <div
-                key={k.id}
-                style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '8px 12px', borderBottom: '1px solid var(--border-subtle)' }}
-              >
+              <div key={k.id} className="ms7px-row">
                 <Checkbox
                   checked={!!sel[k.id]}
                   onChange={function (v) {
@@ -488,10 +520,10 @@
                     });
                   }}
                 />
-                <span style={{ width: 74, fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                <span className="ms7-eyebrow" style={{ width: 74, letterSpacing: '.08em' }}>
                   {PIXV.LABEL[k.tipo]}
                 </span>
-                <span style={{ fontFamily: 'ui-monospace,monospace', fontSize: 12 }}>{k.valor}</span>
+                <span className="ms7px-mono">{k.valor}</span>
               </div>
             );
           })}
@@ -506,9 +538,9 @@
     const r = verify(db);
     function Sec({ title, tone, list, hint, act }) {
       return (
-        <div style={{ border: '1px solid var(--border-default)', borderRadius: 12, overflow: 'hidden' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: 'var(--ms7-gray-50)' }}>
-            <b style={{ flex: 1, fontSize: 14 }}>{title}</b>
+        <div className="ms7px-list">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '10px 14px', background: 'var(--surface-muted)' }}>
+            <span style={{ flex: 1, fontSize: 14, fontWeight: 600, letterSpacing: '-0.005em' }}>{title}</span>
             <Badge size="sm" tone={list.length ? tone : 'green'}>
               {list.length}
             </Badge>
@@ -517,32 +549,27 @@
             <div style={{ maxHeight: 160, overflowY: 'auto' }}>
               {list.map(function (x, i) {
                 return (
-                  <div
-                    key={i}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 10,
-                      padding: '8px 14px',
-                      borderTop: '1px solid var(--border-subtle)',
-                      fontSize: 12,
-                    }}
-                  >
-                    <span style={{ width: 74, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                  <div key={i} className="ms7px-row" style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                    <span className="ms7-eyebrow" style={{ width: 74, letterSpacing: '.08em' }}>
                       {PIXV.LABEL[x.k.tipo]}
                     </span>
-                    <span style={{ flex: 1, fontFamily: 'ui-monospace,monospace' }}>{x.k.valor}</span>
-                    <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{x.g.nome + (x.gp ? ' · ' + x.gp : '')}</span>
+                    <span className="ms7px-mono" style={{ flex: 1 }}>
+                      {x.k.valor}
+                    </span>
+                    <span style={{ color: 'var(--text-secondary)', fontWeight: 500 }}>{x.g.nome + (x.gp ? ' · ' + x.gp : '')}</span>
                     {act ? act(x) : null}
                   </div>
                 );
               })}
             </div>
           ) : (
-            <div style={{ padding: '10px 14px', fontSize: 12, fontWeight: 600, color: 'var(--ms7-green)' }}>Tudo certo.</div>
+            <div style={{ padding: '10px 14px', fontSize: 12.5, fontWeight: 600, color: 'var(--ms7-green)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <DS.Icon name="circle-check" size={14} strokeWidth={2} />
+              Tudo certo.
+            </div>
           )}
           {list.length && hint ? (
-            <div style={{ padding: '8px 14px', fontSize: 12, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)' }}>
+            <div style={{ padding: '8px 14px', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', borderTop: '1px solid var(--border-subtle)' }}>
               {hint}
             </div>
           ) : null}
@@ -651,46 +678,35 @@
       })
       .filter(Boolean);
     return (
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 8,
-          padding: 12,
-          border: '1px solid ' + (s.status === 'bloqueada' ? 'color-mix(in oklab, var(--ms7-error) 35%, transparent)' : 'var(--border-subtle)'),
-          borderRadius: 12,
-          background: 'var(--surface-card, #fff)',
-        }}
-      >
+      <div className={'ms7px-key' + (s.status === 'bloqueada' ? ' is-block' : '')}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span
-            style={{ fontSize: 10, fontWeight: 800, letterSpacing: '.06em', textTransform: 'uppercase', color: 'var(--text-secondary)', flex: 1 }}
-          >
+          <span className="ms7-eyebrow" style={{ flex: 1 }}>
             {PIXV.LABEL[k.tipo] || k.tipo}
           </span>
           {gp ? <Pill s={s.status} /> : null}
         </div>
         <div
+          className="ms7px-mono"
           style={{
-            fontFamily: 'ui-monospace,monospace',
-            fontSize: 13,
+            fontSize: 13.5,
             fontWeight: 600,
             wordBreak: 'break-all',
             textDecoration: s.status === 'bloqueada' ? 'line-through' : 'none',
+            color: s.status === 'bloqueada' ? 'var(--text-secondary)' : 'var(--text-primary)',
           }}
         >
           {k.valor}
         </div>
         {!ok ? (
-          <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ms7-error)', display: 'flex', gap: 4, alignItems: 'center' }}>
-            <DS.Icon name="circle-alert" size={12} />
+          <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--ms7-error)', display: 'flex', gap: 5, alignItems: 'center' }}>
+            <DS.Icon name="circle-alert" size={12} strokeWidth={2} />
             Formato inválido
           </div>
         ) : null}
         {!gp ? <UsedPills k={k} empty={true} /> : null}
         {contas.map(function (x) {
           return (
-            <div key={x.n} style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>
+            <div key={x.n} style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.4 }}>
               {(gp ? '' : x.n + ': ') +
                 'conta ' +
                 x.e.conta.usuario +
@@ -702,9 +718,9 @@
           );
         })}
         {gp && !s.conta && s.status !== 'disponivel' && s.em ? (
-          <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{'Desde ' + DB.fmtDate(s.em)}</div>
+          <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>{'Desde ' + DB.fmtDate(s.em)}</div>
         ) : null}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 2 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 2, marginTop: 2, paddingTop: 8, borderTop: '1px solid var(--border-subtle)' }}>
           <IconButton
             icon="copy"
             size={28}
@@ -861,55 +877,52 @@
       setMm({ gid: g.id, keys: ks, gps: lensGps });
     }
     const sfx = gp ? ' no ' + gp : '';
+    const novoLote = (
+      <Button
+        variant="brand"
+        iconLeft="plus"
+        onClick={function () {
+          setGm({ g: null });
+        }}
+      >
+        Novo lote
+      </Button>
+    );
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', flex: 1 }}>
-            Gerencie os lotes de chaves PIX e onde cada chave está em uso
+          <span style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--text-secondary)', flex: '1 1 240px', lineHeight: 1.5 }}>
+            Gerencie os lotes de chaves PIX e onde cada chave está em&nbsp;uso
           </span>
-          <Button
-            variant="outline"
-            iconLeft="shield-check"
-            onClick={function () {
-              setVm(true);
-            }}
-          >
-            Verificar chaves
-          </Button>
-          <Button
-            iconLeft="plus"
-            onClick={function () {
-              setGm({ g: null });
-            }}
-          >
-            Novo lote
-          </Button>
-        </div>
-        <Card padding={18}>
-          <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
-            <span
-              style={{
-                width: 38,
-                height: 38,
-                borderRadius: 10,
-                background: 'var(--ms7-lime-100)',
-                color: 'var(--ms7-green-ink, #005D3B)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                flexShrink: 0,
+          <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <Button
+              variant="outline"
+              iconLeft="shield-check"
+              onClick={function () {
+                setVm(true);
               }}
             >
-              <DS.Icon name="layers" size={18} />
+              Verificar chaves
+            </Button>
+            {novoLote}
+          </div>
+        </div>
+        <Card padding={20}>
+          <div style={{ display: 'flex', gap: 14, alignItems: 'flex-start' }}>
+            <span className="ms7px-tile" style={{ width: 36, height: 36, borderRadius: 10 }}>
+              <DS.Icon name="layers" size={17} />
             </span>
-            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
-              <b style={{ fontSize: 15 }}>Disponibilidade por plataforma</b>
-              <p style={{ margin: 0, fontSize: 13, fontWeight: 500, lineHeight: 1.55, textWrap: 'pretty' }}>
-                Cada chave tem uma situação separada em cada plataforma. Quando uma chave é usada na <b>{gps[0] || 'Lua 777'}</b>, ela fica{' '}
-                <b>Em uso</b> só nela e continua <b>Disponível</b> na <b>{gps[1] || 'Buscas 123'}</b> e nas outras plataformas. A rede não muda nada:
-                em qualquer rede da mesma plataforma a chave continua em uso.
+            <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.25 }}>Disponibilidade por plataforma</span>
+              <p style={{ margin: 0, fontSize: 13.5, fontWeight: 500, lineHeight: 1.55, color: 'var(--text-secondary)' }}>
+                Cada chave tem uma situação separada em cada plataforma. Quando uma chave é usada na{' '}
+                <b style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{gps[0] || 'Lua 777'}</b>, ela fica{' '}
+                <b style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Em uso</b> só nela e continua{' '}
+                <b style={{ fontWeight: 600, color: 'var(--text-primary)' }}>Disponível</b> na{' '}
+                <b style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{gps[1] || 'Buscas 123'}</b> e nas outras plataformas. A rede não muda
+                nada: em qualquer rede da mesma plataforma a chave continua em&nbsp;uso.
               </p>
-              <div style={{ marginTop: 4, maxWidth: gps.length > 6 ? 360 : 'none' }}>
+              <div className="ms7px-chips" style={{ marginTop: 2, maxWidth: gps.length > 6 ? 360 : 'none' }}>
                 {gps.length > 6 ? (
                   <Select
                     value={gp || ALL}
@@ -935,7 +948,7 @@
                   />
                 )}
               </div>
-              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+              <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.45 }}>
                 {gp
                   ? 'Plataformas neste grupo: ' +
                     PIXV.plats(db, gp).join(', ') +
@@ -979,7 +992,9 @@
           if (!L.length) return null;
           return (
             <Card
-              title={'Chaves por titular · ' + L.length}
+              title="Chaves por titular"
+              subtitle={L.length + (L.length === 1 ? ' titular' : ' titulares') + ' · clique num titular para ver só os lotes dele'}
+              reveal
               action={
                 fTit ? (
                   <DS.Button
@@ -992,12 +1007,10 @@
                   >
                     Mostrar todos
                   </DS.Button>
-                ) : (
-                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>Clique num titular para ver só os lotes dele</span>
-                )
+                ) : null
               }
             >
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,250px),1fr))', gap: 12 }}>
+              <div className="ms7-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,250px),1fr))', gap: 12 }}>
                 {L.map(function (t) {
                   const on = fTit === t.k;
                   return (
@@ -1011,43 +1024,20 @@
                       onKeyDown={function (e) {
                         if (e.key === 'Enter') setFTit(on ? '' : t.k);
                       }}
-                      style={{
-                        border: on ? '2px solid #005D3B' : '1px solid var(--border-subtle)',
-                        background: on ? 'var(--ms7-lime-100, #E9F7D9)' : 'transparent',
-                        borderRadius: 14,
-                        padding: on ? 13 : 14,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 10,
-                        cursor: 'pointer',
-                        opacity: fTit && !on ? 0.55 : 1,
-                        transition: 'opacity .15s',
-                      }}
+                      className={'ms7-card ms7-hover-card ms7px-tit' + (on ? ' is-on' : '') + (fTit && !on ? ' is-dim' : '')}
                     >
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 8 }}>
-                        <span
-                          style={{
-                            padding: '4px 10px',
-                            borderRadius: 8,
-                            background: '#005D3B',
-                            color: '#fff',
-                            fontSize: 13,
-                            fontWeight: 800,
-                            letterSpacing: '.02em',
-                            textTransform: 'uppercase',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap',
-                          }}
-                        >
-                          {t.nome}
-                        </span>
-                        <b style={{ fontSize: 20, fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' }}>
+                        <DS.Badge tone="green" style={{ maxWidth: '100%', overflow: 'hidden' }}>
+                          <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textTransform: 'uppercase', letterSpacing: '.03em', lineHeight: 1.5 }}>
+                            {t.nome}
+                          </span>
+                        </DS.Badge>
+                        <span className="ms7-num" style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.03em', whiteSpace: 'nowrap', lineHeight: 1 }}>
                           {t.total}
-                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                          <span style={{ fontSize: 12, fontWeight: 500, letterSpacing: 0, color: 'var(--text-secondary)' }}>
                             {t.total === 1 ? ' chave' : ' chaves'}
                           </span>
-                        </b>
+                        </span>
                       </div>
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         <DS.Badge size="sm" variant="soft" tone="green">
@@ -1064,15 +1054,17 @@
                           </DS.Badge>
                         ) : null}
                       </div>
-                      <div style={{ display: 'flex', flexDirection: 'column', gap: 4, borderTop: '1px solid var(--border-subtle)', paddingTop: 8 }}>
+                      <div style={{ display: 'flex', flexDirection: 'column', borderTop: '1px solid var(--border-subtle)', paddingTop: 6 }}>
                         {t.bancos.map(function (b) {
                           return (
-                            <div key={b.id} style={{ display: 'flex', justifyContent: 'space-between', gap: 8, fontSize: 13, fontWeight: 600 }}>
-                              <span style={{ display: 'flex', alignItems: 'center', gap: 6, minWidth: 0 }}>
+                            <div key={b.id} className="ms7px-bank">
+                              <span style={{ display: 'flex', alignItems: 'center', gap: 7, minWidth: 0 }}>
                                 <DS.Icon name="landmark" size={13} color="var(--text-secondary)" />
-                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{b.b}</span>
+                                <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontWeight: 600 }}>{b.b}</span>
                               </span>
-                              <span style={{ whiteSpace: 'nowrap', color: 'var(--text-secondary)' }}>{b.n + ' · ' + b.d + ' livres'}</span>
+                              <span className="ms7-num" style={{ whiteSpace: 'nowrap', color: 'var(--text-secondary)' }}>
+                                {b.n + ' · ' + b.d + ' livres'}
+                              </span>
                             </div>
                           );
                         })}
@@ -1084,20 +1076,8 @@
             </Card>
           );
         })()}
-        <Card padding={16}>
+        <Card padding={18}>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 12, alignItems: 'end' }}>
-            <Select
-              label="Titular"
-              value={fTit}
-              onChange={function (e) {
-                setFTit(e.target.value);
-              }}
-              options={[{ value: '', label: 'Todos os titulares' }].concat(
-                titulares.map(function (t) {
-                  return { value: t.k, label: t.nome };
-                }),
-              )}
-            />
             <Select
               label="Operador"
               value={fOp}
@@ -1119,7 +1099,7 @@
                 setQ(e.target.value);
               }}
             />
-            <div style={{ height: 44, display: 'flex', alignItems: 'center' }}>
+            <div style={{ height: 42, display: 'flex', alignItems: 'center' }}>
               <Checkbox label="Apenas lotes ativos" checked={fAt} onChange={setFAt} />
             </div>
           </div>
@@ -1127,15 +1107,16 @@
             <div
               style={{
                 marginTop: 14,
-                padding: 12,
-                borderRadius: 10,
-                background: 'var(--ms7-gray-50)',
+                padding: 14,
+                borderRadius: 12,
+                background: 'var(--surface-muted)',
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 8,
               }}
             >
-              <div style={{ fontSize: 13, fontWeight: 700, color: found.ok ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>
+              <div style={{ fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, color: found.ok ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>
+                <DS.Icon name={found.ok ? 'circle-check' : 'circle-alert'} size={15} strokeWidth={2} />
                 {found.t ? PIXV.LABEL[found.t] + (found.ok ? ' válido' : ' com formato inválido') : 'Formato não reconhecido'}
                 {' · ' + (found.list.length ? found.list.length + ' encontrada(s)' : 'não cadastrada')}
               </div>
@@ -1143,8 +1124,10 @@
                 return (
                   <div key={x.k.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, flexWrap: 'wrap' }}>
-                      <span style={{ fontFamily: 'ui-monospace,monospace' }}>{x.k.valor}</span>
-                      <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>{'Lote: ' + x.g.nome}</span>
+                      <span className="ms7px-mono" style={{ fontSize: 13, fontWeight: 600 }}>
+                        {x.k.valor}
+                      </span>
+                      <span style={{ fontWeight: 500, color: 'var(--text-secondary)' }}>{'Lote: ' + x.g.nome}</span>
                     </div>
                     <UsedPills k={x.k} empty={true} />
                   </div>
@@ -1154,7 +1137,7 @@
                 <div>
                   <Button
                     size="sm"
-                    variant="secondary"
+                    variant="outline"
                     iconLeft="plus"
                     onClick={function () {
                       if (!db.pix.length) {
@@ -1171,9 +1154,33 @@
             </div>
           ) : null}
         </Card>
+        {grupos0.length ? (
+          <div className="ms7px-pills">
+            <span className="ms7-eyebrow" style={{ marginRight: 2 }}>
+              {'Lotes · ' + grupos.length}
+            </span>
+            <Tabs
+              variant="chips"
+              value={fTit}
+              onChange={function (v) {
+                setFTit(v);
+              }}
+              items={[{ id: '', label: 'Todos os titulares' }].concat(
+                titulares.map(function (t) {
+                  return { id: t.k, label: t.nome };
+                }),
+              )}
+            />
+          </div>
+        ) : null}
         {grupos.length === 0 ? (
           <Card>
-            <Empty icon="key-round" title="Nenhum lote de chaves PIX" sub="Crie um lote para começar a gerenciar chaves PIX para cooperações." />
+            <Empty
+              art="Keys"
+              title="Nenhum lote de chaves PIX"
+              sub="Crie um lote para começar a gerenciar chaves PIX para cooperações."
+              action={grupos0.length ? null : novoLote}
+            />
           </Card>
         ) : null}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
@@ -1185,20 +1192,9 @@
             });
             return (
               <Card key={g.id} padding={0}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, padding: '14px 18px', flexWrap: 'wrap' }}>
-                  <span
-                    style={{
-                      width: 38,
-                      height: 38,
-                      borderRadius: 10,
-                      background: 'var(--ms7-lime-100)',
-                      color: 'var(--ms7-green-ink, #005D3B)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <DS.Icon name="key-round" size={18} />
+                <div className="ms7px-lote">
+                  <span className="ms7px-tile" style={{ width: 36, height: 36, borderRadius: 10 }}>
+                    <DS.Icon name="key-round" size={17} />
                   </span>
                   <div
                     style={{ flex: '1 1 200px', minWidth: 0, cursor: 'pointer' }}
@@ -1208,7 +1204,7 @@
                     }}
                   >
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-                      <b style={{ fontSize: 16 }}>{g.nome}</b>
+                      <span style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em' }}>{g.nome}</span>
                       <Badge size="sm" variant="soft" tone="blue">
                         {g.plataforma ? 'Só ' + PIXV.gp(db, g.plataforma) : 'Todos os grupos'}
                       </Badge>
@@ -1218,7 +1214,7 @@
                         </Badge>
                       ) : null}
                     </div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    <div style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 2 }}>
                       {(g.pagamento || '—') + ' · ' + (g.opId ? DB.opName(g.opId) : 'Todos os operadores')}
                     </div>
                   </div>
@@ -1238,7 +1234,7 @@
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
                     <Button
                       size="sm"
-                      variant="secondary"
+                      variant="outline"
                       iconLeft="plus"
                       onClick={function () {
                         setCm(g.id);
@@ -1248,7 +1244,7 @@
                     </Button>
                     <Button
                       size="sm"
-                      variant="secondary"
+                      variant="outline"
                       iconLeft="upload"
                       onClick={function () {
                         setIm(g.id);
@@ -1258,7 +1254,7 @@
                     </Button>
                     <Button
                       size="sm"
-                      variant="secondary"
+                      variant="outline"
                       iconLeft="clipboard-copy"
                       onClick={function () {
                         copiarBloco(g);
@@ -1303,35 +1299,36 @@
                 {on ? (
                   <div
                     style={{
-                      borderTop: '1px solid var(--border-subtle)',
+                      borderTop: '1px solid var(--line)',
                       padding: 16,
                       display: 'flex',
                       flexDirection: 'column',
                       gap: 12,
-                      background: 'var(--ms7-gray-50)',
+                      background: 'var(--surface-muted)',
+                      borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
                     }}
                   >
-                    <Tabs
-                      variant="chips"
-                      value={kf}
-                      onChange={setKf}
-                      items={[
-                        { id: 'todas', label: 'Todas', count: s.total },
-                        { id: 'disponivel', label: gp ? 'Disponíveis' : 'Livres', count: s.disponivel },
-                        { id: 'usada', label: 'Em uso', count: s.usada },
-                        { id: 'bloqueada', label: 'Bloqueadas', count: s.bloqueada },
-                      ]}
-                    />
+                    <div className="ms7px-chips">
+                      <Tabs
+                        variant="chips"
+                        value={kf}
+                        onChange={setKf}
+                        items={[
+                          { id: 'todas', label: 'Todas', count: s.total },
+                          { id: 'disponivel', label: gp ? 'Disponíveis' : 'Livres', count: s.disponivel },
+                          { id: 'usada', label: 'Em uso', count: s.usada },
+                          { id: 'bloqueada', label: 'Bloqueadas', count: s.bloqueada },
+                        ]}
+                      />
+                    </div>
                     {keys.length ? (
-                      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))', gap: 10 }}>
+                      <div className="ms7-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))', gap: 10 }}>
                         {keys.map(function (k) {
                           return <KeyCard key={k.id} g={g} k={k} gp={gp} gps={gps} />;
                         })}
                       </div>
                     ) : (
-                      <div style={{ padding: 16, textAlign: 'center', fontSize: 13, color: 'var(--text-secondary)' }}>
-                        Nenhuma chave correspondente ao filtro selecionado.
-                      </div>
+                      <Empty art="Keys" compact title="Nenhuma chave nesse filtro" sub="Nenhuma chave correspondente ao filtro selecionado." />
                     )}
                   </div>
                 ) : null}

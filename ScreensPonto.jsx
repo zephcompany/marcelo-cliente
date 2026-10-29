@@ -1,6 +1,78 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
   const TZ = 'America/Sao_Paulo';
+  (function () {
+    const CSS = [
+      '.ms7p-date{font-size:13px;font-weight:500;color:var(--text-secondary)}',
+      '.ms7p-h{font-size:22px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin-top:3px}',
+      '.ms7p-chips{display:flex;gap:8px;flex-wrap:wrap}',
+      '.ms7p-chip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 14px 0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast),transform var(--dur-base) var(--ease-standard)}',
+      '.ms7p-chip:hover{border-color:var(--line-strong)}',
+      '.ms7p-chip .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}',
+      '.ms7p-chip .n{font-variant-numeric:tabular-nums;color:var(--text-secondary);font-weight:600}',
+      '.ms7p-chip.is-on{background:var(--surface-inverse);border-color:var(--surface-inverse);color:var(--text-inverse)}',
+      '.ms7p-chip.is-on .n{color:inherit;opacity:.75}',
+      '.ms7p-sec{display:flex;flex-direction:column;gap:10px}',
+      '.ms7p-sec-head{display:flex;align-items:center;gap:10px;padding:0 4px}',
+      '.ms7p-sec-head .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}',
+      '.ms7p-sec-head .n{font-size:11px;font-weight:600;color:var(--text-secondary);font-variant-numeric:tabular-nums}',
+      '.ms7p-sec-head .ln{flex:1;height:1px;background:var(--line)}',
+      '.ms7p-list{padding:6px}',
+      '.ms7p-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;column-gap:14px;row-gap:4px;padding:12px;border-radius:10px;transition:background var(--dur-fast)}',
+      '.ms7p-row+.ms7p-row{border-top:1px solid var(--border-subtle)}',
+      '.ms7p-row:hover{background:var(--surface-muted);border-top-color:transparent}',
+      '.ms7p-row:hover+.ms7p-row{border-top-color:transparent}',
+      '.ms7p-row:hover .ms7p-act,.ms7p-row:focus-within .ms7p-act{opacity:1}',
+      '.ms7p-act{opacity:0;transition:opacity var(--dur-fast)}',
+      '@media (hover:none){.ms7p-act{opacity:1}}',
+      '.ms7p-name{font-size:14px;font-weight:600;letter-spacing:-.005em}',
+      '.ms7p-times{font-size:12.5px;font-weight:500;color:var(--text-secondary);margin-top:2px;display:flex;gap:2px 0;flex-wrap:wrap;align-items:center}',
+      '.ms7p-times .v{color:var(--text-primary);font-weight:600;font-variant-numeric:tabular-nums}',
+      '.ms7p-times .v.is-off{color:var(--text-secondary);font-weight:500}',
+      '.ms7p-times .sep{margin:0 6px;color:var(--line-strong)}',
+      '.ms7p-worked{text-align:right;min-width:86px}',
+      '.ms7p-worked .v{display:block;font-size:16px;font-weight:600;letter-spacing:-.02em;line-height:1.15;margin-top:2px}',
+      '.ms7p-late{font-size:12px;font-weight:600;color:var(--ms7-error);white-space:nowrap}',
+      '.ms7p-log{display:flex;gap:12px;align-items:flex-start;padding:11px 0}',
+      '.ms7p-log+.ms7p-log{border-top:1px solid var(--border-subtle)}',
+      '.ms7p-log .ico{width:32px;height:32px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center}',
+      '.ms7p-hero{width:100%;max-width:640px;margin:0 auto;display:flex;flex-direction:column;align-items:center;text-align:center;gap:0}',
+      '.ms7p-clock{font-size:44px;font-weight:600;letter-spacing:-.03em;line-height:1;margin-top:8px}',
+      '.ms7p-sub{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:14px;font-size:12.5px;font-weight:500;color:var(--text-secondary)}',
+      '.ms7p-actions{width:100%;max-width:380px;display:flex;flex-direction:column;gap:8px;margin-top:22px}',
+      '.ms7p-actions .ms7-btn{height:50px;font-size:15px;border-radius:12px}',
+      '.ms7p-actions .ms7-btn-outline{height:44px;font-size:14px}',
+      '.ms7p-actions .ms7-btn-brand,.ms7p-actions .ms7-btn-primary{order:-1}',
+      '.ms7p-pause{width:100%;max-width:380px;margin-top:22px;padding:18px;border-radius:14px;background:var(--surface-muted);display:flex;flex-direction:column;align-items:center;gap:10px}',
+      '.ms7p-pause .t{font-size:32px;font-weight:600;letter-spacing:-.03em;line-height:1}',
+      '.ms7p-marks{width:100%;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:24px}',
+      '.ms7p-mark{padding:10px 12px;border-radius:12px;background:var(--surface-muted);display:flex;flex-direction:column;gap:3px;min-width:0;text-align:left}',
+      '.ms7p-mark .lab{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.ms7p-mark .v{font-size:17px;font-weight:600;letter-spacing:-.02em;color:var(--text-secondary)}',
+      '.ms7p-mark.is-on .lab{color:var(--ms7-green-ink)}',
+      '.ms7p-mark.is-on .v{color:var(--text-primary)}',
+      '.ms7p-prog{width:100%;margin-top:14px;text-align:left}',
+      '.ms7p-prog .l{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:8px}',
+      '.ms7p-prog .l .v{font-size:14px;font-weight:600;color:var(--text-primary)}',
+      '.ms7p-note{margin-top:14px;font-size:12px;font-weight:500;color:var(--text-secondary);line-height:1.5;max-width:420px}',
+      '.ms7p-done{width:100%;max-width:380px;margin-top:22px;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--surface-muted);font-size:14px;font-weight:600;text-align:left}',
+      '.ms7p-done .ico{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green) 14%,var(--surface-card));color:var(--ms7-green)}',
+      '.ms7p-mot{display:flex;gap:8px;flex-wrap:wrap}',
+      '.ms7p-mot button{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}',
+      '.ms7p-mot button:hover{border-color:var(--line-strong)}',
+      '.ms7p-mot button.is-on{background:var(--ms7-green-900);border-color:var(--ms7-green-900);color:var(--text-inverse)}',
+      '.ms7p-regra{display:flex;flex-direction:column;gap:10px;padding:14px 0;border-top:1px solid var(--border-subtle)}',
+      '.ms7p-regra:first-of-type{border-top:0;padding-top:0}',
+      '@media (max-width:640px){.ms7p-row{grid-template-columns:auto minmax(0,1fr) auto;row-gap:6px}.ms7p-row .ms7p-worked{grid-column:2;text-align:left;min-width:0}.ms7p-row .ms7p-act{grid-column:3;grid-row:1}.ms7p-marks{grid-template-columns:repeat(2,minmax(0,1fr))}.ms7p-clock{font-size:38px}.ms7p-h{font-size:20px}}',
+    ].join('');
+    let s = document.getElementById('ms7-ponto-css');
+    if (!s) {
+      s = document.createElement('style');
+      s.id = 'ms7-ponto-css';
+      document.head.appendChild(s);
+    }
+    s.textContent = CSS;
+  })();
   const F = [
     ['entrada', 'Entrada', 'log-in'],
     ['almocoIni', 'Saída almoço', 'utensils'],
@@ -169,32 +241,20 @@
           </React.Fragment>
         }
       >
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,minmax(0,1fr))', gap: 8 }}>
+        <div className="ms7p-mot">
           {MOTIVOS.map(function (x) {
             const on = m === x[0];
             return (
               <button
                 key={x[0]}
                 type="button"
+                className={on ? 'is-on' : ''}
+                aria-pressed={on}
                 onClick={function () {
                   setM(x[0]);
                 }}
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  minHeight: 48,
-                  padding: '10px 12px',
-                  borderRadius: 12,
-                  border: on ? '2px solid #005D3B' : '1px solid var(--border-default)',
-                  background: on ? 'var(--ms7-lime-100)' : 'var(--surface-card)',
-                  color: 'var(--text-primary)',
-                  font: '700 14px var(--font-sans)',
-                  cursor: 'pointer',
-                  textAlign: 'left',
-                }}
               >
-                <DS.Icon name={x[1]} size={18} />
+                <DS.Icon name={x[1]} size={16} strokeWidth={2} />
                 {x[0]}
               </button>
             );
@@ -263,44 +323,21 @@
   function Saldo({ m }) {
     if (m == null) return <span style={{ color: 'var(--text-secondary)' }}>—</span>;
     return (
-      <b style={{ color: m >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)', fontVariantNumeric: 'tabular-nums' }}>{(m >= 0 ? '+' : '') + dur(m)}</b>
+      <span className="ms7-num" style={{ fontWeight: 600, color: m >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>{(m >= 0 ? '+' : '') + dur(m)}</span>
     );
   }
   function Marks({ r, compact }) {
     return (
-      <div style={{ display: 'grid', gridTemplateColumns: compact ? 'repeat(2,minmax(0,1fr))' : 'repeat(4,minmax(0,1fr))', gap: 8 }}>
+      <div className="ms7p-marks" style={compact ? { gridTemplateColumns: 'repeat(2,minmax(0,1fr))' } : null}>
         {F.map(function (f) {
           const on = !!r[f[0]];
           return (
-            <div
-              key={f[0]}
-              style={{
-                padding: '10px 12px',
-                borderRadius: 12,
-                background: on ? 'var(--ms7-lime-100)' : 'var(--ms7-gray-50)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 4,
-                minWidth: 0,
-              }}
-            >
-              <span
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 5,
-                  fontSize: 11,
-                  fontWeight: 700,
-                  color: on ? 'var(--ms7-green-900)' : 'var(--text-secondary)',
-                  lineHeight: 1.2,
-                }}
-              >
-                <DS.Icon name={f[2]} size={13} />
+            <div key={f[0]} className={'ms7p-mark' + (on ? ' is-on' : '')}>
+              <span className="lab">
+                <DS.Icon name={f[2]} size={12} strokeWidth={2} />
                 {f[1]}
               </span>
-              <b style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums', color: on ? 'var(--ms7-green-900)' : 'var(--text-secondary)' }}>
-                {hm(r[f[0]])}
-              </b>
+              <span className="v ms7-num">{hm(r[f[0]])}</span>
             </div>
           );
         })}
@@ -485,29 +522,15 @@
         <button
           key={id}
           type="button"
+          className={'ms7p-chip' + (on ? ' is-on' : '')}
+          aria-pressed={on}
           onClick={function () {
             setFil(on ? '' : id);
           }}
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 8,
-            height: 38,
-            padding: '0 14px',
-            borderRadius: 19,
-            border: '1px solid ' + (on ? cor : 'var(--border-default)'),
-            background: on ? 'color-mix(in oklab, ' + cor + ' 16%, var(--surface-card))' : 'var(--surface-card)',
-            color: 'var(--text-primary)',
-            fontFamily: 'inherit',
-            fontSize: 14,
-            fontWeight: 700,
-            cursor: 'pointer',
-            transition: 'background .15s,border-color .15s',
-          }}
         >
-          <span style={{ width: 8, height: 8, borderRadius: 4, background: cor }}></span>
+          <span className="dot" style={{ background: cor }}></span>
           {label}
-          <span style={{ fontVariantNumeric: 'tabular-nums', color: v ? 'var(--text-primary)' : 'var(--text-secondary)' }}>{v}</span>
+          <span className="n">{v}</span>
         </button>
       );
     };
@@ -515,37 +538,24 @@
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1000 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <div style={{ flex: '1 1 220px' }}>
-            <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)' }}>
+          <div style={{ flex: '1 1 220px', minWidth: 0 }}>
+            <div className="ms7p-date">
               {(function (s) {
                 return s.charAt(0).toUpperCase() + s.slice(1);
               })(agora.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ }))}
             </div>
-            <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.01em', marginTop: 2 }}>
-              {n('trabalhando') + ' de ' + rows.length + (rows.length === 1 ? ' operador trabalhando' : ' operadores trabalhando')}
+            <div className="ms7p-h ms7-balance">
+              {n('trabalhando') + ' de ' + rows.length + (rows.length === 1 ? ' operador\u00A0trabalhando' : ' operadores\u00A0trabalhando')}
             </div>
           </div>
           {atr ? (
-            <span
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                gap: 6,
-                height: 32,
-                padding: '0 12px',
-                borderRadius: 16,
-                background: 'color-mix(in oklab, var(--ms7-error) 14%, transparent)',
-                color: 'var(--ms7-error)',
-                fontSize: 13,
-                fontWeight: 800,
-              }}
-            >
-              <DS.Icon name="alarm-clock" size={14} />
+            <DS.Badge tone="error">
+              <DS.Icon name="alarm-clock" size={13} strokeWidth={2} />
               {atr + (atr === 1 ? ' atraso hoje' : ' atrasos hoje')}
-            </span>
+            </DS.Badge>
           ) : null}
         </div>
-        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+        <div className="ms7p-chips">
           {GR.map(function (g) {
             return chip(g[0], g[1], g[2], n(g[0]));
           })}
@@ -558,126 +568,63 @@
               return x.c.estado === g[0];
             });
             return (
-              <section key={g[0]} style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px 6px' }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 4, background: g[2] }}></span>
-                  <b style={{ fontSize: 13, fontWeight: 800, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+              <section key={g[0]} className="ms7p-sec">
+                <div className="ms7p-sec-head">
+                  <span className="dot" style={{ background: g[2] }}></span>
+                  <span className="ms7-eyebrow" style={{ color: 'var(--text-primary)' }}>
                     {g[1]}
-                  </b>
-                  <span
-                    style={{
-                      minWidth: 22,
-                      height: 22,
-                      padding: '0 7px',
-                      borderRadius: 11,
-                      background: 'var(--surface-muted, var(--ms7-gray-100))',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 12,
-                      fontWeight: 800,
-                      color: 'var(--text-secondary)',
-                    }}
-                  >
-                    {L.length}
                   </span>
-                  <span style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }}></span>
+                  <span className="n">{L.length}</span>
+                  <span className="ln"></span>
                 </div>
-                <div style={{ background: 'var(--surface-card)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', padding: 6 }}>
+                <div className="ms7-card ms7p-list">
                   {L.map(function (x) {
                     const cf = cfg(db, x.o.id);
                     return (
-                      <div
-                        key={x.o.id}
-                        className="ms7t-row"
-                        style={{
-                          display: 'grid',
-                          gridTemplateColumns: 'auto minmax(0,1fr) auto auto',
-                          alignItems: 'center',
-                          columnGap: 14,
-                          rowGap: 6,
-                          padding: '12px',
-                          borderRadius: 14,
-                        }}
-                      >
-                        <Avatar name={x.o.nome} size={40} />
+                      <div key={x.o.id} className="ms7p-row">
+                        <Avatar name={x.o.nome} size={34} />
                         <div style={{ minWidth: 0 }}>
-                          <b style={{ fontSize: 16 }}>{x.o.nome}</b>
-                          <div
-                            style={{
-                              fontSize: 13,
-                              fontWeight: 600,
-                              color: 'var(--text-secondary)',
-                              marginTop: 2,
-                              display: 'flex',
-                              gap: '2px 12px',
-                              flexWrap: 'wrap',
-                            }}
-                          >
+                          <div className="ms7p-name">{x.o.nome}</div>
+                          <div className="ms7p-times">
                             {[
                               ['Entrada', x.r.entrada, cf.entrada],
                               ['Almoço', x.r.almocoIni ? hm(x.r.almocoIni) + '–' + (x.r.almocoFim ? hm(x.r.almocoFim) : '…') : null],
                               ['Saída', x.r.saida],
-                            ].map(function (q) {
+                            ].map(function (q, qi) {
                               const v = q[1] ? (typeof q[1] === 'string' && q[1].indexOf('–') > 0 ? q[1] : hm(q[1])) : '—';
                               return (
                                 <span key={q[0]} style={{ whiteSpace: 'nowrap' }}>
+                                  {qi ? <span className="sep">·</span> : null}
                                   {q[0] + ' '}
-                                  <b style={{ color: q[1] ? 'var(--text-primary)' : 'var(--text-secondary)', fontVariantNumeric: 'tabular-nums' }}>
-                                    {v}
-                                  </b>
+                                  <span className={'v' + (q[1] ? '' : ' is-off')}>{v}</span>
                                   {q[0] === 'Entrada' && !q[1] ? ' (prevista ' + q[2] + ')' : ''}
                                 </span>
                               );
                             })}
                           </div>
                           {x.c.emPausa ? (
-                            <div
-                              style={{
-                                marginTop: 6,
-                                display: 'inline-flex',
-                                alignItems: 'center',
-                                gap: 6,
-                                height: 24,
-                                padding: '0 10px',
-                                borderRadius: 12,
-                                background: 'var(--soft-warn-bg, #FFF1E6)',
-                                color: 'var(--soft-warn-fg, #8A3B00)',
-                                fontSize: 12,
-                                fontWeight: 800,
-                              }}
-                            >
-                              <DS.Icon name="pause" size={12} />
-                              {x.c.emPausa.motivo + ' · desde ' + hm(x.c.emPausa.ini) + ' (' + dur((Date.now() - x.c.emPausa.ini) / 60000) + ')'}
+                            <div style={{ marginTop: 6 }}>
+                              <DS.Badge size="sm" tone="orange">
+                                <DS.Icon name="pause" size={11} strokeWidth={2.2} />
+                                {x.c.emPausa.motivo + ' · desde ' + hm(x.c.emPausa.ini) + ' (' + dur((Date.now() - x.c.emPausa.ini) / 60000) + ')'}
+                              </DS.Badge>
                             </div>
                           ) : (x.r.pausas || []).length ? (
-                            <div style={{ marginTop: 4, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                            <div style={{ marginTop: 4, fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
                               {'Pausas: ' + pausasTxt(x.r)}
                             </div>
                           ) : null}
                         </div>
-                        <div style={{ textAlign: 'right', minWidth: 90 }}>
-                          <div
-                            style={{
-                              fontSize: 11,
-                              fontWeight: 700,
-                              letterSpacing: '.05em',
-                              textTransform: 'uppercase',
-                              color: 'var(--text-secondary)',
-                            }}
-                          >
-                            Trabalhado
-                          </div>
-                          <b style={{ fontSize: 18, fontVariantNumeric: 'tabular-nums' }}>{dur(x.c.trab)}</b>
-                          {x.c.atraso > 0 ? (
-                            <div style={{ fontSize: 12, fontWeight: 800, color: 'var(--ms7-error)' }}>{'Atraso ' + dur(x.c.atraso)}</div>
-                          ) : null}
+                        <div className="ms7p-worked">
+                          <span className="ms7-eyebrow">Trabalhado</span>
+                          <span className="v ms7-num">{dur(x.c.trab)}</span>
+                          {x.c.atraso > 0 ? <div className="ms7p-late">{'Atraso ' + dur(x.c.atraso)}</div> : null}
                         </div>
-                        <div className="ms7t-act">
+                        <div className="ms7p-act">
                           <DS.IconButton
                             icon="pencil"
-                            size={34}
-                            iconSize={15}
+                            size={30}
+                            iconSize={14}
                             label="Ajustar"
                             onClick={function () {
                               onEdit(x.r);
@@ -693,7 +640,7 @@
           })
         ) : (
           <Card>
-            <Empty icon="users" title="Nenhum operador ativo" sub="Cadastre operadores em Gestão → Operadores." />
+            <Empty art="People" title="Nenhum operador ativo" sub="Cadastre operadores em Gestão → Operadores." />
           </Card>
         )}
         {(db.pontoLog || []).length ? (
@@ -702,26 +649,11 @@
               {db.pontoLog.slice(0, 8).map(function (a, i) {
                 const alerta = a.tipo !== 'marcacao';
                 return (
-                  <div
-                    key={a.id}
-                    style={{
-                      display: 'flex',
-                      gap: 12,
-                      alignItems: 'flex-start',
-                      padding: '10px 0',
-                      borderTop: i ? '1px solid var(--border-subtle)' : 'none',
-                    }}
-                  >
+                  <div key={a.id} className="ms7p-log">
                     <span
+                      className="ico"
                       style={{
-                        width: 32,
-                        height: 32,
-                        borderRadius: 9,
-                        flexShrink: 0,
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        background: alerta ? 'color-mix(in oklab, var(--ms7-error) 14%, transparent)' : 'var(--ms7-gray-100)',
+                        background: alerta ? 'color-mix(in oklab, var(--ms7-error) 12%, var(--surface-card))' : 'var(--surface-muted)',
                         color: alerta ? 'var(--ms7-error)' : 'var(--text-primary)',
                       }}
                     >
@@ -740,10 +672,10 @@
                       />
                     </span>
                     <div style={{ flex: 1, minWidth: 0 }}>
-                      <b style={{ fontSize: 14 }}>{a.title}</b>
-                      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>{a.body}</div>
+                      <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.005em' }}>{a.title}</div>
+                      <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 2 }}>{a.body}</div>
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                    <span className="ms7-num" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
                       {new Date(a.at).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit', timeZone: TZ })}
                     </span>
                   </div>
@@ -873,7 +805,7 @@
                 key: 'nome',
                 label: 'Operador',
                 render: function (r) {
-                  return <b>{r.nome}</b>;
+                  return <span style={{ fontWeight: 600 }}>{r.nome}</span>;
                 },
               },
               { key: 'dias', label: 'Dias', align: 'center' },
@@ -882,7 +814,7 @@
                 label: 'Horas',
                 align: 'right',
                 render: function (r) {
-                  return <b>{dur(r.min)}</b>;
+                  return <span className="ms7-num" style={{ fontWeight: 600 }}>{dur(r.min)}</span>;
                 },
               },
               {
@@ -898,7 +830,7 @@
                 label: 'Atrasos',
                 align: 'center',
                 render: function (r) {
-                  return r.atrasos ? <span style={{ color: 'var(--ms7-error)', fontWeight: 700 }}>{r.atrasos + ' · ' + dur(r.minAtraso)}</span> : '0';
+                  return r.atrasos ? <span style={{ color: 'var(--ms7-error)', fontWeight: 600 }}>{r.atrasos + ' · ' + dur(r.minAtraso)}</span> : '0';
                 },
               },
               {
@@ -977,7 +909,7 @@
                 key: 'data',
                 label: 'Dia',
                 render: function (r) {
-                  return <b style={{ textTransform: 'capitalize' }}>{diaLabel(r.data)}</b>;
+                  return <span style={{ textTransform: 'capitalize', fontWeight: 600 }}>{diaLabel(r.data)}</span>;
                 },
               },
               {
@@ -994,7 +926,7 @@
                 render: function (r) {
                   const c = calc(r, db);
                   return (
-                    <span style={{ color: c.atraso > 0 ? 'var(--ms7-error)' : 'inherit', fontWeight: c.atraso > 0 ? 700 : 500 }}>
+                    <span style={{ color: c.atraso > 0 ? 'var(--ms7-error)' : 'inherit', fontWeight: c.atraso > 0 ? 600 : 500 }}>
                       {hm(r.entrada)}
                     </span>
                   );
@@ -1025,7 +957,7 @@
                 label: 'Pausas',
                 render: function (r) {
                   return (r.pausas || []).length ? (
-                    <span style={{ fontSize: 12, fontWeight: 600 }}>{dur(calc(r, db).fora) + ' · ' + pausasTxt(r)}</span>
+                    <span style={{ fontSize: 12, fontWeight: 500 }}>{dur(calc(r, db).fora) + ' · ' + pausasTxt(r)}</span>
                   ) : (
                     '—'
                   );
@@ -1036,7 +968,7 @@
                 label: 'Trabalhado',
                 align: 'right',
                 render: function (r) {
-                  return <b>{dur(calc(r, db).trab)}</b>;
+                  return <span className="ms7-num" style={{ fontWeight: 600 }}>{dur(calc(r, db).trab)}</span>;
                 },
               },
               {
@@ -1103,7 +1035,7 @@
             ]}
           />
         ) : (
-          <Empty icon="clock" title="Nenhum registro no período" sub="Os registros aparecem aqui quando os operadores batem o ponto." />
+          <Empty art="Clock" title="Nenhum registro no período" sub={'Os registros aparecem aqui quando os operadores batem o\u00A0ponto.'} />
         )}
       </Card>
     );
@@ -1113,10 +1045,10 @@
     const [e, setE] = React.useState(o.pontoEntrada || '');
     const [j, setJ] = React.useState(o.pontoJornada || '');
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: '12px 0', borderBottom: '1px solid var(--border-subtle)' }}>
+      <div className="ms7p-regra">
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
           <Avatar name={o.nome} size={30} />
-          <b style={{ fontSize: 14, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.nome}</b>
+          <span style={{ fontSize: 14, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.nome}</span>
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) minmax(0,1fr) auto', gap: 10, alignItems: 'end' }}>
           <div>
@@ -1142,7 +1074,8 @@
           </div>
           <Button
             size="sm"
-            variant="secondary"
+            variant="outline"
+            iconLeft="check"
             onClick={function () {
               DB.A.saveOperador({ id: o.id, pontoEntrada: e, pontoJornada: j ? +String(j).replace(',', '.') : '' });
               toast('Regras de ' + o.nome + ' salvas');
@@ -1303,7 +1236,7 @@
             ? [['almocoFim', 'Voltar do almoço', 'coffee', 'brand']]
             : (!r.almocoIni ? [['almocoIni', 'Sair para almoço', 'utensils', 'outline']] : []).concat([
                 ['pausa', 'Sair para compromisso', 'pause', 'outline'],
-                ['saida', 'Registrar saída', 'log-out', 'primary'],
+                ['saida', 'Registrar saída', 'log-out', 'brand'],
               ]);
     function marcar(k) {
       if (k === 'pausa') {
@@ -1324,59 +1257,43 @@
     const e = EST[c.estado];
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <Card padding={24}>
-          <div style={{ display: 'flex', gap: 28, alignItems: 'center', flexWrap: 'wrap' }}>
-            <div style={{ flex: '1 1 260px' }}>
-              <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                {(function (s) {
-                  return s.charAt(0).toUpperCase() + s.slice(1);
-                })(now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ }))}
-              </div>
-              <div style={{ fontSize: 64, fontWeight: 800, lineHeight: 1.05, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}>
-                {now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: TZ })}
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 8, flexWrap: 'wrap' }}>
-                <Badge tone={e[1]}>{e[0]}</Badge>
-                <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                  {'Entrada prevista ' + cf.entrada + ' · jornada ' + cf.jornada + 'h'}
-                </span>
-              </div>
+        <Card padding={28}>
+          <div className="ms7p-hero">
+            <div className="ms7p-date">
+              {(function (s) {
+                return s.charAt(0).toUpperCase() + s.slice(1);
+              })(now.toLocaleDateString('pt-BR', { weekday: 'long', day: 'numeric', month: 'long', timeZone: TZ }))}
             </div>
-            <div style={{ flex: '1 1 280px', display: 'flex', flexDirection: 'column', gap: 10 }}>
-              {c.emPausa ? (
-                <div
-                  style={{
-                    padding: 18,
-                    borderRadius: 16,
-                    background: 'var(--soft-warn-bg, #FFF1E6)',
-                    color: 'var(--soft-warn-fg, #8A3B00)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 10,
+            <div className="ms7p-clock ms7-num">
+              {now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit', timeZone: TZ })}
+            </div>
+            <div className="ms7p-sub">
+              <Badge tone={e[1]}>{e[0]}</Badge>
+              <span>{'Entrada prevista ' + cf.entrada + ' · jornada ' + cf.jornada + 'h'}</span>
+            </div>
+            {c.emPausa ? (
+              <div className="ms7p-pause">
+                <DS.Badge tone="orange">
+                  <DS.Icon name="pause" size={12} strokeWidth={2.2} />
+                  {'Em pausa: ' + c.emPausa.motivo + ' · desde ' + hm(c.emPausa.ini)}
+                </DS.Badge>
+                <span className="t ms7-num">{cron(Date.now() - c.emPausa.ini)}</span>
+                <DS.Button
+                  variant="brand"
+                  iconLeft="play"
+                  fullWidth
+                  onClick={function () {
+                    DB.A.pontoVolta(opId);
                   }}
+                  style={{ height: 50, fontSize: 15, borderRadius: 12 }}
                 >
-                  <span style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 14, fontWeight: 700 }}>
-                    <DS.Icon name="pause" size={16} />
-                    {'Em pausa: ' + c.emPausa.motivo + ' · desde ' + hm(c.emPausa.ini)}
-                  </span>
-                  <b style={{ fontSize: 40, lineHeight: 1, fontVariantNumeric: 'tabular-nums', letterSpacing: '-0.02em' }}>
-                    {cron(Date.now() - c.emPausa.ini)}
-                  </b>
-                  <DS.Button
-                    variant="brand"
-                    iconLeft="play"
-                    fullWidth
-                    onClick={function () {
-                      DB.A.pontoVolta(opId);
-                    }}
-                    style={{ height: 56, fontSize: 17 }}
-                  >
-                    Voltar ao trabalho
-                  </DS.Button>
-                </div>
-              ) : null}
-              {acts.length ? (
-                acts.map(function (a) {
+                  Voltar ao trabalho
+                </DS.Button>
+              </div>
+            ) : null}
+            {acts.length ? (
+              <div className="ms7p-actions">
+                {acts.map(function (a) {
                   return (
                     <Button
                       key={a[0]}
@@ -1386,61 +1303,44 @@
                       onClick={function () {
                         marcar(a[0]);
                       }}
-                      style={{ height: 56, fontSize: 17 }}
                     >
                       {a[1]}
                     </Button>
                   );
-                })
-              ) : c.emPausa ? null : (
-                <div
-                  style={{
-                    padding: 16,
-                    borderRadius: 14,
-                    background: 'var(--ms7-lime-100)',
-                    color: 'var(--ms7-green-ink, #005D3B)',
-                    fontWeight: 700,
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 10,
-                  }}
-                >
-                  <DS.Icon name="circle-check" size={20} />
-                  Dia encerrado. Até amanhã!
-                </div>
-              )}
-              <span style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
-                O horário registrado é o do servidor. Esqueceu de marcar? Fale com o administrador para ajustar.
-              </span>
-            </div>
-          </div>
-          <div style={{ marginTop: 22, display: 'flex', flexDirection: 'column', gap: 12 }}>
+                })}
+              </div>
+            ) : c.emPausa ? null : (
+              <div className="ms7p-done">
+                <span className="ico">
+                  <DS.Icon name="circle-check" size={16} strokeWidth={2} />
+                </span>
+                Dia encerrado. Até amanhã!
+              </div>
+            )}
             <Marks r={r} />
-            <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 700, marginBottom: 6 }}>
-                <span>{'Trabalhado hoje: ' + dur(c.trab)}</span>
+            <div className="ms7p-prog">
+              <div className="l">
+                <span>
+                  {'Trabalhado hoje '}
+                  <span className="v ms7-num">{dur(c.trab)}</span>
+                </span>
                 <span>{'Meta ' + cf.jornada + 'h'}</span>
               </div>
-              <div style={{ height: 10, borderRadius: 5, background: 'var(--ms7-gray-100)' }}>
-                <div
-                  style={{
-                    width: pct + '%',
-                    height: '100%',
-                    borderRadius: 5,
-                    background: pct >= 100 ? 'var(--ms7-green)' : 'var(--ms7-lime-600)',
-                    transition: 'width .4s',
-                  }}
-                ></div>
+              <div className="ms7-bar">
+                <i style={{ width: pct + '%', background: pct >= 100 ? 'var(--ms7-green)' : 'var(--ms7-lime-600)' }} />
               </div>
             </div>
             {c.atraso > 0 ? (
-              <span style={{ fontSize: 13, fontWeight: 700, color: 'var(--ms7-error)' }}>{'Entrada com atraso de ' + dur(c.atraso)}</span>
+              <div style={{ marginTop: 12 }}>
+                <DS.Badge tone="error">{'Entrada com atraso de ' + dur(c.atraso)}</DS.Badge>
+              </div>
             ) : null}
             {(r.pausas || []).length ? (
-              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+              <span style={{ marginTop: 10, fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)' }}>
                 {'Pausas hoje (' + dur(c.fora) + ' fora): ' + pausasTxt(r)}
               </span>
             ) : null}
+            <span className="ms7p-note">{'O horário registrado é o do servidor. Esqueceu de marcar? Fale com o administrador para\u00A0ajustar.'}</span>
           </div>
           <PausaModal
             open={pz}
@@ -1470,7 +1370,7 @@
                   key: 'data',
                   label: 'Dia',
                   render: function (x) {
-                    return <b style={{ textTransform: 'capitalize' }}>{diaLabel(x.data)}</b>;
+                    return <span style={{ textTransform: 'capitalize', fontWeight: 600 }}>{diaLabel(x.data)}</span>;
                   },
                 },
                 {
@@ -1506,7 +1406,7 @@
                   label: 'Trabalhado',
                   align: 'right',
                   render: function (x) {
-                    return <b>{dur(calc(x, db).trab)}</b>;
+                    return <span className="ms7-num" style={{ fontWeight: 600 }}>{dur(calc(x, db).trab)}</span>;
                   },
                 },
                 {
@@ -1528,7 +1428,7 @@
               ]}
             />
           ) : (
-            <Empty icon="clock" title="Nenhum registro ainda" sub="Registre sua entrada para começar." />
+            <Empty art="Clock" title="Nenhum registro ainda" sub="Registre sua entrada para começar." />
           )}
         </Card>
       </div>

@@ -2,12 +2,64 @@
   const DS = window.MS7DesignSystem_5d5172;
   const TZ = 'America/Sao_Paulo';
   (function () {
-    if (document.getElementById('ms7-tarefas-css')) return;
-    const s = document.createElement('style');
-    s.id = 'ms7-tarefas-css';
-    s.textContent =
-      '@keyframes ms7tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}@keyframes ms7tPop{0%{transform:scale(.6)}60%{transform:scale(1.15)}100%{transform:scale(1)}}.ms7t-row{animation:ms7tIn .24s cubic-bezier(.2,.7,.2,1) both;transition:background .15s}.ms7t-row:hover{background:var(--surface-muted, rgba(0,0,0,.03))}.ms7t-row:hover .ms7t-act{opacity:1}.ms7t-act{opacity:.35;transition:opacity .15s}.ms7t-chk{transition:background .18s,border-color .18s,transform .12s}.ms7t-chk:active{transform:scale(.9)}.ms7t-pop{animation:ms7tPop .28s ease both}@media (hover:none){.ms7t-act{opacity:1}}';
-    document.head.appendChild(s);
+    const CSS = [
+      '@keyframes ms7tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}',
+      '@keyframes ms7tPop{0%{transform:scale(.7)}55%{transform:scale(1.12)}100%{transform:scale(1)}}',
+      '.ms7t-wrap{display:flex;flex-direction:column;gap:24px;width:100%;max-width:980px;margin:0 auto}',
+      '.ms7t-hero{display:flex;align-items:center;gap:24px;flex-wrap:wrap}',
+      '.ms7t-hero-main{flex:1 1 260px;min-width:0;display:flex;align-items:center;gap:16px}',
+      '.ms7t-ring{flex-shrink:0;display:block}',
+      '.ms7t-ring .track{stroke:var(--line)}',
+      '.ms7t-ring .fill{stroke:var(--ms7-green-900);transition:stroke-dashoffset 600ms var(--ease-out)}',
+      '.ms7t-date{font-size:13px;font-weight:500;color:var(--text-secondary)}',
+      '.ms7t-h{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin-top:3px}',
+      '.ms7t-facts{display:flex;gap:28px;flex-wrap:wrap}',
+      '.ms7t-fact-v{font-size:20px;font-weight:600;letter-spacing:-.02em;line-height:1.1;margin-top:4px}',
+      '.ms7t-new{display:flex;gap:10px;margin-top:20px;flex-wrap:wrap;align-items:center}',
+      '.ms7t-new .ms7-field{flex:1 1 260px;min-width:0}',
+      '.ms7t-opts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center}',
+      '.ms7t-opts .ms7-field{flex:0 1 auto}',
+      '.ms7t-tip{font-size:12.5px;font-weight:500;color:var(--text-secondary);flex-basis:100%;margin-top:4px}',
+      '.ms7t-sec{display:flex;flex-direction:column;gap:10px}',
+      '.ms7t-sec-head{display:flex;align-items:center;gap:10px;padding:0 4px}',
+      '.ms7t-sec-head .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}',
+      '.ms7t-sec-head .n{font-size:11px;font-weight:600;color:var(--text-secondary);font-variant-numeric:tabular-nums}',
+      '.ms7t-sec-head .ln{flex:1;height:1px;background:var(--line)}',
+      '.ms7t-list{padding:6px}',
+      '.ms7t-row{display:flex;align-items:center;gap:14px;padding:11px 12px;border-radius:10px;animation:ms7tIn .24s var(--ease-out) both;transition:background var(--dur-fast)}',
+      '.ms7t-row+.ms7t-row{border-top:1px solid var(--border-subtle)}',
+      '.ms7t-row:hover{background:var(--surface-muted);border-top-color:transparent}',
+      '.ms7t-row:hover+.ms7t-row{border-top-color:transparent}',
+      '.ms7t-row:hover .ms7t-act,.ms7t-row:focus-within .ms7t-act{opacity:1}',
+      '.ms7t-act{display:flex;gap:2px;flex-shrink:0;opacity:0;transition:opacity var(--dur-fast)}',
+      '@media (hover:none){.ms7t-act{opacity:1}}',
+      '.ms7t-chk{width:22px;height:22px;flex-shrink:0;border-radius:50%;border:1.5px solid var(--line-strong);background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;color:var(--text-inverse);transition:background var(--dur-fast),border-color var(--dur-fast),transform var(--dur-fast)}',
+      '.ms7t-chk:hover{border-color:var(--ms7-green)}',
+      '.ms7t-chk.is-urg{border-color:var(--ms7-error)}',
+      '.ms7t-chk.is-on{background:var(--ms7-green);border-color:var(--ms7-green);animation:ms7tPop .32s var(--ease-spring) both}',
+      '.ms7t-chk.is-on svg path{stroke-dasharray:22;stroke-dashoffset:22;animation:ms7-check 280ms var(--ease-out) 60ms forwards}',
+      '.ms7t-chk:active{transform:scale(.9)}',
+      '.ms7t-txt{flex:1;min-width:0;border:0;background:transparent;padding:0;text-align:left;cursor:pointer;color:var(--text-primary);font-family:inherit}',
+      '.ms7t-t{font-size:14px;font-weight:500;line-height:1.4;word-break:break-word;text-wrap:balance;transition:color var(--dur-fast)}',
+      '.ms7t-t.is-done{text-decoration:line-through;text-decoration-color:var(--line-strong);color:var(--text-secondary)}',
+      '.ms7t-tags{display:flex;gap:6px;flex-wrap:wrap;margin-top:5px;align-items:center}',
+      '.ms7t-obs{font-size:12.5px;font-weight:500;color:var(--text-secondary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}',
+      '.ms7t-grp{display:flex;align-items:center;gap:8px;padding:12px 0 6px}',
+      '.ms7t-fix{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--border-subtle)}',
+      '.ms7t-fix .nm{flex:1;min-width:0;font-size:14px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:8px}',
+      '.ms7t-fix .when{font-size:12.5px;font-weight:500;color:var(--text-secondary);white-space:nowrap}',
+      '.ms7t-day{height:30px;min-width:40px;padding:0 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;font-size:12.5px;font-weight:600;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}',
+      '.ms7t-day:hover{border-color:var(--line-strong)}',
+      '.ms7t-day.is-on{background:var(--ms7-green-900);border-color:var(--ms7-green-900);color:var(--text-inverse)}',
+      '@media (max-width:640px){.ms7t-h{font-size:21px}.ms7t-facts{gap:18px}.ms7t-fix{flex-wrap:wrap}.ms7t-fix .nm{flex:1 1 calc(100% - 100px);white-space:normal}.ms7t-fix .when{flex-basis:100%;order:9;padding-left:17px;margin-top:-4px}}',
+    ].join('');
+    let s = document.getElementById('ms7-tarefas-css');
+    if (!s) {
+      s = document.createElement('style');
+      s.id = 'ms7-tarefas-css';
+      document.head.appendChild(s);
+    }
+    s.textContent = CSS;
   })();
   const hojeISO = function () {
     return new Date().toLocaleDateString('sv-SE', { timeZone: TZ });
@@ -66,27 +118,14 @@
     return (
       <button
         type="button"
-        className="ms7t-chk"
+        className={'ms7t-chk' + (on ? ' is-on' : '') + (urg ? ' is-urg' : '')}
         onClick={onClick}
         aria-label={on ? 'Desmarcar' : 'Marcar como feita'}
-        style={{
-          width: 26,
-          height: 26,
-          flexShrink: 0,
-          borderRadius: '50%',
-          border: '2px solid ' + (on ? 'var(--ms7-green)' : urg ? 'var(--ms7-error)' : 'var(--border-default)'),
-          background: on ? 'var(--ms7-green)' : 'transparent',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          cursor: 'pointer',
-          padding: 0,
-        }}
       >
         {on ? (
-          <span className="ms7t-pop" style={{ display: 'flex' }}>
-            <DS.Icon name="check" size={15} color="#fff" strokeWidth={3} />
-          </span>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12.5l5 5L20 6.5" />
+          </svg>
         ) : null}
       </button>
     );
@@ -94,13 +133,14 @@
   function DiasPick({ value, onChange }) {
     const v = value || [];
     return (
-      <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
         {SEM.map(function (n, i) {
           const on = !v.length || v.indexOf(i) >= 0;
           return (
             <button
               key={i}
               type="button"
+              className={'ms7t-day' + (on ? ' is-on' : '')}
               onClick={function () {
                 let nv = v.length ? v.slice() : [0, 1, 2, 3, 4, 5, 6];
                 nv =
@@ -110,19 +150,6 @@
                       })
                     : nv.concat([i]).sort();
                 onChange(nv.length === 7 ? [] : nv);
-              }}
-              style={{
-                height: 30,
-                minWidth: 40,
-                padding: '0 8px',
-                borderRadius: 15,
-                border: '1px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-subtle)'),
-                background: on ? 'color-mix(in oklab, var(--ms7-lime-500) 22%, transparent)' : 'transparent',
-                color: 'var(--text-primary)',
-                fontFamily: 'inherit',
-                fontSize: 12,
-                fontWeight: 700,
-                cursor: 'pointer',
               }}
             >
               {n}
@@ -134,53 +161,16 @@
   }
   function Seg({ value, onChange, items }) {
     return (
-      <div style={{ display: 'inline-flex', padding: 3, borderRadius: 12, background: 'var(--surface-sunken, var(--ms7-gray-100))', gap: 2 }}>
-        {items.map(function (o) {
-          const on = value === o[0];
-          return (
-            <button
-              key={o[0]}
-              type="button"
-              onClick={function () {
-                onChange(o[0]);
-              }}
-              style={{
-                height: 30,
-                padding: '0 12px',
-                border: 0,
-                borderRadius: 9,
-                background: on ? 'var(--surface-card)' : 'transparent',
-                boxShadow: on ? '0 1px 2px rgba(0,0,0,.1)' : 'none',
-                fontFamily: 'inherit',
-                fontSize: 13,
-                fontWeight: 700,
-                color: on && o[2] ? o[2] : 'var(--text-primary)',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-              }}
-            >
-              {o[1]}
-            </button>
-          );
+      <DS.Tabs
+        variant="chips"
+        value={value}
+        onChange={onChange}
+        items={items.map(function (o) {
+          return { id: o[0], label: o[1] };
         })}
-      </div>
+      />
     );
   }
-  const lbl = { fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginBottom: 6 };
-  const inpS = {
-    height: 36,
-    padding: '0 10px',
-    border: '1px solid var(--border-default)',
-    borderRadius: 10,
-    background: 'var(--surface-card)',
-    color: 'var(--text-primary)',
-    fontFamily: 'inherit',
-    fontSize: 13,
-    fontWeight: 600,
-    boxSizing: 'border-box',
-  };
 
   function Editor({ t, isOp, ops, onSave, onClose }) {
     const [f, setF] = React.useState(
@@ -233,29 +223,23 @@
           />
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 16 }}>
             {!isOp ? (
-              <div>
-                <div style={lbl}>Para quem</div>
-                <select
-                  value={f.resp}
-                  onChange={function (e) {
-                    set('resp', e.target.value);
-                  }}
-                  style={Object.assign({}, inpS, { width: '100%' })}
-                >
-                  <option value="admin">Gestão (admins)</option>
-                  {t.id ? null : <option value="__todos">{'Todos os operadores (' + ops.length + ')'}</option>}
-                  {ops.map(function (o) {
-                    return (
-                      <option key={o.id} value={o.id}>
-                        {o.nome}
-                      </option>
-                    );
-                  })}
-                </select>
-              </div>
+              <DS.Select
+                label="Para quem"
+                value={f.resp}
+                onChange={function (e) {
+                  set('resp', e.target.value);
+                }}
+                options={[{ value: 'admin', label: 'Gestão (admins)' }]
+                  .concat(t.id ? [] : [{ value: '__todos', label: 'Todos os operadores (' + ops.length + ')' }])
+                  .concat(
+                    ops.map(function (o) {
+                      return { value: o.id, label: o.nome };
+                    }),
+                  )}
+              />
             ) : null}
-            <div>
-              <div style={lbl}>Prioridade</div>
+            <div className="ms7-field">
+              <span className="ms7-label">Prioridade</span>
               <Seg
                 value={f.prio}
                 onChange={function (v) {
@@ -269,8 +253,8 @@
             </div>
           </div>
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(180px,1fr))', gap: 16, alignItems: 'end' }}>
-            <div>
-              <div style={lbl}>Repetir</div>
+            <div className="ms7-field">
+              <span className="ms7-label">Repetir</span>
               <Seg
                 value={f.rep}
                 onChange={function (v) {
@@ -282,21 +266,18 @@
                 ]}
               />
             </div>
-            <div>
-              <div style={lbl}>{f.rep === 'diaria' ? 'Começa em' : 'Dia'}</div>
-              <input
-                type="date"
-                value={f.data || ''}
-                onChange={function (e) {
-                  set('data', e.target.value);
-                }}
-                style={Object.assign({}, inpS, { width: '100%' })}
-              />
-            </div>
+            <DS.Input
+              label={f.rep === 'diaria' ? 'Começa em' : 'Dia'}
+              type="date"
+              value={f.data || ''}
+              onChange={function (e) {
+                set('data', e.target.value);
+              }}
+            />
           </div>
           {f.rep === 'diaria' ? (
-            <div>
-              <div style={lbl}>Dias da semana</div>
+            <div className="ms7-field">
+              <span className="ms7-label">Dias da semana</span>
               <DiasPick
                 value={f.dias}
                 onChange={function (v) {
@@ -324,65 +305,24 @@
     const ok = feita(t, dia);
     const urg = t.prio === 'urgente';
     const r = respDe(t);
-    const tag = function (icon, txt, col) {
+    const tag = function (icon, txt, tone) {
       return (
-        <span
-          style={{
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: 4,
-            height: 22,
-            padding: '0 8px',
-            borderRadius: 11,
-            background: col ? 'color-mix(in oklab, ' + col + ' 14%, transparent)' : 'var(--surface-muted, var(--ms7-gray-100))',
-            color: col || 'var(--text-secondary)',
-            fontSize: 12,
-            fontWeight: 700,
-          }}
-        >
-          <DS.Icon name={icon} size={12} />
+        <DS.Badge size="sm" variant="soft" tone={tone || 'gray'}>
           {txt}
-        </span>
+        </DS.Badge>
       );
     };
+    const temTags = (urg && !ok) || !isOp || showDia || t.hora || t.rep === 'diaria' || t.obs;
     return (
-      <div className="ms7t-row" style={{ display: 'flex', alignItems: 'center', gap: 14, padding: '12px 12px', borderRadius: 14 }}>
+      <div className="ms7t-row">
         <Check on={ok} urg={urg && !ok} onClick={onToggle} />
-        <button
-          type="button"
-          onClick={onEdit}
-          style={{
-            flex: 1,
-            minWidth: 0,
-            border: 0,
-            background: 'transparent',
-            padding: 0,
-            textAlign: 'left',
-            cursor: 'pointer',
-            color: 'var(--text-primary)',
-            fontFamily: 'inherit',
-          }}
-        >
-          <div
-            style={{
-              fontSize: 16,
-              fontWeight: 700,
-              lineHeight: 1.35,
-              textDecoration: ok ? 'line-through' : 'none',
-              textDecorationColor: 'var(--text-secondary)',
-              opacity: ok ? 0.45 : 1,
-              transition: 'opacity .2s',
-              wordBreak: 'break-word',
-              textWrap: 'pretty',
-            }}
-          >
-            {t.txt}
-          </div>
-          {(urg && !ok) || !isOp || showDia || t.hora || t.rep === 'diaria' || t.obs ? (
-            <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginTop: 6, alignItems: 'center', opacity: ok ? 0.5 : 1 }}>
-              {urg && !ok ? tag('flame', 'Urgente', 'var(--ms7-error)') : null}
-              {!isOp ? tag(r === 'admin' ? 'shield' : 'user', respNome(r)) : null}
-              {showDia ? tag('calendar', diaL(showDia), showDia < hojeISO() && !ok ? 'var(--ms7-error)' : null) : null}
+        <button type="button" onClick={onEdit} className="ms7t-txt">
+          <div className={'ms7t-t' + (ok ? ' is-done' : '')}>{t.txt}</div>
+          {temTags ? (
+            <div className="ms7t-tags" style={{ opacity: ok ? 0.55 : 1 }}>
+              {urg && !ok ? tag('flame', 'Urgente', 'error') : null}
+              {!isOp ? tag(r === 'admin' ? 'shield' : 'user', respNome(r), r === 'admin' ? 'gray' : 'blue') : null}
+              {showDia ? tag('calendar', diaL(showDia), showDia < hojeISO() && !ok ? 'error' : 'gray') : null}
               {t.hora ? tag('clock', t.hora) : null}
               {t.rep === 'diaria'
                 ? tag(
@@ -394,64 +334,35 @@
                           })
                           .join(' ')
                       : 'Todo dia',
+                    'green',
                   )
                 : null}
-              {t.obs ? (
-                <span
-                  style={{
-                    fontSize: 13,
-                    fontWeight: 500,
-                    color: 'var(--text-secondary)',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    maxWidth: '100%',
-                  }}
-                >
-                  {t.obs}
-                </span>
-              ) : null}
+              {t.obs ? <span className="ms7t-obs">{t.obs}</span> : null}
             </div>
           ) : null}
         </button>
-        <div className="ms7t-act" style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
-          <DS.IconButton icon="pencil" size={32} iconSize={15} label="Editar" onClick={onEdit} />
-          <DS.IconButton icon="trash-2" size={32} iconSize={15} label="Apagar" onClick={onDel} />
+        <div className="ms7t-act">
+          <DS.IconButton icon="pencil" size={30} iconSize={14} label="Editar" onClick={onEdit} />
+          <DS.IconButton icon="trash-2" size={30} iconSize={14} label="Apagar" onClick={onDel} />
         </div>
       </div>
     );
   }
 
-  function Secao({ titulo, cor, itens, vazio, children }) {
+  function Secao({ titulo, cor, itens, vazio, vazioSub, children }) {
     return (
-      <section style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '0 12px 6px' }}>
-          <span style={{ width: 8, height: 8, borderRadius: 4, background: cor, flexShrink: 0 }}></span>
-          <b style={{ fontSize: 13, fontWeight: 800, letterSpacing: '.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+      <section className="ms7t-sec">
+        <div className="ms7t-sec-head">
+          <span className="dot" style={{ background: cor }}></span>
+          <span className="ms7-eyebrow" style={{ color: 'var(--text-primary)' }}>
             {titulo}
-          </b>
-          <span
-            style={{
-              minWidth: 22,
-              height: 22,
-              padding: '0 7px',
-              borderRadius: 11,
-              background: 'var(--surface-muted, var(--ms7-gray-100))',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: 12,
-              fontWeight: 800,
-              color: 'var(--text-secondary)',
-            }}
-          >
-            {itens}
           </span>
-          <span style={{ flex: 1, height: 1, background: 'var(--border-subtle)' }}></span>
+          <span className="n">{itens}</span>
+          <span className="ln"></span>
         </div>
-        <div style={{ background: 'var(--surface-card)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', padding: 6 }}>
+        <div className="ms7-card ms7t-list">
           {children}
-          {vazio ? <div style={{ padding: '16px 12px', fontSize: 14, fontWeight: 600, color: 'var(--text-secondary)' }}>{vazio}</div> : null}
+          {vazio ? <Empty art="Tasks" title={vazio} sub={vazioSub} compact /> : null}
         </div>
       </section>
     );
@@ -645,42 +556,37 @@
       return t.prio === 'urgente' && !feita(t, hoje);
     }).length;
 
+    const R = 24,
+      C = 2 * Math.PI * R;
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 900 }}>
-        <DS.Card>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-            <div style={{ flex: '1 1 220px', minWidth: 0 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 16 }}>
-                <svg width="56" height="56" viewBox="0 0 56 56" style={{ flexShrink: 0 }}>
-                  <circle cx="28" cy="28" r="23" fill="none" stroke="var(--ms7-gray-100)" strokeWidth="6"></circle>
-                  <circle
-                    cx="28"
-                    cy="28"
-                    r="23"
-                    fill="none"
-                    stroke="var(--ms7-green)"
-                    strokeWidth="6"
-                    strokeLinecap="round"
-                    strokeDasharray={(2 * Math.PI * 23).toFixed(1)}
-                    strokeDashoffset={((1 - pct / 100) * 2 * Math.PI * 23).toFixed(1)}
-                    transform="rotate(-90 28 28)"
-                    style={{ transition: 'stroke-dashoffset .5s cubic-bezier(.2,.7,.2,1)' }}
-                  ></circle>
-                  <text x="28" y="32" textAnchor="middle" fontSize="13" fontWeight="800" fill="var(--text-primary)" fontFamily="var(--font-sans)">
-                    {pct + '%'}
-                  </text>
-                </svg>
-                <div>
-                  <div style={{ fontSize: 14, fontWeight: 700, color: 'var(--text-secondary)' }}>
-                    {SEM_L[new Date(hoje + 'T12:00:00').getDay()] + ', ' + dm(hoje)}
-                  </div>
-                  <div style={{ fontSize: 26, fontWeight: 800, letterSpacing: '-0.01em', marginTop: 2 }}>
-                    {deHoje.length ? okH + ' de ' + deHoje.length + ' feitas hoje' : 'Nada para hoje'}
-                  </div>
-                </div>
+      <div className="ms7t-wrap">
+        <DS.Card padding={24}>
+          <div className="ms7t-hero">
+            <div className="ms7t-hero-main">
+              <svg className="ms7t-ring" width="56" height="56" viewBox="0 0 56 56" aria-hidden="true">
+                <circle className="track" cx="28" cy="28" r={R} fill="none" strokeWidth="5"></circle>
+                <circle
+                  className="fill"
+                  cx="28"
+                  cy="28"
+                  r={R}
+                  fill="none"
+                  strokeWidth="5"
+                  strokeLinecap="round"
+                  strokeDasharray={C.toFixed(2)}
+                  strokeDashoffset={((1 - pct / 100) * C).toFixed(2)}
+                  transform="rotate(-90 28 28)"
+                ></circle>
+                <text x="28" y="32" textAnchor="middle" fontSize="12" fontWeight="600" fill="var(--text-primary)" fontFamily="var(--font-sans)" className="ms7-num">
+                  {pct + '%'}
+                </text>
+              </svg>
+              <div style={{ minWidth: 0 }}>
+                <div className="ms7t-date">{SEM_L[new Date(hoje + 'T12:00:00').getDay()] + ', ' + dm(hoje)}</div>
+                <div className="ms7t-h ms7-balance">{deHoje.length ? okH + ' de ' + deHoje.length + ' feitas hoje' : 'Nada para hoje'}</div>
               </div>
             </div>
-            <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap' }}>
+            <div className="ms7t-facts">
               {[
                 ['Atrasadas', atras.length, 'var(--ms7-error)'],
                 ['Urgentes hoje', urgH, 'var(--ms7-orange)'],
@@ -688,98 +594,85 @@
               ].map(function (x) {
                 return (
                   <div key={x[0]}>
-                    <div style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>{x[0]}</div>
-                    <div style={{ fontSize: 20, fontWeight: 800, color: x[1] ? x[2] : 'var(--text-secondary)' }}>{x[1]}</div>
+                    <div className="ms7-eyebrow">{x[0]}</div>
+                    <div className="ms7t-fact-v ms7-num" style={{ color: x[1] ? x[2] : 'var(--text-secondary)' }}>
+                      {x[1]}
+                    </div>
                   </div>
                 );
               })}
             </div>
           </div>
-          <form onSubmit={add} style={{ display: 'flex', gap: 10, marginTop: 16, flexWrap: 'wrap', alignItems: 'center' }}>
-            <div style={{ flex: '1 1 260px', minWidth: 0 }}>
-              <DS.Input
-                icon="plus"
-                value={txt}
-                onChange={function (e) {
-                  setTxt(e.target.value);
-                }}
-                placeholder="Nova tarefa e aperte Enter"
-              />
-            </div>
+          <form onSubmit={add} className="ms7t-new">
+            <DS.Input
+              icon="plus"
+              value={txt}
+              onChange={function (e) {
+                setTxt(e.target.value);
+              }}
+              placeholder="Nova tarefa e aperte Enter"
+              style={{ minHeight: 44 }}
+            />
+            <DS.Button variant="brand" iconLeft="plus" onClick={add} style={{ height: 44 }}>
+              Adicionar
+            </DS.Button>
+          </form>
+          <div className="ms7t-opts">
             {!isOp ? (
-              <select
+              <DS.Select
+                variant="pill"
                 aria-label="Para quem"
                 value={qResp}
                 onChange={function (e) {
                   setQResp(e.target.value);
                 }}
-                style={inpS}
-              >
-                <option value="admin">Gestão</option>
-                <option value="__todos">{'Todos os operadores (' + ops.length + ')'}</option>
-                {ops.map(function (o) {
-                  return (
-                    <option key={o.id} value={o.id}>
-                      {o.nome}
-                    </option>
-                  );
-                })}
-              </select>
+                options={[
+                  { value: 'admin', label: 'Gestão' },
+                  { value: '__todos', label: 'Todos os operadores (' + ops.length + ')' },
+                ].concat(
+                  ops.map(function (o) {
+                    return { value: o.id, label: o.nome };
+                  }),
+                )}
+              />
             ) : null}
             {qRep ? null : (
               <input
                 type="date"
+                className="ms7-native"
                 aria-label="Dia"
                 value={qDia}
                 onChange={function (e) {
                   setQDia(e.target.value);
                 }}
-                style={inpS}
+                style={{ height: 34, borderRadius: 999, fontSize: 12.5, fontWeight: 600 }}
               />
             )}
-            <button
-              type="button"
+            <DS.Button
+              size="sm"
+              variant={qRep ? 'primary' : 'outline'}
+              iconLeft="repeat"
+              aria-pressed={qRep}
               onClick={function () {
                 setQRep(!qRep);
               }}
-              aria-pressed={qRep}
-              style={Object.assign({}, inpS, {
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                cursor: 'pointer',
-                borderColor: qRep ? 'var(--ms7-green)' : 'var(--border-default)',
-                color: qRep ? 'var(--ms7-green)' : 'var(--text-secondary)',
-                background: qRep ? 'color-mix(in oklab, var(--ms7-green) 10%, var(--surface-card))' : 'var(--surface-card)',
-              })}
+              style={{ borderRadius: 999 }}
             >
-              <DS.Icon name="repeat" size={14} />
               Todo dia
-            </button>
-            <button
-              type="button"
+            </DS.Button>
+            <DS.Button
+              size="sm"
+              variant={qUrg ? 'primary' : 'outline'}
+              iconLeft="flame"
+              aria-pressed={qUrg}
               onClick={function () {
                 setQUrg(!qUrg);
               }}
-              aria-pressed={qUrg}
-              style={Object.assign({}, inpS, {
-                display: 'flex',
-                alignItems: 'center',
-                gap: 6,
-                cursor: 'pointer',
-                borderColor: qUrg ? 'var(--ms7-error)' : 'var(--border-default)',
-                color: qUrg ? 'var(--ms7-error)' : 'var(--text-secondary)',
-              })}
+              style={{ borderRadius: 999 }}
             >
-              <DS.Icon name="flame" size={14} />
               Urgente
-            </button>
-            <DS.Button variant="brand" iconLeft="plus" onClick={add}>
-              Adicionar
             </DS.Button>
-          </form>
-          <div style={{ marginTop: 8, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
-            Clique numa tarefa para repetir, mudar o dia ou escrever uma observação.
+            <span className="ms7t-tip">Clique numa tarefa para repetir, mudar o dia ou escrever uma&nbsp;observação.</span>
           </div>
         </DS.Card>
 
@@ -793,24 +686,22 @@
                 ['urgentes', 'Só urgentes', 'var(--ms7-error)'],
               ]}
             />
-            <select
+            <DS.Select
+              variant="pill"
               aria-label="Responsável"
               value={quem}
               onChange={function (e) {
                 setQuem(e.target.value);
               }}
-              style={inpS}
-            >
-              <option value="todos">Todos os responsáveis</option>
-              <option value="admin">Gestão</option>
-              {ops.map(function (o) {
-                return (
-                  <option key={o.id} value={o.id}>
-                    {o.nome}
-                  </option>
-                );
-              })}
-            </select>
+              options={[
+                { value: 'todos', label: 'Todos os responsáveis' },
+                { value: 'admin', label: 'Gestão' },
+              ].concat(
+                ops.map(function (o) {
+                  return { value: o.id, label: o.nome };
+                }),
+              )}
+            />
           </div>
         ) : null}
 
@@ -821,18 +712,18 @@
             })}
           </Secao>
         ) : null}
-        <Secao titulo="Hoje" cor="var(--ms7-green)" itens={deHoje.length} vazio={deHoje.length ? null : 'Nenhuma tarefa para hoje.'}>
+        <Secao titulo="Hoje" cor="var(--ms7-green)" itens={deHoje.length} vazio={deHoje.length ? null : 'Nenhuma tarefa para hoje'} vazioSub={'Escreva uma tarefa acima e aperte Enter: ela entra aqui na hora.'}>
           {deHoje.map(function (t) {
             return row(t, hoje, null);
           })}
         </Secao>
-        <Secao titulo="Amanhã" cor="var(--ms7-lime-500)" itens={deAmanha.length} vazio={deAmanha.length ? null : 'Nada marcado para amanhã.'}>
+        <Secao titulo="Amanhã" cor="var(--ms7-lime-500)" itens={deAmanha.length} vazio={deAmanha.length ? null : 'Nada marcado para amanhã'} vazioSub={'Mude a data ao criar a tarefa para deixá-la pronta para amanhã.'}>
           {deAmanha.map(function (t) {
             return row(t, amanha, null);
           })}
         </Secao>
         {prox.length ? (
-          <Secao titulo="Próximos dias" cor="var(--ms7-gray-400, #A3A79E)" itens={prox.length}>
+          <Secao titulo="Próximos dias" cor="var(--ms7-gray-400)" itens={prox.length}>
             {prox.map(function (t) {
               return row(t, t.data, t.data);
             })}
@@ -847,31 +738,50 @@
           const ks = Object.keys(grp).sort(function (x, y) {
             return x === 'admin' ? -1 : y === 'admin' ? 1 : respNome(x).localeCompare(respNome(y), 'pt-BR');
           });
+          const novaDiaria = (
+            <DS.Button
+              size="sm"
+              variant="outline"
+              iconLeft="plus"
+              onClick={function () {
+                setEdit({ rep: 'diaria', data: hoje, dias: [], resp: isOp ? session.opId : quem !== 'todos' ? quem : 'admin' });
+              }}
+            >
+              Nova tarefa diária
+            </DS.Button>
+          );
           return (
-            <DS.Card>
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap', marginBottom: fixas.length ? 8 : 0 }}>
-                <DS.Icon name="repeat" size={18} color="var(--ms7-green)" />
-                <b style={{ flex: 1, fontSize: 17 }}>{'Tarefas diárias' + (fixas.length ? ' · ' + fixas.length : '')}</b>
-                <DS.Button
-                  size="sm"
-                  variant="secondary"
-                  iconLeft="plus"
-                  onClick={function () {
-                    setEdit({ rep: 'diaria', data: hoje, dias: [], resp: isOp ? session.opId : quem !== 'todos' ? quem : 'admin' });
+            <DS.Card
+              title={'Tarefas diárias' + (fixas.length ? ' · ' + fixas.length : '')}
+              subtitle="Repetem todo dia, ou só nos dias escolhidos, e entram na lista de Hoje."
+              icon={
+                <span
+                  style={{
+                    width: 30,
+                    height: 30,
+                    borderRadius: 9,
+                    flexShrink: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))',
+                    color: 'var(--ms7-green-900)',
                   }}
                 >
-                  Nova tarefa diária
-                </DS.Button>
-              </div>
+                  <DS.Icon name="repeat" size={15} strokeWidth={2} />
+                </span>
+              }
+              action={fixas.length ? novaDiaria : null}
+            >
               {fixas.length ? (
                 ks.map(function (k) {
                   return (
-                    <div key={k} style={{ marginTop: 6 }}>
+                    <div key={k}>
                       {!isOp ? (
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '8px 0 4px' }}>
+                        <div className="ms7t-grp">
                           <DS.Avatar name={respNome(k)} size={24} />
-                          <b style={{ fontSize: 13 }}>{respNome(k)}</b>
-                          <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                          <span style={{ fontSize: 13.5, fontWeight: 600 }}>{respNome(k)}</span>
+                          <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)' }}>
                             {grp[k].length + (grp[k].length === 1 ? ' tarefa' : ' tarefas')}
                           </span>
                         </div>
@@ -880,37 +790,26 @@
                         const ok = feita(x, hoje);
                         const hojeVale = vale(x, hoje);
                         return (
-                          <div
-                            key={x.id}
-                            style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', borderTop: '1px solid var(--border-subtle)' }}
-                          >
+                          <div key={x.id} className="ms7t-fix">
                             <span
                               style={{
-                                width: 8,
-                                height: 8,
-                                borderRadius: 4,
+                                width: 7,
+                                height: 7,
+                                borderRadius: '50%',
                                 flexShrink: 0,
-                                background: !hojeVale ? 'var(--border-default)' : ok ? 'var(--ms7-green)' : 'var(--ms7-orange)',
+                                background: !hojeVale ? 'var(--line-strong)' : ok ? 'var(--ms7-green)' : 'var(--ms7-orange)',
                               }}
                               title={!hojeVale ? 'Não vale hoje' : ok ? 'Feita hoje' : 'Pendente hoje'}
                             ></span>
-                            <span
-                              style={{
-                                flex: 1,
-                                minWidth: 0,
-                                fontSize: 14,
-                                fontWeight: 600,
-                                overflow: 'hidden',
-                                textOverflow: 'ellipsis',
-                                whiteSpace: 'nowrap',
-                              }}
-                            >
-                              {x.txt}
+                            <span className="nm">
+                              <span style={{ minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis' }}>{x.txt}</span>
                               {x.prio === 'urgente' ? (
-                                <span style={{ marginLeft: 6, fontSize: 11, fontWeight: 800, color: 'var(--ms7-error)' }}>URGENTE</span>
+                                <DS.Badge size="sm" variant="soft" tone="error">
+                                  Urgente
+                                </DS.Badge>
                               ) : null}
                             </span>
-                            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                            <span className="when">
                               {(x.dias && x.dias.length && x.dias.length < 7
                                 ? x.dias
                                     .slice()
@@ -948,11 +847,13 @@
                   );
                 })
               ) : (
-                <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                  {isOp
-                    ? 'Nenhuma tarefa diária para você.'
-                    : 'Nenhuma tarefa diária. Crie uma para a Gestão ou para um operador: ela aparece todo dia (ou nos dias escolhidos) na lista de Hoje.'}
-                </div>
+                <Empty
+                  art="Tasks"
+                  compact
+                  title={isOp ? 'Nenhuma tarefa diária para você' : 'Nenhuma tarefa diária'}
+                  sub={isOp ? null : 'Crie uma para a Gestão ou para um operador: ela aparece todo dia (ou nos dias escolhidos) na lista de Hoje.'}
+                  action={novaDiaria}
+                />
               )}
             </DS.Card>
           );
