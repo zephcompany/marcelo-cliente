@@ -1,554 +1,5741 @@
-(function(){
-const DS=window.MS7DesignSystem_5d5172;
-function soX(fn){return function(e){if(e&&e.currentTarget&&e.currentTarget.tagName==='BUTTON')fn();};}
-const CONTA_ST=['Aguardando','À sacar','Sacado','Não sacado','Bloqueado'];
-function gSel(dbx,c){if(c.pixGrupos&&c.pixGrupos.length)return c.pixGrupos;const s=[];(dbx.coops||[]).forEach(function(o){if(o.id!==c.id&&o.opId===c.opId&&['Ativa','Em andamento'].indexOf(o.status)>=0&&DB.platNorm(o.plataforma)===DB.platNorm(c.plataforma))(o.pixGrupos||[]).forEach(function(id){if(s.indexOf(id)<0)s.push(id);});});return s;}
-function limpaCh(k){const v=String(k.valor||'').trim();if(/@/.test(v))return v;if(/^(cpf|cnpj|tel|telefone|celular|phone)$/i.test(String(k.tipo||''))||/^[\d\s().+\-\/]+$/.test(v))return v.replace(/\D/g,'');return v;}
-function chNorm(v){v=String(v||'').trim();if(/@/.test(v))return v.toLowerCase();const d=v.replace(/\D/g,'');if(d.length>=10&&/^[\d\s().+\-\/]+$/.test(v))return d.length>=12&&d.indexOf('55')===0?d.slice(2):d;return v.toLowerCase();}
-function chavesUsadas(dbx,c,exceptId){const P=DB.platNorm(c.plataforma);const s={};(dbx.coops||[]).forEach(function(o){if(o.status==='Lixeira')return;if(o.id!==c.id&&DB.platNorm(o.plataforma)!==P)return;(o.contas||[]).forEach(function(k){if(k.pix&&!(o.id===c.id&&k.id===exceptId))s[chNorm(k.pix)]=1;});});return s;}
-function gruposDaCoop(c){const dbx=DB.get();const gpc=PIXV.gp(dbx,c.plataforma)||'Geral';const grupos=DB.pixOrd((gSel(dbx,c).length)?(dbx.pix||[]).filter(function(g){return g.ativo!==false&&gSel(dbx,c).indexOf(g.id)>=0;}):(dbx.pix||[]).filter(function(g){return g.ativo!==false&&!(dbx.coops||[]).some(function(o){return o.id!==c.id&&o.opId!==c.opId&&['Ativa','Em andamento'].indexOf(o.status)>=0&&DB.platNorm(o.plataforma)===DB.platNorm(c.plataforma)&&(o.pixGrupos||[]).indexOf(g.id)>=0;})&&(!g.opId||g.opId===c.opId)&&(!g.plataforma||g.plataforma===c.plataforma||g.plataforma===gpc);}));
-  const usd=chavesUsadas(dbx,c,null);return {gpc:gpc,lista:grupos.map(function(g){return {g:g,ks:g.chaves.filter(function(k){return PIXV.st(k,gpc).status==='disponivel'&&!usd[chNorm(k.valor)];}).map(limpaCh)};}).filter(function(x){return x.ks.length;})};}
-function copiaTexto(txt,n){const ok=function(){toast(n+(n===1?' chave copiada':' chaves copiadas'));};function fb(){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');ok();}catch(e){toast('Selecione e copie manualmente');}document.body.removeChild(t);}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,fb);else fb();}
-function ChavesModal({c,onClose}){
-  const {Modal,Button}=DS;const r=gruposDaCoop(c);const tot=r.lista.reduce(function(a,x){return a+x.ks.length;},0);const all=r.lista.map(function(x){return x.ks.join('\n');}).join('\n');
-  return <Modal open={true} onClose={onClose} title={tot+(tot===1?' chave PIX disponível':' chaves PIX disponíveis')} subtitle={DB.coopNome(c)+' · separadas por grupo, uma por linha'} footer={<React.Fragment><Button variant="secondary" onClick={onClose}>Fechar</Button><Button variant="brand" iconLeft="copy" disabled={!tot} onClick={function(){copiaTexto(all,tot);}}>{'Copiar todas ('+tot+')'}</Button></React.Fragment>}>
-    <div style={{display:'flex',flexDirection:'column',gap:14}}>{r.lista.map(function(x){const t=x.ks.join('\n');return <div key={x.g.id} style={{display:'flex',flexDirection:'column',gap:6}}>
-      <div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,minWidth:0}}><div style={{fontSize:13,fontWeight:800,textTransform:'uppercase',color:'var(--ms7-green-ink, var(--ms7-green))'}}>{x.g.pagamento||x.g.nome}</div><div style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{(x.g.pagamento?x.g.nome+' · ':'')+x.ks.length+(x.ks.length===1?' chave':' chaves')}</div></div><Button size="sm" variant="outline" iconLeft="copy" onClick={function(){copiaTexto(t,x.ks.length);}}>{'Copiar '+x.ks.length}</Button></div>
-      <textarea readOnly value={t} onFocus={function(e){e.target.select();}} rows={Math.min(14,Math.max(3,x.ks.length))} style={{width:'100%',boxSizing:'border-box',padding:'10px 12px',border:'1px solid var(--border-default)',borderRadius:12,background:'var(--surface-sunken, var(--surface-card))',color:'var(--text-primary)',font:'500 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace',resize:'vertical'}}></textarea>
-    </div>;})}{!tot?<div style={{fontSize:13,color:'var(--text-secondary)'}}>Nenhuma chave disponível para esta cooperação. Escolha os grupos de chaves PIX dentro da cooperação.</div>:null}</div>
-  </Modal>;
-}
-function cpTxt(t,msg){const ok=function(){toast(msg||'Copiado');};function fb(){const x=document.createElement('textarea');x.value=t;document.body.appendChild(x);x.select();try{document.execCommand('copy');ok();}catch(e){}document.body.removeChild(x);}if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(t).then(ok,fb);else fb();}
-function CopyBtn({t,msg}){return t?<button type="button" title="Copiar" onClick={function(e){e.stopPropagation();cpTxt(t,msg);}} style={{display:'inline-flex',padding:3,border:0,background:'transparent',color:'var(--text-secondary)',cursor:'pointer'}}><DS.Icon name="copy" size={14}/></button>:null;}
-function CoopCard({c,onOpen,canAdmin}){
-  const {IconButton}=DS;const k=DB.calc(c);const [ed,setEd]=React.useState(false);const [tr,setTr]=React.useState(false);const [chv,setChv]=React.useState(false);const [ver,setVer]=React.useState(false);
-  const acts=c.status==='Concluída'?(canAdmin?[['rotate-ccw','Reabrir','Em andamento']]:[]):c.status==='Lixeira'?[['undo-2','Restaurar','Ativa']]:c.status==='Ativa'?[['play','Iniciar','Em andamento'],['flag','Finalizar','Finalizada']]:c.status==='Finalizada'?(canAdmin?[['undo-2','Devolver','Em andamento'],['circle-check','Concluir','Concluída']]:[]):[['flag','Finalizar','Finalizada']];
-  const cm=c.contaMae||{};const lk=cm.link?(/^https?:/i.test(cm.link)?cm.link:'https://'+cm.link):'';
-  const STC={'Ativa':'var(--ms7-blue)','Em andamento':'var(--ms7-orange)','Finalizada':'var(--ms7-purple)','Concluída':'var(--ms7-green)','Lixeira':'var(--ms7-gray-500)'};const stc=STC[c.status]||'var(--ms7-gray-500)';
-  const pill=function(txt,col,icon){return <span style={{display:'inline-flex',alignItems:'center',gap:5,height:26,padding:'0 10px',borderRadius:8,background:'color-mix(in oklab, '+col+' 8%, transparent)',border:'1px solid color-mix(in oklab, '+col+' 24%, transparent)',color:'var(--text-primary)',fontSize:13,fontWeight:700,whiteSpace:'nowrap'}}>{icon?<DS.Icon name={icon} size={13} color={col}/>:null}{txt}</span>;};
-  const lbl={color:'var(--text-secondary)',fontWeight:600};const val={fontWeight:700};
-  const V=DB.contasValidas(c);const grp=function(st){const l=V.filter(function(x){return x.status===st;});return [l.length,l.reduce(function(a,x){return a+(+x.saque||0);},0)];};
-  const gA=grp('À sacar'),gS=grp('Sacado'),gB=grp('Bloqueado');
-  const hora=c.criadaEm?new Date(c.criadaEm).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}):'';
-  const fin=acts.find(function(x){return x[2]==='Finalizada'||x[2]==='Concluída';});const outros=acts.filter(function(x){return x!==fin;});
-  return <div style={{background:'var(--surface-card)',borderRadius:'var(--radius-lg)',boxShadow:'var(--shadow-card)',padding:'20px 22px',display:'flex',flexDirection:'column',gap:14,opacity:c.status==='Lixeira'?0.6:1}}>
-    <div style={{display:'flex',gap:'12px 24px',flexWrap:'wrap',alignItems:'flex-start'}}>
-      <div style={{flex:'1 1 320px',minWidth:0,display:'flex',alignItems:'center',gap:8,flexWrap:'wrap'}}>
-        <button type="button" onClick={onOpen} style={{border:0,background:'transparent',padding:0,cursor:'pointer',color:'var(--text-primary)',fontFamily:'inherit',fontSize:20,fontWeight:800,textAlign:'left'}}>{DB.coopNome(c)}</button>
-        {c.linkN?pill(c.linkN,'var(--ms7-blue)','link'):null}
-        {pill(c.status,stc,c.status==='Em andamento'?'play':c.status==='Concluída'?'circle-check':c.status==='Finalizada'?'flag':null)}
-        {pill((c.depositantes||c.contas.length)+' depositantes','var(--ms7-error)')}
-        {c.rollover?pill(c.rollover,'var(--ms7-yellow)'):null}
-        <span style={{display:'inline-flex',alignItems:'center',gap:5,fontSize:13,fontWeight:600,color:'var(--text-secondary)'}}><DS.Icon name="calendar" size={13}/>{DB.fmtDate(c.inicio)+(hora?' '+hora:'')}</span>
-      </div>
-      <div style={{display:'flex',gap:'6px 22px',flexWrap:'wrap',justifyContent:'flex-end'}}>
-        {[['Depósito',k.dep,null],['Re-depósito',k.red,null],['Saque',k.saq,null],[k.lucro>=0?'Resultado':'Resultado',k.lucro,k.lucro>=0?'var(--ms7-green)':'var(--ms7-error)']].map(function(x){return <div key={x[0]} style={{textAlign:'right'}}><div style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{x[0]}</div><div style={{fontSize:16,fontWeight:800,fontVariantNumeric:'tabular-nums',color:x[2]||'var(--text-primary)'}}>{MS7.brl(x[1])}</div></div>;})}
-      </div>
-    </div>
-    {(function(){const cid=cm.id||DB.linkId(cm.link);const icb=function(icon,label,fn){return <button key={label} type="button" title={label} aria-label={label} onClick={fn} style={{width:30,height:30,flexShrink:0,display:'inline-flex',alignItems:'center',justifyContent:'center',borderRadius:8,border:0,background:'transparent',color:'var(--text-secondary)',cursor:'pointer'}}><DS.Icon name={icon} size={15}/></button>;};
-      const F=[['Operador',DB.opName(c.opId),null,[]]];
-      if(!c.proprio)F.push(['Comissão',MS7.brl(k.com),null,[]]);
-      if(cm.usuario)F.push(['Conta mãe',cm.usuario,null,[icb('copy','Copiar usuário',function(){cpTxt(cm.usuario,'Usuário copiado');})]]);
-      if(cm.senha)F.push(['Senha',ver?cm.senha:'••••••••',null,[icb(ver?'eye-off':'eye',ver?'Esconder senha':'Ver senha',function(){setVer(!ver);}),icb('copy','Copiar senha',function(){cpTxt(cm.senha,'Senha copiada');})]]);
-      if(cid)F.push(['ID',cid,null,[icb('copy','Copiar ID',function(){cpTxt(cid,'ID copiado');})],1]);
-      if(lk)F.push(['Link da conta mãe','',null,[icb('external-link','Abrir link',function(){window.open(lk,'_blank','noopener');}),icb('copy','Copiar link',function(){cpTxt(lk,'Link copiado');})]]);
-      if(c.linkDiv)F.push(['Divulgação','',null,[icb('copy','Copiar link de divulgação',function(){cpTxt(c.linkDiv,'Link de divulgação copiado');})]]);
-      return <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(190px,1fr))',gap:8}}>{F.map(function(x){return <div key={x[0]} style={{display:'flex',alignItems:'center',gap:4,minHeight:52,padding:'6px 6px 6px 12px',borderRadius:10,background:'color-mix(in oklab, var(--surface-muted, var(--ms7-gray-100)) 55%, transparent)',border:'1px solid var(--border-subtle)',minWidth:0}}>
-        <div style={{flex:1,minWidth:0}}><div style={{fontSize:11,fontWeight:700,letterSpacing:'.04em',textTransform:'uppercase',color:'var(--text-secondary)'}}>{x[0]}</div>
-          {x[1]?<div style={{fontSize:14,fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:x[4]?'ui-monospace, monospace':'inherit',fontVariantNumeric:'tabular-nums'}} title={x[0]==='Senha'?'':x[1]}>{x[1]}{x[2]?<span style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{' · '+x[2]}</span>:null}</div>:<div style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)'}}>Abrir ou copiar</div>}</div>
-        {x[3]}</div>;})}</div>;})()}
-    {c.descricao?<div style={{display:'flex',gap:10,alignItems:'flex-start',padding:'10px 14px',borderRadius:12,background:'var(--ms7-lime-100)',color:'var(--ms7-green-ink, #005D3B)',fontSize:14,fontWeight:600}}><DS.Icon name="megaphone" size={16} style={{marginTop:2,flexShrink:0}}/><span style={{whiteSpace:'pre-line',minWidth:0}}>{c.descricao}</span></div>:null}
-    <div style={{display:'flex',gap:'10px 8px',alignItems:'center',flexWrap:'wrap',borderTop:'1px solid var(--border-subtle)',paddingTop:12}}>
-      <span style={{fontSize:12,fontWeight:700,letterSpacing:'.06em',color:'var(--text-secondary)'}}>CONTAS</span>
-      {[['À sacar',gA,'var(--ms7-orange)'],['Sacado',gS,'var(--ms7-green)'],['Bloqueado',gB,'var(--ms7-error)']].map(function(x){return <span key={x[0]} style={{display:'inline-flex',alignItems:'center',gap:6,height:30,padding:'0 10px',borderRadius:8,background:'color-mix(in oklab, '+x[2]+' 7%, transparent)',border:'1px solid color-mix(in oklab, '+x[2]+' 22%, transparent)',fontSize:13,fontWeight:700,color:'var(--text-primary)'}}><span style={{width:7,height:7,borderRadius:4,background:x[2]}}></span>{x[0]+' '+x[1][0]}<span style={{color:'var(--text-secondary)',fontWeight:600}}>{'· '+MS7.brl(x[1][1])}</span></span>;})}
-      <span style={{flex:1,minWidth:8}}></span>
-      {c.status==='Finalizada'&&!canAdmin?<span style={{fontSize:12,fontWeight:700,color:'var(--ms7-orange)',display:'flex',alignItems:'center',gap:6}}><DS.Icon name="hourglass" size={14}/>Aguardando análise do admin</span>:null}
-      {c.status!=='Lixeira'?<IconButton icon="key-round" label="Copiar chaves PIX por grupo" size={34} iconSize={16} onClick={function(){setChv(true);}}/>:null}
-      {canAdmin&&c.status!=='Lixeira'?<IconButton icon="pencil" label="Editar (plataforma, operador, salário…)" size={34} iconSize={16} onClick={function(){setEd(true);}}/>:null}
-      {canAdmin&&c.status!=='Lixeira'&&DB.A.pendentesDe(c.id).length?<IconButton icon="arrow-right-left" label="Passar as contas que faltam para outro operador" size={34} iconSize={16} onClick={function(){setTr(true);}}/>:null}
-      {tr?<TransferirModal c={c} onClose={function(){setTr(false);}}/>:null}
-      {canAdmin&&c.status!=='Lixeira'?<IconButton icon="trash-2" label="Mover para lixeira" size={34} iconSize={16} onClick={function(){DB.A.setStatus(c.id,'Lixeira');}}/>:null}
-      {outros.map(function(x){return <DS.Button key={x[1]} size="sm" variant="secondary" iconLeft={x[0]} onClick={function(){DB.A.setStatus(c.id,x[2]);}}>{x[1]}</DS.Button>;})}
-      {fin?<button type="button" onClick={function(){DB.A.setStatus(c.id,fin[2]);}} style={{display:'inline-flex',alignItems:'center',gap:8,height:36,padding:'0 16px',borderRadius:10,border:'1px solid color-mix(in oklab, var(--ms7-green) 30%, transparent)',background:'color-mix(in oklab, var(--ms7-green) 8%, transparent)',color:'var(--text-primary)',fontFamily:'inherit',fontSize:14,fontWeight:800,cursor:'pointer'}}><DS.Icon name={fin[0]} size={16} color="var(--ms7-green)"/>{fin[1]}</button>:null}
-      <DS.Button size="sm" variant="outline" iconRight="arrow-right" onClick={onOpen}>Abrir</DS.Button>
-      {chv?<ChavesModal c={c} onClose={function(){setChv(false);}}/>:null}
-      {canAdmin?<EditCoop c={c} open={ed} onClose={function(){setEd(false);}}/>:null}
-    </div>
-  </div>;
-}
-function CoopWizard({open,onClose,session,bau,meu}){
-  const PR_KEY='ms7op-plat-recentes';const [platRec,setPlatRec]=React.useState(function(){try{const v=JSON.parse(localStorage.getItem(PR_KEY)||'[]');return Array.isArray(v)?v:[];}catch(e){return [];}});
-  const gravaPlat=function(l){setPlatRec(l);try{localStorage.setItem(PR_KEY,JSON.stringify(l));}catch(e){}};
-  const redeDe=function(p){const n=DB.platNorm(String(p||'').replace(/\s*[-·|]?\s*link\s*\d+\s*$/i,''));if(!n)return '';const l=(DB.get().coops||[]).filter(function(x){return x.rede&&DB.platNorm(x.plataforma)===n;});if(!l.length)return '';const num=function(x){return +String(x.id||'').replace(/\D/g,'')||0;};l.sort(function(a,b){const da=String(a.inicio||''),db2=String(b.inicio||'');if(da!==db2)return db2<da?-1:1;return num(b)-num(a);});return l[0].rede;};
-  const setPlat=function(p){const r=redeDe(p);setF(function(x){const n=Object.assign({},x,{plataforma:p});if(r)n.rede=r;return n;});};
-  const tiraPlat=function(p){gravaPlat(platRec.filter(function(x){return x!==p;}));};
-  const guardaPlat=function(p){p=String(p||'').trim().replace(/\s+/g,' ').replace(/\s*[-·|]?\s*link\s*\d+\s*$/i,'').trim();if(!p)return;gravaPlat([p].concat(platRec.filter(function(x){return DB.platNorm(x)!==DB.platNorm(p);})).slice(0,12));};
-  const {Modal,Stepper,Select,Input,Button,Tabs}=DS;const db=DB.get();const semOp=!!window.ms7SemOp||!!meu;const st0=semOp?2:1;const [step,setStep]=React.useState(st0);
-  const init=function(){const oid=session.role==='operador'?session.opId:((db.operadores||[])[0]||{}).id||'';const o0=(db.operadores||[]).find(function(x){return x.id===oid;})||{};return semOp?{opId:'',comTipo:'fixo',comValor:'0',plataforma:'',rede:'',qtd:'20',cliente:''}:{opId:oid,comTipo:o0.comTipo||'pct',comValor:String(o0.comValor!=null?o0.comValor:(o0.pct!=null?o0.pct:15)),plataforma:'',rede:'',qtd:'20',cliente:''};};
-  const [f,setF]=React.useState(init);const [novo,setNovo]=React.useState({col:null,v:''});
-  React.useEffect(function(){if(open){setF(init());setStep(st0);setNovo({col:null,v:''});}},[open]);
-  React.useEffect(function(){setF(function(p){const n=Object.assign({},p);if(n.rede&&!db.redes.some(function(x){return x.nome===n.rede;}))n.rede=(db.redes[0]||{}).nome||'';return n;});},[db.plataformas.length,db.redes.length]);
-  function pick(k,col){return function(e){const v=e.target.value;if(v==='__new'){setNovo({col:col,v:''});return;}u(k)(e);};}
-  function criar(){const nome=String(novo.v||'').trim();if(!nome)return;DB.A.addLista(novo.col,nome);const k=novo.col==='plataformas'?'plataforma':'rede';setF(function(p){const n=Object.assign({},p);n[k]=nome;return n;});setNovo({col:null,v:''});}
-  function NovoBox(col){if(novo.col!==col)return null;return <div style={{gridColumn:'1 / -1',display:'flex',gap:8,alignItems:'flex-end',padding:12,borderRadius:12,background:'var(--ms7-gray-50)'}}><div style={{flex:1}} onKeyDown={function(e){if(e.key==='Enter')criar();}}><Input label={col==='plataformas'?'Nova plataforma':'Nova rede'} value={novo.v} onChange={function(e){setNovo({col:col,v:e.target.value});}} placeholder={col==='plataformas'?'Nome da plataforma':'Nome da rede'}/></div><Button variant="brand" iconLeft="plus" onClick={criar}>Adicionar</Button><Button variant="secondary" onClick={function(){setNovo({col:null,v:''});}}>Cancelar</Button></div>;}
-  function next(){if(step===2&&!f.plataforma){toast('Digite o nome da plataforma');return;}setStep(step+1);}
-  const u=function(k){return function(e){const v=e&&e.target?e.target.value:e;setF(function(p){const n=Object.assign({},p);n[k]=v;if(k==='comTipo'){n.comValor={pct:'15',conta:'25',fixo:'900',misto:'50'}[v];n.comConta=v==='misto'?'2':'';}if(k==='opId'){const o=(db.operadores||[]).find(function(x){return x.id===v;});if(o){n.comTipo=['pct','conta','fixo'].indexOf(o.comTipo)>=0?o.comTipo:'pct';n.comValor=String(o.comValor!=null?o.comValor:(o.pct!=null?o.pct:15));n.comConta=o.comConta!=null?String(o.comConta):'';}}return n;});};};
-  function close(){setStep(st0);setF(init());onClose();}
-  const lb={fontSize:13,fontWeight:600,marginBottom:6};const hn={fontSize:12,fontWeight:600,color:'var(--text-secondary)',marginTop:6};const inS={width:'100%',boxSizing:'border-box',height:44,padding:'0 12px',border:'1px solid var(--border-default)',borderRadius:12,background:'var(--surface-card)',color:'var(--text-primary)',fontFamily:'inherit',fontSize:14,fontWeight:600};
-  const chip=function(on){return {height:34,minWidth:48,padding:'0 12px',borderRadius:10,border:'1px solid '+(on?'var(--ms7-green)':'var(--border-default)'),background:on?'color-mix(in oklab, var(--ms7-lime-500) 28%, transparent)':'transparent',color:on?'var(--ms7-green-ink, var(--ms7-green))':'var(--text-primary)',fontFamily:'inherit',fontSize:13,fontWeight:700,cursor:'pointer'};};
-  const est=(+f.qtd||0)*(parseFloat(String(f.mediaDep||'').replace(',','.'))||0);
-  const falta=[!String(f.plataforma||'').trim()?'plataforma':null,!f.rede?'rede':null].filter(Boolean);
-  const prev=f.comTipo==='misto'?'Ex.: 45 contas → '+MS7.brl(parseFloat(String(f.comValor).replace(',','.'))||0)+' + 45 × '+MS7.brl(parseFloat(String(f.comConta||'').replace(',','.'))||0)+' = '+MS7.brl((parseFloat(String(f.comValor).replace(',','.'))||0)+45*(parseFloat(String(f.comConta||'').replace(',','.'))||0)):f.comTipo==='pct'?'Ex.: resultado de R$ 4.000 → comissão de '+MS7.brl(4000*(parseFloat(f.comValor)||0)/100):f.comTipo==='conta'?'Ex.: 10 contas → comissão de '+MS7.brl(10*(parseFloat(f.comValor)||0)):'Valor total que o operador recebe por esta cooperação (todas as contas): '+MS7.brl(parseFloat(String(f.comValor).replace(',','.'))||0);
-  return <Modal open={open} onClose={soX(close)} title={bau?'Novo baú':'Nova cooperação'} size="md" footer={<React.Fragment>
-      <Button variant="secondary" iconLeft="chevron-left" onClick={function(){step===st0?close():setStep(step-1);}}>{step===st0?'Cancelar':'Voltar'}</Button>
-      {step<3?<Button iconRight="chevron-right" onClick={next}>Próxima etapa</Button>:<Button variant="brand" iconLeft="check" onClick={function(){if(!f.opId&&!semOp){toast('Cadastre um operador em Gestão → Operadores antes de criar a cooperação');return;}guardaPlat(f.plataforma);DB.A.createCoop(Object.assign({},f,{tipo:bau?'bau':'coop'},(meu||f.opId==='__eu')?{proprio:true,opId:'',comTipo:'fixo',comValor:'0',comConta:''}:{}));close();}}>{meu?'Criar minha cooperação':bau?'Criar baú':'Criar cooperação'}</Button>}</React.Fragment>}>
-    {semOp?null:<Stepper steps={3} current={step}/>}
-    <h4 style={{margin:'18px 0 14px',fontSize:18,fontWeight:700}}>{['Comissão','Informações','Valores'][step-1]}</h4>
-    {step===1?<div style={{display:'flex',flexDirection:'column',gap:14}}>
-      {session.role!=='operador'?<Select label="Operador" required value={f.opId} onChange={u('opId')} options={[{value:'__eu',label:'Eu (admin) · sem operador'}].concat(db.operadores.filter(function(o){return o.ativo;}).map(function(o){return {value:o.id,label:o.nome};}))}/>:null}
-      {f.opId==='__eu'?<div style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)',lineHeight:1.5}}>Cooperação sua: sem operador e sem comissão. Fica junto das outras em Cooperações e entra no lucro total.</div>:null}
-      {f.opId==='__eu'?null:<div style={{fontSize:13,fontWeight:600}}>Tipo de comissão</div>}
-      {f.opId==='__eu'?null:<Tabs value={f.comTipo} onChange={u('comTipo')} items={[{id:'pct',label:'% do lucro'},{id:'conta',label:'Valor por conta'},{id:'fixo',label:'Valor fixo'}]}/>}
-      {f.opId==='__eu'?null:f.comTipo==='misto'?<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}><Input label="Valor fixo" prefix="R$" value={f.comValor} onChange={u('comValor')}/><Input label="Mais por conta" prefix="R$" value={f.comConta||''} onChange={u('comConta')}/><div style={{gridColumn:'1 / -1',fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{prev}</div></div>:<Input label={f.comTipo==='pct'?'Percentual do lucro':f.comTipo==='conta'?'Valor por conta':'Valor fixo da cooperação'} prefix={f.comTipo==='pct'?'%':'R$'} value={f.comValor} onChange={u('comValor')} hint={prev}/>}
-    </div>:null}
-    {step===2?<div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-      <Select label="Rede" value={f.rede} onChange={pick('rede','redes')} options={[{value:'',label:db.redes.length?'Sem rede':'Nenhuma rede cadastrada'}].concat(db.redes.map(function(r){return {value:r.nome,label:r.nome};})).concat([{value:'__new',label:'+ Cadastrar nova rede'}])}/>
-      <div style={{display:'flex',flexDirection:'column',gap:8}}>
-        <Input label="Plataforma" required placeholder="Ex.: Azul 777" value={f.plataforma} onChange={function(e){setPlat(e.target.value);}} hint={redeDe(f.plataforma)?'Rede escolhida sozinha: '+redeDe(f.plataforma)+' (usada antes nesta plataforma)':'Primeira vez: escolha a rede. Nas próximas ela vem sozinha.'}/>
-        {platRec.length?<div style={{display:'flex',flexWrap:'wrap',gap:6}}>{platRec.map(function(p){const on=DB.platNorm(p)===DB.platNorm(f.plataforma);return <span key={p} style={{display:'inline-flex',alignItems:'center',height:30,borderRadius:15,border:'1px solid '+(on?'var(--ms7-green)':'var(--border-default)'),background:on?'color-mix(in oklab, var(--ms7-lime-500) 22%, transparent)':'var(--surface-card)',overflow:'hidden'}}>
-          <button type="button" onClick={function(){setPlat(p);}} style={{height:'100%',padding:'0 4px 0 12px',border:0,background:'transparent',color:'var(--text-primary)',fontFamily:'inherit',fontSize:13,fontWeight:700,lineHeight:1,cursor:'pointer'}}>{p}</button>
-          <button type="button" aria-label={'Tirar '+p} title="Tirar da lista" onClick={function(){tiraPlat(p);}} style={{width:28,height:'100%',border:0,background:'transparent',color:'var(--text-secondary)',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center'}}><DS.Icon name="x" size={14}/></button>
-        </span>;})}</div>:null}
-      </div>
-      <Input label="Link" placeholder={f.opId&&f.opId!=='__eu'?'Automático: '+DB.proxLink(f.opId):'Automático (Link 1, 2, 3…)'} value={f.linkN||''} onChange={u('linkN')} hint="Em branco: numera sozinho por operador"/>
-      {NovoBox('redes')}
-      <Input label="Qtd. depositantes" type="number" value={f.qtd} onChange={u('qtd')}/>
-      <Input label="Link da conta mãe" icon="link" placeholder="https://" value={f.link||''} onChange={u('link')}/>
-      <Input label="Usuário da conta mãe" icon="user" placeholder="usuário" value={f.muser||''} onChange={u('muser')}/>
-      <Input label="Senha da conta mãe" icon="lock" placeholder="senha" value={f.msenha||''} onChange={u('msenha')}/>
-      <div style={{gridColumn:'1 / -1'}}><Input label="Nome do cliente" placeholder="Ex.: nome do blogueiro" value={f.cliente} onChange={u('cliente')}/></div>
-    </div>:null}
-    {step===3?<div style={{display:'flex',flexDirection:'column',gap:16}}>
-      <Input label="Salário" prefix="R$" placeholder="0,00" value={f.salario||''} onChange={u('salario')} hint="Opcional (R$ 0,00 para comissão pura)"/>
-      <div style={{border:'1px solid var(--border-default)',borderRadius:14,padding:16,display:'flex',flexDirection:'column',gap:14}}>
-        <Input label="Média de depósito" prefix="R$" placeholder="0,00" value={f.mediaDep||''} onChange={u('mediaDep')}/>
-        <div style={{display:'flex',flexDirection:'column',gap:8}}>
-          <span style={{fontSize:13,fontWeight:600}}>Apostas válidas (multiplicador)</span>
-          <div style={{display:'flex',gap:8,flexWrap:'wrap'}}>{['N/A','2x','2.5x','3x','3.5x','4x'].map(function(x){const on=(f.rollover||'N/A')===x;return <button key={x} onClick={function(){setF(function(p){return Object.assign({},p,{rollover:x==='N/A'?'':x});});}} style={{height:40,minWidth:60,padding:'0 14px',borderRadius:10,border:'2px solid '+(on?'var(--ms7-green-900)':'var(--border-default)'),background:on?'var(--ms7-lime-100)':'transparent',color:'var(--text-primary)',fontFamily:'inherit',fontSize:15,fontWeight:700,cursor:'pointer'}}>{x}</button>;})}</div>
-          {f.rollover&&f.mediaDep?<span style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{'Cada conta precisa apostar '+MS7.brl((parseFloat(String(f.mediaDep).replace(',','.'))||0)*(parseFloat(f.rollover)||0))+' em apostas válidas'}</span>:null}
+(function () {
+  const DS = window.MS7DesignSystem_5d5172;
+  function soX(fn) {
+    return function (e) {
+      if (e && e.currentTarget && e.currentTarget.tagName === 'BUTTON') fn();
+    };
+  }
+  const CONTA_ST = ['Aguardando', 'À sacar', 'Sacado', 'Não sacado', 'Bloqueado'];
+  function gSel(dbx, c) {
+    if (c.pixGrupos && c.pixGrupos.length) return c.pixGrupos;
+    const s = [];
+    (dbx.coops || []).forEach(function (o) {
+      if (
+        o.id !== c.id &&
+        o.opId === c.opId &&
+        ['Ativa', 'Em andamento'].indexOf(o.status) >= 0 &&
+        DB.platNorm(o.plataforma) === DB.platNorm(c.plataforma)
+      )
+        (o.pixGrupos || []).forEach(function (id) {
+          if (s.indexOf(id) < 0) s.push(id);
+        });
+    });
+    return s;
+  }
+  function limpaCh(k) {
+    const v = String(k.valor || '').trim();
+    if (/@/.test(v)) return v;
+    if (/^(cpf|cnpj|tel|telefone|celular|phone)$/i.test(String(k.tipo || '')) || /^[\d\s().+\-\/]+$/.test(v)) return v.replace(/\D/g, '');
+    return v;
+  }
+  function chNorm(v) {
+    v = String(v || '').trim();
+    if (/@/.test(v)) return v.toLowerCase();
+    const d = v.replace(/\D/g, '');
+    if (d.length >= 10 && /^[\d\s().+\-\/]+$/.test(v)) return d.length >= 12 && d.indexOf('55') === 0 ? d.slice(2) : d;
+    return v.toLowerCase();
+  }
+  function chavesUsadas(dbx, c, exceptId) {
+    const P = DB.platNorm(c.plataforma);
+    const s = {};
+    (dbx.coops || []).forEach(function (o) {
+      if (o.status === 'Lixeira') return;
+      if (o.id !== c.id && DB.platNorm(o.plataforma) !== P) return;
+      (o.contas || []).forEach(function (k) {
+        if (k.pix && !(o.id === c.id && k.id === exceptId)) s[chNorm(k.pix)] = 1;
+      });
+    });
+    return s;
+  }
+  function gruposDaCoop(c) {
+    const dbx = DB.get();
+    const gpc = PIXV.gp(dbx, c.plataforma) || 'Geral';
+    const grupos = DB.pixOrd(
+      gSel(dbx, c).length
+        ? (dbx.pix || []).filter(function (g) {
+            return g.ativo !== false && gSel(dbx, c).indexOf(g.id) >= 0;
+          })
+        : (dbx.pix || []).filter(function (g) {
+            return (
+              g.ativo !== false &&
+              !(dbx.coops || []).some(function (o) {
+                return (
+                  o.id !== c.id &&
+                  o.opId !== c.opId &&
+                  ['Ativa', 'Em andamento'].indexOf(o.status) >= 0 &&
+                  DB.platNorm(o.plataforma) === DB.platNorm(c.plataforma) &&
+                  (o.pixGrupos || []).indexOf(g.id) >= 0
+                );
+              }) &&
+              (!g.opId || g.opId === c.opId) &&
+              (!g.plataforma || g.plataforma === c.plataforma || g.plataforma === gpc)
+            );
+          }),
+    );
+    const usd = chavesUsadas(dbx, c, null);
+    return {
+      gpc: gpc,
+      lista: grupos
+        .map(function (g) {
+          return {
+            g: g,
+            ks: g.chaves
+              .filter(function (k) {
+                return PIXV.st(k, gpc).status === 'disponivel' && !usd[chNorm(k.valor)];
+              })
+              .map(limpaCh),
+          };
+        })
+        .filter(function (x) {
+          return x.ks.length;
+        }),
+    };
+  }
+  function copiaTexto(txt, n) {
+    const ok = function () {
+      toast(n + (n === 1 ? ' chave copiada' : ' chaves copiadas'));
+    };
+    function fb() {
+      const t = document.createElement('textarea');
+      t.value = txt;
+      document.body.appendChild(t);
+      t.select();
+      try {
+        document.execCommand('copy');
+        ok();
+      } catch (e) {
+        toast('Selecione e copie manualmente');
+      }
+      document.body.removeChild(t);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(txt).then(ok, fb);
+    else fb();
+  }
+  function ChavesModal({ c, onClose }) {
+    const { Modal, Button } = DS;
+    const r = gruposDaCoop(c);
+    const tot = r.lista.reduce(function (a, x) {
+      return a + x.ks.length;
+    }, 0);
+    const all = r.lista
+      .map(function (x) {
+        return x.ks.join('\n');
+      })
+      .join('\n');
+    return (
+      <Modal
+        open={true}
+        onClose={onClose}
+        title={tot + (tot === 1 ? ' chave PIX disponível' : ' chaves PIX disponíveis')}
+        subtitle={DB.coopNome(c) + ' · separadas por grupo, uma por linha'}
+        footer={
+          <React.Fragment>
+            <Button variant="secondary" onClick={onClose}>
+              Fechar
+            </Button>
+            <Button
+              variant="brand"
+              iconLeft="copy"
+              disabled={!tot}
+              onClick={function () {
+                copiaTexto(all, tot);
+              }}
+            >
+              {'Copiar todas (' + tot + ')'}
+            </Button>
+          </React.Fragment>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          {r.lista.map(function (x) {
+            const t = x.ks.join('\n');
+            return (
+              <div key={x.g.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase', color: 'var(--ms7-green-ink, var(--ms7-green))' }}>
+                      {x.g.pagamento || x.g.nome}
+                    </div>
+                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      {(x.g.pagamento ? x.g.nome + ' · ' : '') + x.ks.length + (x.ks.length === 1 ? ' chave' : ' chaves')}
+                    </div>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    iconLeft="copy"
+                    onClick={function () {
+                      copiaTexto(t, x.ks.length);
+                    }}
+                  >
+                    {'Copiar ' + x.ks.length}
+                  </Button>
+                </div>
+                <textarea
+                  readOnly
+                  value={t}
+                  onFocus={function (e) {
+                    e.target.select();
+                  }}
+                  rows={Math.min(14, Math.max(3, x.ks.length))}
+                  style={{
+                    width: '100%',
+                    boxSizing: 'border-box',
+                    padding: '10px 12px',
+                    border: '1px solid var(--border-default)',
+                    borderRadius: 12,
+                    background: 'var(--surface-sunken, var(--surface-card))',
+                    color: 'var(--text-primary)',
+                    font: '500 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace',
+                    resize: 'vertical',
+                  }}
+                ></textarea>
+              </div>
+            );
+          })}
+          {!tot ? (
+            <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>
+              Nenhuma chave disponível para esta cooperação. Escolha os grupos de chaves PIX dentro da cooperação.
+            </div>
+          ) : null}
+        </div>
+      </Modal>
+    );
+  }
+  function cpTxt(t, msg) {
+    const ok = function () {
+      toast(msg || 'Copiado');
+    };
+    function fb() {
+      const x = document.createElement('textarea');
+      x.value = t;
+      document.body.appendChild(x);
+      x.select();
+      try {
+        document.execCommand('copy');
+        ok();
+      } catch (e) {}
+      document.body.removeChild(x);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(t).then(ok, fb);
+    else fb();
+  }
+  function CopyBtn({ t, msg }) {
+    return t ? (
+      <button
+        type="button"
+        title="Copiar"
+        onClick={function (e) {
+          e.stopPropagation();
+          cpTxt(t, msg);
+        }}
+        style={{ display: 'inline-flex', padding: 3, border: 0, background: 'transparent', color: 'var(--text-secondary)', cursor: 'pointer' }}
+      >
+        <DS.Icon name="copy" size={14} />
+      </button>
+    ) : null;
+  }
+  function CoopCard({ c, onOpen, canAdmin }) {
+    const { IconButton } = DS;
+    const k = DB.calc(c);
+    const [ed, setEd] = React.useState(false);
+    const [tr, setTr] = React.useState(false);
+    const [chv, setChv] = React.useState(false);
+    const [ver, setVer] = React.useState(false);
+    const acts =
+      c.status === 'Concluída'
+        ? canAdmin
+          ? [['rotate-ccw', 'Reabrir', 'Em andamento']]
+          : []
+        : c.status === 'Lixeira'
+          ? [['undo-2', 'Restaurar', 'Ativa']]
+          : c.status === 'Ativa'
+            ? [
+                ['play', 'Iniciar', 'Em andamento'],
+                ['flag', 'Finalizar', 'Finalizada'],
+              ]
+            : c.status === 'Finalizada'
+              ? canAdmin
+                ? [
+                    ['undo-2', 'Devolver', 'Em andamento'],
+                    ['circle-check', 'Concluir', 'Concluída'],
+                  ]
+                : []
+              : [['flag', 'Finalizar', 'Finalizada']];
+    const cm = c.contaMae || {};
+    const lk = cm.link ? (/^https?:/i.test(cm.link) ? cm.link : 'https://' + cm.link) : '';
+    const STC = {
+      Ativa: 'var(--ms7-blue)',
+      'Em andamento': 'var(--ms7-orange)',
+      Finalizada: 'var(--ms7-purple)',
+      Concluída: 'var(--ms7-green)',
+      Lixeira: 'var(--ms7-gray-500)',
+    };
+    const stc = STC[c.status] || 'var(--ms7-gray-500)';
+    const pill = function (txt, col, icon) {
+      return (
+        <span
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: 5,
+            height: 26,
+            padding: '0 10px',
+            borderRadius: 8,
+            background: 'color-mix(in oklab, ' + col + ' 8%, transparent)',
+            border: '1px solid color-mix(in oklab, ' + col + ' 24%, transparent)',
+            color: 'var(--text-primary)',
+            fontSize: 13,
+            fontWeight: 700,
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {icon ? <DS.Icon name={icon} size={13} color={col} /> : null}
+          {txt}
+        </span>
+      );
+    };
+    const lbl = { color: 'var(--text-secondary)', fontWeight: 600 };
+    const val = { fontWeight: 700 };
+    const V = DB.contasValidas(c);
+    const grp = function (st) {
+      const l = V.filter(function (x) {
+        return x.status === st;
+      });
+      return [
+        l.length,
+        l.reduce(function (a, x) {
+          return a + (+x.saque || 0);
+        }, 0),
+      ];
+    };
+    const gA = grp('À sacar'),
+      gS = grp('Sacado'),
+      gB = grp('Bloqueado');
+    const hora = c.criadaEm ? new Date(c.criadaEm).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) : '';
+    const fin = acts.find(function (x) {
+      return x[2] === 'Finalizada' || x[2] === 'Concluída';
+    });
+    const outros = acts.filter(function (x) {
+      return x !== fin;
+    });
+    return (
+      <div
+        style={{
+          background: 'var(--surface-card)',
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: 'var(--shadow-card)',
+          padding: '20px 22px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 14,
+          opacity: c.status === 'Lixeira' ? 0.6 : 1,
+        }}
+      >
+        <div style={{ display: 'flex', gap: '12px 24px', flexWrap: 'wrap', alignItems: 'flex-start' }}>
+          <div style={{ flex: '1 1 320px', minWidth: 0, display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              onClick={onOpen}
+              style={{
+                border: 0,
+                background: 'transparent',
+                padding: 0,
+                cursor: 'pointer',
+                color: 'var(--text-primary)',
+                fontFamily: 'inherit',
+                fontSize: 20,
+                fontWeight: 800,
+                textAlign: 'left',
+              }}
+            >
+              {DB.coopNome(c)}
+            </button>
+            {c.linkN ? pill(c.linkN, 'var(--ms7-blue)', 'link') : null}
+            {pill(
+              c.status,
+              stc,
+              c.status === 'Em andamento' ? 'play' : c.status === 'Concluída' ? 'circle-check' : c.status === 'Finalizada' ? 'flag' : null,
+            )}
+            {pill((c.depositantes || c.contas.length) + ' depositantes', 'var(--ms7-error)')}
+            {c.rollover ? pill(c.rollover, 'var(--ms7-yellow)') : null}
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5, fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+              <DS.Icon name="calendar" size={13} />
+              {DB.fmtDate(c.inicio) + (hora ? ' ' + hora : '')}
+            </span>
+          </div>
+          <div style={{ display: 'flex', gap: '6px 22px', flexWrap: 'wrap', justifyContent: 'flex-end' }}>
+            {[
+              ['Depósito', k.dep, null],
+              ['Re-depósito', k.red, null],
+              ['Saque', k.saq, null],
+              [k.lucro >= 0 ? 'Resultado' : 'Resultado', k.lucro, k.lucro >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)'],
+            ].map(function (x) {
+              return (
+                <div key={x[0]} style={{ textAlign: 'right' }}>
+                  <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{x[0]}</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, fontVariantNumeric: 'tabular-nums', color: x[2] || 'var(--text-primary)' }}>
+                    {MS7.brl(x[1])}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+        {(function () {
+          const cid = cm.id || DB.linkId(cm.link);
+          const icb = function (icon, label, fn) {
+            return (
+              <button
+                key={label}
+                type="button"
+                title={label}
+                aria-label={label}
+                onClick={fn}
+                style={{
+                  width: 30,
+                  height: 30,
+                  flexShrink: 0,
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  borderRadius: 8,
+                  border: 0,
+                  background: 'transparent',
+                  color: 'var(--text-secondary)',
+                  cursor: 'pointer',
+                }}
+              >
+                <DS.Icon name={icon} size={15} />
+              </button>
+            );
+          };
+          const F = [['Operador', DB.opName(c.opId), null, []]];
+          if (!c.proprio) F.push(['Comissão', MS7.brl(k.com), null, []]);
+          if (cm.usuario)
+            F.push([
+              'Conta mãe',
+              cm.usuario,
+              null,
+              [
+                icb('copy', 'Copiar usuário', function () {
+                  cpTxt(cm.usuario, 'Usuário copiado');
+                }),
+              ],
+            ]);
+          if (cm.senha)
+            F.push([
+              'Senha',
+              ver ? cm.senha : '••••••••',
+              null,
+              [
+                icb(ver ? 'eye-off' : 'eye', ver ? 'Esconder senha' : 'Ver senha', function () {
+                  setVer(!ver);
+                }),
+                icb('copy', 'Copiar senha', function () {
+                  cpTxt(cm.senha, 'Senha copiada');
+                }),
+              ],
+            ]);
+          if (cid)
+            F.push([
+              'ID',
+              cid,
+              null,
+              [
+                icb('copy', 'Copiar ID', function () {
+                  cpTxt(cid, 'ID copiado');
+                }),
+              ],
+              1,
+            ]);
+          if (lk)
+            F.push([
+              'Link da conta mãe',
+              '',
+              null,
+              [
+                icb('external-link', 'Abrir link', function () {
+                  window.open(lk, '_blank', 'noopener');
+                }),
+                icb('copy', 'Copiar link', function () {
+                  cpTxt(lk, 'Link copiado');
+                }),
+              ],
+            ]);
+          if (c.linkDiv)
+            F.push([
+              'Divulgação',
+              '',
+              null,
+              [
+                icb('copy', 'Copiar link de divulgação', function () {
+                  cpTxt(c.linkDiv, 'Link de divulgação copiado');
+                }),
+              ],
+            ]);
+          return (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', gap: 8 }}>
+              {F.map(function (x) {
+                return (
+                  <div
+                    key={x[0]}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 4,
+                      minHeight: 52,
+                      padding: '6px 6px 6px 12px',
+                      borderRadius: 10,
+                      background: 'color-mix(in oklab, var(--surface-muted, var(--ms7-gray-100)) 55%, transparent)',
+                      border: '1px solid var(--border-subtle)',
+                      minWidth: 0,
+                    }}
+                  >
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div
+                        style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}
+                      >
+                        {x[0]}
+                      </div>
+                      {x[1] ? (
+                        <div
+                          style={{
+                            fontSize: 14,
+                            fontWeight: 700,
+                            overflow: 'hidden',
+                            textOverflow: 'ellipsis',
+                            whiteSpace: 'nowrap',
+                            fontFamily: x[4] ? 'ui-monospace, monospace' : 'inherit',
+                            fontVariantNumeric: 'tabular-nums',
+                          }}
+                          title={x[0] === 'Senha' ? '' : x[1]}
+                        >
+                          {x[1]}
+                          {x[2] ? <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{' · ' + x[2]}</span> : null}
+                        </div>
+                      ) : (
+                        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Abrir ou copiar</div>
+                      )}
+                    </div>
+                    {x[3]}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+        {c.descricao ? (
+          <div
+            style={{
+              display: 'flex',
+              gap: 10,
+              alignItems: 'flex-start',
+              padding: '10px 14px',
+              borderRadius: 12,
+              background: 'var(--ms7-lime-100)',
+              color: 'var(--ms7-green-ink, #005D3B)',
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            <DS.Icon name="megaphone" size={16} style={{ marginTop: 2, flexShrink: 0 }} />
+            <span style={{ whiteSpace: 'pre-line', minWidth: 0 }}>{c.descricao}</span>
+          </div>
+        ) : null}
+        <div
+          style={{
+            display: 'flex',
+            gap: '10px 8px',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            borderTop: '1px solid var(--border-subtle)',
+            paddingTop: 12,
+          }}
+        >
+          <span style={{ fontSize: 12, fontWeight: 700, letterSpacing: '.06em', color: 'var(--text-secondary)' }}>CONTAS</span>
+          {[
+            ['À sacar', gA, 'var(--ms7-orange)'],
+            ['Sacado', gS, 'var(--ms7-green)'],
+            ['Bloqueado', gB, 'var(--ms7-error)'],
+          ].map(function (x) {
+            return (
+              <span
+                key={x[0]}
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 6,
+                  height: 30,
+                  padding: '0 10px',
+                  borderRadius: 8,
+                  background: 'color-mix(in oklab, ' + x[2] + ' 7%, transparent)',
+                  border: '1px solid color-mix(in oklab, ' + x[2] + ' 22%, transparent)',
+                  fontSize: 13,
+                  fontWeight: 700,
+                  color: 'var(--text-primary)',
+                }}
+              >
+                <span style={{ width: 7, height: 7, borderRadius: 4, background: x[2] }}></span>
+                {x[0] + ' ' + x[1][0]}
+                <span style={{ color: 'var(--text-secondary)', fontWeight: 600 }}>{'· ' + MS7.brl(x[1][1])}</span>
+              </span>
+            );
+          })}
+          <span style={{ flex: 1, minWidth: 8 }}></span>
+          {c.status === 'Finalizada' && !canAdmin ? (
+            <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--ms7-orange)', display: 'flex', alignItems: 'center', gap: 6 }}>
+              <DS.Icon name="hourglass" size={14} />
+              Aguardando análise do admin
+            </span>
+          ) : null}
+          {c.status !== 'Lixeira' ? (
+            <IconButton
+              icon="key-round"
+              label="Copiar chaves PIX por grupo"
+              size={34}
+              iconSize={16}
+              onClick={function () {
+                setChv(true);
+              }}
+            />
+          ) : null}
+          {canAdmin && c.status !== 'Lixeira' ? (
+            <IconButton
+              icon="pencil"
+              label="Editar (plataforma, operador, salário…)"
+              size={34}
+              iconSize={16}
+              onClick={function () {
+                setEd(true);
+              }}
+            />
+          ) : null}
+          {canAdmin && c.status !== 'Lixeira' && DB.A.pendentesDe(c.id).length ? (
+            <IconButton
+              icon="arrow-right-left"
+              label="Passar as contas que faltam para outro operador"
+              size={34}
+              iconSize={16}
+              onClick={function () {
+                setTr(true);
+              }}
+            />
+          ) : null}
+          {tr ? (
+            <TransferirModal
+              c={c}
+              onClose={function () {
+                setTr(false);
+              }}
+            />
+          ) : null}
+          {canAdmin && c.status !== 'Lixeira' ? (
+            <IconButton
+              icon="trash-2"
+              label="Mover para lixeira"
+              size={34}
+              iconSize={16}
+              onClick={function () {
+                DB.A.setStatus(c.id, 'Lixeira');
+              }}
+            />
+          ) : null}
+          {outros.map(function (x) {
+            return (
+              <DS.Button
+                key={x[1]}
+                size="sm"
+                variant="secondary"
+                iconLeft={x[0]}
+                onClick={function () {
+                  DB.A.setStatus(c.id, x[2]);
+                }}
+              >
+                {x[1]}
+              </DS.Button>
+            );
+          })}
+          {fin ? (
+            <button
+              type="button"
+              onClick={function () {
+                DB.A.setStatus(c.id, fin[2]);
+              }}
+              style={{
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: 8,
+                height: 36,
+                padding: '0 16px',
+                borderRadius: 10,
+                border: '1px solid color-mix(in oklab, var(--ms7-green) 30%, transparent)',
+                background: 'color-mix(in oklab, var(--ms7-green) 8%, transparent)',
+                color: 'var(--text-primary)',
+                fontFamily: 'inherit',
+                fontSize: 14,
+                fontWeight: 800,
+                cursor: 'pointer',
+              }}
+            >
+              <DS.Icon name={fin[0]} size={16} color="var(--ms7-green)" />
+              {fin[1]}
+            </button>
+          ) : null}
+          <DS.Button size="sm" variant="outline" iconRight="arrow-right" onClick={onOpen}>
+            Abrir
+          </DS.Button>
+          {chv ? (
+            <ChavesModal
+              c={c}
+              onClose={function () {
+                setChv(false);
+              }}
+            />
+          ) : null}
+          {canAdmin ? (
+            <EditCoop
+              c={c}
+              open={ed}
+              onClose={function () {
+                setEd(false);
+              }}
+            />
+          ) : null}
         </div>
       </div>
-      <Input label="Descrição das apostas (opcional)" placeholder="Ex: Apostas válidas entre 2x e 10x" value={f.descricao||''} onChange={u('descricao')}/>
-    </div>:null}
-  </Modal>;
-}
-function ContaForm({conta,onClose,onSave}){
-  const {Modal,Input,Select,Button}=DS;const [f,setF]=React.useState(conta);
-  const u=function(k){return function(e){const v=e.target.value;setF(function(p){const n=Object.assign({},p);n[k]=v;return n;});};};
-  const res=(+f.saque||0)-(+f.deposito||0)-(+f.redeposito||0);
-  return <Modal open={true} onClose={onClose} title={conta.id?'Editar conta':'Adicionar conta'} footer={<React.Fragment><Button variant="secondary" onClick={onClose}>Cancelar</Button><Button variant="brand" iconLeft="check" onClick={function(){if(!f.usuario){toast('Informe o usuário');return;}onSave(f);}}>Salvar</Button></React.Fragment>}>
-    <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:14}}>
-      <Input label="Usuário" required value={f.usuario} onChange={u('usuario')}/><Input label="Senha" type="password" value={f.senha} onChange={u('senha')}/>
-      <Input label="Depósito" prefix="R$" type="number" value={f.deposito} onChange={u('deposito')}/><Input label="Re-depósito" prefix="R$" type="number" value={f.redeposito} onChange={u('redeposito')}/>
-      <Input label="Saque" prefix="R$" type="number" value={f.saque} onChange={u('saque')}/><Select label="Status" value={f.status} onChange={u('status')} options={CONTA_ST}/>
-      <div style={{gridColumn:'1 / -1'}}><Input label="Observação" value={f.obs} onChange={u('obs')}/></div>
-    </div>
-    <div style={{marginTop:14,fontSize:14,fontWeight:600}}>{'Resultado da conta: '}<span style={{color:res>=0?'var(--ms7-green)':'var(--ms7-error)'}}>{MS7.brl(res)}</span>{f.status==='Bloqueado'?<span style={{color:'var(--ms7-error)'}}> · vai gerar alerta de conta bloqueada</span>:null}</div>
-  </Modal>;
-}
-const ST_COL={'Aguardando':'var(--text-secondary)','À sacar':'var(--ms7-orange)','Sacado':'var(--ms7-green)','Não sacado':'var(--ms7-error)','Bloqueado':'var(--ms7-error)'};
-function Cell({value,onCommit,placeholder,align,bold,money,secret,ro}){
-  const [v,setV]=React.useState(value==null?'':String(value));const [show,setShow]=React.useState(false);const [f,setF]=React.useState(false);
-  React.useEffect(function(){setV(value==null?'':String(value));},[value]);
-  function commit(){setF(false);if(ro)return;if(String(value==null?'':value)!==v)onCommit(v);}
-  const shown=money&&!f?(+String(v).replace(',','.')?MS7.brl(+String(v).replace(',','.')):''):v;
-  return <div style={{position:'relative',display:'flex',alignItems:'center'}}>
-    <input value={shown} readOnly={!!ro} title={ro?'Só o super admin altera':undefined} type={secret&&!show?'password':'text'} placeholder={placeholder} inputMode={money?'decimal':undefined} onChange={function(e){setV(e.target.value);}} onFocus={function(e){setF(true);e.target.style.borderColor='var(--border-focus, var(--ms7-green))';e.target.style.boxShadow='0 0 0 3px color-mix(in oklab, var(--border-focus, var(--ms7-green)) 22%, transparent)';}} onBlur={function(e){e.target.style.borderColor='var(--border-default)';e.target.style.boxShadow='none';commit();}} onKeyDown={function(e){if(e.key!=='Enter'&&e.key!=='ArrowDown'&&e.key!=='ArrowUp')return;const td=e.target.closest('td'),tr=td&&td.parentElement;const up=e.key==='ArrowUp'||(e.key==='Enter'&&e.shiftKey);let nx=tr&&(up?tr.previousElementSibling:tr.nextElementSibling);let inp=null;while(nx&&!inp){const c=nx.children[td.cellIndex];inp=c&&nx.children.length===tr.children.length?c.querySelector('input'):null;if(!inp)nx=up?nx.previousElementSibling:nx.nextElementSibling;}if(e.key!=='Enter'&&!inp)return;e.preventDefault();e.target.blur();if(inp)setTimeout(function(){inp.focus();inp.select&&inp.select();},0);}}
-      style={{width:'100%',boxSizing:'border-box',height:36,padding:secret?'0 30px 0 12px':'0 12px',border:'1px solid '+(ro?'transparent':'var(--border-default)'),borderRadius:10,background:ro?'transparent':'var(--surface-page)',cursor:ro?'default':'text',transition:'border-color .15s, box-shadow .15s',fontFamily:'var(--font-sans)',fontSize:13,fontWeight:bold?700:600,color:money&&!+String(v).replace(',','.')?'var(--text-secondary)':'var(--text-primary)',textAlign:align||'left',fontVariantNumeric:'tabular-nums',outline:'none'}}/>
-    {secret&&v?<button onClick={function(){setShow(!show);}} aria-label={show?'Ocultar':'Mostrar'} style={{position:'absolute',right:4,border:'none',background:'none',cursor:'pointer',display:'flex',padding:4,color:'var(--text-secondary)'}}><DS.Icon name={show?'eye-off':'eye'} size={14}/></button>:null}
-  </div>;
-}
-function TransferirModal({c,onClose}){const pend=DB.A.pendentesDe(c.id);const ops=(DB.get().operadores||[]).filter(function(o){return o.id!==c.opId&&o.ativo!==false;}).sort(function(a,b){return a.nome.localeCompare(b.nome,'pt-BR');});
-  const [op,setOp]=React.useState('');const [fin,setFin]=React.useState(true);const dep=pend.reduce(function(a,k){return a+(+k.deposito||0);},0);const nR=pend.filter(function(k){return k.rolo;}).length;const feitas=DB.contasValidas(c).length-pend.filter(function(k){return !k.virt;}).length;
-  return <DS.Modal open onClose={onClose} title="Passar contas para outro operador" subtitle={DB.coopNome(c)+' · '+DB.opName(c.opId)} size="sm" footer={<React.Fragment><DS.Button variant="secondary" onClick={onClose}>Cancelar</DS.Button><DS.Button variant="brand" iconLeft="arrow-right-left" disabled={!op} onClick={function(){DB.A.transferirContas(c.id,op==='__eu'?'':op,fin);onClose();}}>{'Passar '+pend.length+' contas'}</DS.Button></React.Fragment>}>
-    <div style={{display:'flex',flexDirection:'column',gap:14}}>
-      <div style={{display:'grid',gridTemplateColumns:'1fr 1fr 1fr',gap:8}}>{[['Feitas',feitas],['Faltam',pend.length+(nR?' ('+nR+' R)':'')],['Depósito',MS7.brl(dep)]].map(function(x){return <div key={x[0]} style={{padding:'10px 12px',borderRadius:10,background:'var(--surface-muted, var(--ms7-gray-100))'}}><div style={{fontSize:11,fontWeight:700,letterSpacing:'.05em',textTransform:'uppercase',color:'var(--text-secondary)'}}>{x[0]}</div><div style={{fontSize:16,fontWeight:800,fontVariantNumeric:'tabular-nums'}}>{x[1]}</div></div>;})}</div>
-      <DS.Select label="Novo operador" value={op} onChange={function(e){setOp(e.target.value);}} options={[{value:'',label:'Escolha o operador'},{value:'__eu',label:'Eu (admin) · sem operador'}].concat(ops.map(function(o){return {value:o.id,label:o.nome};}))}/>
-      {c.status==='Ativa'||c.status==='Em andamento'?<label style={{display:'flex',alignItems:'center',gap:10,fontSize:14,fontWeight:600,cursor:'pointer'}}><input type="checkbox" checked={fin} onChange={function(e){setFin(e.target.checked);}} style={{width:18,height:18}}/>{'Finalizar a cooperação de '+DB.opName(c.opId)+' com '+feitas+' contas'}</label>:null}
-      <div style={{fontSize:13,fontWeight:500,color:'var(--text-secondary)',lineHeight:1.45}}>Cria uma cooperação nova com a mesma plataforma, conta mãe, link, comissão e os depósitos das contas que faltam. A cooperação atual fica com as contas feitas, e a devolução recalcula sozinha. Escolha os grupos de chaves PIX na cooperação nova.</div>
-    </div>
-  </DS.Modal>;}
-function CellSelect({value,options,onChange,color,pill}){
-  return <select value={value||''} onChange={function(e){onChange(e.target.value);}} style={{width:'100%',boxSizing:'border-box',height:36,padding:'0 10px',border:'1px solid '+(pill?'color-mix(in oklab, '+(color||'var(--text-secondary)')+' 35%, var(--border-default))':'var(--border-default)'),borderRadius:10,background:pill?'color-mix(in oklab, '+(color||'var(--text-secondary)')+' 10%, var(--surface-page))':'var(--surface-page)',fontFamily:'var(--font-sans)',fontSize:12,fontWeight:700,color:color||'var(--text-primary)',cursor:'pointer',outline:'none',textOverflow:'ellipsis'}}>
-    {options.map(function(o){if(o&&o.group)return <optgroup key={'g'+o.group} label={'■ '+String(o.group).toUpperCase()} style={{color:'var(--ms7-green-ink, #005D3B)',fontWeight:800,background:'var(--ms7-lime-100, #E9F7D9)'}}>{o.items.map(function(it){return <option key={it.value} value={it.value} >{it.label}</option>;})}</optgroup>;const ov=typeof o==='string'?o:o.value;const ol=typeof o==='string'?o:o.label;return <option key={ov} value={ov} >{ol}</option>;})}</select>;
-}
-function cpPix(r,keyInfo){const k=keyInfo&&keyInfo[r.pix]&&keyInfo[r.pix].k;const t=k?(typeof limpaChave==='function'?limpaChave(k):k.valor):String(r.pix||'');(navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).then(function(){toast('Chave copiada');},function(){window.prompt('Copie a chave:',t);});}
-function PixCopyBtn({r,keyInfo}){if(!r.pix)return null;return <button type="button" title="Copiar chave" aria-label="Copiar chave" onClick={function(e){e.stopPropagation();cpPix(r,keyInfo);}} style={{width:26,height:26,flexShrink:0,display:'flex',alignItems:'center',justifyContent:'center',border:0,borderRadius:6,background:'transparent',color:'var(--text-secondary)',cursor:'pointer'}}><DS.Icon name="copy" size={14}/></button>;}
-const COLS_DEF=[{id:'usuario',l:'Usuário',w:150},{id:'senha',l:'Senha',w:100},{id:'senhaSaque',l:'Senha saque',w:100},{id:'deposito',l:'Depósito',w:110,r:1},{id:'redeposito',l:'Re-dep.',w:104,r:1},{id:'saque',l:'Saque',w:110,r:1},{id:'aposta',l:'Aposta válida',w:116,r:1},{id:'bau',l:'Baú',w:96,r:1},{id:'pix',l:'Chave PIX',w:180},{id:'res',l:'Resultado',w:100,r:1},{id:'status',l:'Status',w:130},{id:'obs',l:'Observação',w:170}];
-function alvoAposta(c,lst){const t=String(c.rollover||'').trim();if(!t)return 0;const m=t.match(/^(\d+(?:[.,]\d+)?)\s*x$/i);const dep=lst.reduce(function(a,r){return a+(+r.deposito||0)+(+r.redeposito||0);},0);if(m)return dep*(parseFloat(m[1].replace(',','.'))||0);return parseFloat(t.replace(/[^\d,.]/g,'').replace(/\./g,'').replace(',','.'))||0;}
-function num(v){return parseFloat(String(v).replace(/\./g,'').replace(',','.'))||0;}
-function Planilha({c,canAdmin,superAdm}){
-  React.useEffect(function(){const cc=DB.coop(c.id);if(cc&&cc.depositantes&&cc.contas.length===0&&cc.status!=='Concluída'&&cc.status!=='Lixeira')DB.A.gerarLinhas(cc.id,cc.depositantes);},[c.id]);
-  const {Button,IconButton,Checkbox,Modal,Input,Select}=DS;
-  const [nu,setNu]=React.useState('');const [sel,setSel]=React.useState({});const [colsOpen,setColsOpen]=React.useState(false);const [hide,setHide]=usePersist('ui-cols-hide',{});React.useEffect(function(){if(localStorage.getItem('ms7op-cols-v2'))return;localStorage.setItem('ms7op-cols-v2','1');if(hide.res||hide.status||hide.obs){const n=Object.assign({},hide);delete n.res;delete n.status;delete n.obs;setHide(n);}},[]);
-  const [qd,setQd]=React.useState(String(c.depositantes||c.contas.length));React.useEffect(function(){setQd(String(c.depositantes||c.contas.length));},[c.depositantes]);
-  const [imp,setImp]=React.useState(false);const [txt,setTxt]=React.useState('');const [impT,setImpT]=React.useState(superAdm?'tg':'contas');const [impC,setImpC]=React.useState('deposito');const [colar,setColar]=React.useState(false);const [ctxt,setCtxt]=React.useState('');
-  const dbx=DB.get();const gpc=PIXV.gp(dbx,c.plataforma)||'Geral';const grupos=DB.pixOrd((gSel(dbx,c).length)?(dbx.pix||[]).filter(function(g){return g.ativo!==false&&gSel(dbx,c).indexOf(g.id)>=0;}):(dbx.pix||[]).filter(function(g){return g.ativo!==false&&!(dbx.coops||[]).some(function(o){return o.id!==c.id&&o.opId!==c.opId&&['Ativa','Em andamento'].indexOf(o.status)>=0&&DB.platNorm(o.plataforma)===DB.platNorm(c.plataforma)&&(o.pixGrupos||[]).indexOf(g.id)>=0;})&&(!g.opId||g.opId===c.opId)&&(!g.plataforma||g.plataforma===c.plataforma||g.plataforma===gpc);}));
-  const keyInfo={};(dbx.pix||[]).forEach(function(g){g.chaves.forEach(function(k){keyInfo[k.valor]={k:k,g:g};});});
-  function pixOptsFor(r){const o=[{value:'',label:r.pix?'— Liberar chave —':'Selecionar chave'}];if(r.pix){const ki=keyInfo[r.pix];o.push({value:r.pix,label:(ki?PIXV.LABEL[ki.k.tipo]+' · ':'')+r.pix+(ki&&PIXV.st(ki.k,gpc).status==='bloqueada'?' (BLOQUEADA)':'')});}
-    const usd=chavesUsadas(dbx,c,r.id);grupos.forEach(function(g){const ks=g.chaves.filter(function(k){return PIXV.st(k,gpc).status==='disponivel'&&k.valor!==r.pix&&!usd[chNorm(k.valor)];});if(ks.length)o.push({group:g.nome+(g.pagamento?' · '+g.pagamento:'')+' · '+ks.length+(ks.length===1?' disponível':' disponíveis'),items:ks.map(function(k){return {value:k.valor,label:PIXV.LABEL[k.tipo]+' · '+k.valor};})});});return o;}
-  const usd0=chavesUsadas(dbx,c,null);const dispCount=grupos.reduce(function(a,g){return a+g.chaves.filter(function(k){return PIXV.st(k,gpc).status==='disponivel'&&!usd0[chNorm(k.valor)];}).length;},0);
-  const [busca,setBusca]=React.useState('');const bq=busca.trim().toLowerCase();const bn=bq.replace(/[^\d,.]/g,'').replace(/\./g,'').replace(',','.');
-  function bateBusca(r){if(!bq)return true;if(/^r?\$?\s*[\d.,]+$/.test(bq)){const n=parseFloat(bn);if(String(r.usuario||'').toLowerCase()===bq)return true;return !isNaN(n)&&['deposito','redeposito','saque'].some(function(k){const v=+r[k]||0;return v&&Math.abs(v-n)<0.005;});}if(String(r.usuario||'').toLowerCase().indexOf(bq)>=0)return true;if(String(r.pix||'').toLowerCase().indexOf(bq)>=0)return true;return false;}
-  const achados=bq?c.contas.filter(bateBusca).length:c.contas.length;
-  function limpaChave(k){const v=String(k.valor||'').trim();if(/@/.test(v))return v;if(/^(cpf|cnpj|tel|telefone|celular|phone)$/i.test(String(k.tipo||''))||/^[\d\s().+\-\/]+$/.test(v))return v.replace(/\D/g,'');return v;}
-  const [blocoCh,setBlocoCh]=React.useState(false);const [ativa,setAtiva]=React.useState(null);
-  const wrapRef=React.useRef(null);const [ww,setWw]=React.useState(1200);const [modoP,setModoP]=usePersist('ui-planilha-modo','auto');
-  React.useEffect(function(){const el=wrapRef.current;if(!el||!window.ResizeObserver)return;const ro=new ResizeObserver(function(e){setWw(e[0].contentRect.width);});ro.observe(el);return function(){ro.disconnect();};},[]);
-  const compacto=modoP==='bloco'||(modoP!=='tabela'&&ww<(canAdmin?720:600));
-  function gruposDisp(){return grupos.map(function(g){return {g:g,ks:g.chaves.filter(function(k){return PIXV.st(k,gpc).status==='disponivel'&&!usd0[chNorm(k.valor)];}).map(limpaChave)};}).filter(function(x){return x.ks.length;});}
-  function copiarTxt(txt,n){const ok=function(){toast(n+(n===1?' chave copiada':' chaves copiadas'));};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,function(){fb();});else fb();function fb(){const t=document.createElement('textarea');t.value=txt;document.body.appendChild(t);t.select();try{document.execCommand('copy');ok();}catch(e){toast('Selecione e copie manualmente');}document.body.removeChild(t);}}
-  function listaChaves(){const L=[];grupos.forEach(function(g){g.chaves.forEach(function(k){if(PIXV.st(k,gpc).status==='disponivel'&&!usd0[chNorm(k.valor)])L.push(limpaChave(k));});});return L;}
-  function copiarChaves(){const L=listaChaves();if(!L.length){toast('Nenhuma chave disponível para copiar');return;}const txt=L.join('\n');const ok=function(){toast(L.length+(L.length===1?' chave copiada':' chaves copiadas'));};if(navigator.clipboard&&navigator.clipboard.writeText)navigator.clipboard.writeText(txt).then(ok,function(){window.prompt('Copie as chaves:',txt);});else window.prompt('Copie as chaves:',txt);}
-  const used={};c.contas.forEach(function(r){if(r.pix)used[r.pix]=(used[r.pix]||0)+1;});
-  function set(r,k,v){const n=Object.assign({},r);n[k]=(k==='deposito'||k==='redeposito'||k==='saque'||k==='bau'||k==='aposta')?num(v):v;DB.A.saveConta(c.id,n,k!=='status');}
-  function add(){if(!nu.trim())return;DB.A.saveConta(c.id,{usuario:nu.trim(),senha:'',senhaSaque:'',deposito:0,redeposito:0,saque:0,bau:0,status:'Aguardando',pix:'',obs:''},true);setNu('');}
-  const OP_COLS=['usuario','deposito','saque','aposta','pix','status'];const hideOp=c.colsHide||COLS_DEF.reduce(function(a,x){if(OP_COLS.indexOf(x.id)<0)a[x.id]=1;return a;},{});const hideAt=c.colsHide||hide;const cols=COLS_DEF.filter(function(x){return canAdmin?!hideAt[x.id]:!hideOp[x.id];});const ids=Object.keys(sel).filter(function(k){return sel[k];});const allOn=c.contas.length&&ids.length===c.contas.length;
-  const tot=DB.contasValidas(c).reduce(function(a,r){a.deposito+=+r.deposito||0;a.redeposito+=+r.redeposito||0;a.saque+=DB.saqEf(r);a.bau+=+r.bau||0;a.aposta+=+r.aposta||0;a.res+=DB.contaRes(r);return a;},{deposito:0,redeposito:0,saque:0,bau:0,aposta:0,res:0});
-  const apAlvo=alvoAposta(c,DB.contasValidas(c));const apFalta=Math.max(0,apAlvo-tot.aposta);const apPct=apAlvo?Math.min(100,Math.round(tot.aposta/apAlvo*100)):0;
-  const th={height:36,padding:'0 8px',fontSize:10.5,fontWeight:700,letterSpacing:'.05em',textTransform:'uppercase',color:'var(--text-secondary)',textAlign:'left',borderBottom:'1px solid var(--border-default)',whiteSpace:'nowrap',background:'var(--ms7-gray-50)',position:'sticky',top:0,zIndex:1};
-  const td={padding:'5px 5px',borderBottom:'1px solid var(--border-subtle)'};
-  const [tgR,setTgR]=React.useState(String(c.comR!=null?c.comR:2).replace('.',','));const [tgS,setTgS]=React.useState(String(c.comS!=null?c.comS:1.5).replace('.',','));
-  function parseTg(t){const out=[];String(t||'').split(/\r?\n/).forEach(function(l){const m=l.trim().match(/^(\d{1,4})\s*[–—\-]\s*(?:R\$\s*)?([\d.,]+)\s*(?:[–—\-]?\s*(R))?\s*$/i);if(m){const v=parseValor(m[2]);if(!isNaN(v))out.push({n:+m[1],valor:v,rolo:!!m[3]});}});return out;}
-  function parseValor(v){v=String(v||'').replace(/[R$\s]/g,'');if(!v)return NaN;if(v.indexOf(',')>=0)v=v.replace(/\./g,'').replace(',','.');return parseFloat(v);}
-  function importarDep(){const rows=[];txt.split(/\n/).forEach(function(l){l=l.trim();if(!l)return;const p=l.split(/\s*[|;\t]\s*|\s+-\s+|\s+/).filter(Boolean);const vi=p.map(parseValor);let k=-1;for(let i=p.length-1;i>=0;i--){if(!isNaN(vi[i])&&/\d/.test(p[i])){k=i;break;}}if(k<0)return;const u=p.filter(function(x,i){return i!==k&&!/^r\$$/i.test(x);}).join(' ').trim();rows.push({usuario:u,valor:vi[k]});});if(!rows.length){toast('Nenhum valor reconhecido');return;}DB.A.importarDepositos(c.id,rows,impC);setImp(false);setTxt('');}
-  function importar(){if(impT==='tg'){const rows=parseTg(txt);if(!rows.length){toast('Nenhuma linha reconhecida. Formato: 1 – 90 – R');return;}DB.A.importarTelegram(c.id,rows,num(tgR),num(tgS));setImp(false);setTxt('');return;}if(impT==='dep')return importarDep();const rows=txt.split(/\r?\n/).map(function(l){return l.replace(/(usu[aá]rio|login|user|senha( de)? saque|senha|pass(word)?)\s*[:=]\s*/gi,' ').trim();}).filter(Boolean).map(function(l){const p=l.split(/\s*[|;\t,:\/]\s*|\s+-\s+|\s+/).filter(Boolean);return {usuario:p[0]||'',senha:p[1]||'',senhaSaque:p[2]||''};}).filter(function(r){return r.usuario;});if(!rows.length){toast('Nenhuma conta reconhecida');return;}DB.A.importarContas(c.id,rows);setImp(false);setTxt('');}
-  function cellFor(r,col){const res=DB.contaRes(r);
-    if(col.id==='usuario')return <Cell value={r.usuario} bold placeholder="usuário" onCommit={function(v){set(r,'usuario',v);}}/>;
-    if(col.id==='senha'||col.id==='senhaSaque')return <Cell value={r[col.id]||''} secret placeholder="—" onCommit={function(v){set(r,col.id,v);}}/>;
-    if(col.r&&col.id!=='res')return <Cell value={r[col.id]||''} ro={col.id==='deposito'&&!superAdm} money align="right" placeholder="R$ 0,00" onCommit={function(v){set(r,col.id,v);}}/>;
-    if(col.id==='res')return <div style={{textAlign:'right',padding:'0 6px',fontSize:14,fontWeight:800,color:res>0?'var(--ms7-green)':res<0?'var(--ms7-error)':'var(--text-secondary)',fontVariantNumeric:'tabular-nums'}}>{MS7.brl(res)}</div>;
-    if(col.id==='obs')return <Cell value={r.obs||''} placeholder="Observação" onCommit={function(v){set(r,'obs',v);}}/>;
-    if(col.id==='status')return <div><CellSelect pill value={r.status} options={CONTA_ST} color={ST_COL[r.status]} onChange={function(v){set(r,'status',v);}}/></div>;
-    if(col.id==='pix')return <div style={{display:'flex',alignItems:'center',gap:2}}><div style={{flex:1,minWidth:0}}><CellSelect value={r.pix||''} options={pixOptsFor(r)} color={!r.pix?'var(--text-secondary)':keyInfo[r.pix]&&PIXV.st(keyInfo[r.pix].k,gpc).status==='bloqueada'?'var(--ms7-error)':undefined} onChange={function(v){DB.A.pixAtribuir(c.id,r.id,v);}}/></div><PixCopyBtn r={r} keyInfo={keyInfo}/>{r.pix&&used[r.pix]>1?<span title="Chave usada em mais de uma conta" style={{display:'flex',color:'var(--ms7-orange)'}}><DS.Icon name="triangle-alert" size={14}/></span>:null}</div>;}
-  return <div ref={wrapRef} style={{background:'var(--surface-card)',borderRadius:'var(--radius-lg)',boxShadow:'var(--shadow-card)',overflow:'hidden'}}>
-    <div style={{display:'flex',alignItems:'center',gap:compacto?6:10,padding:compacto?'10px 12px':'16px 20px',flexWrap:'wrap',borderBottom:'1px solid var(--border-subtle)'}}>
-      <div style={{flex:'1 1 220px',minWidth:0}}><div style={{display:'flex',alignItems:'center',gap:8}}><b style={{fontSize:17}}>Tabela de contas</b><span style={{fontSize:12,fontWeight:700,padding:'2px 8px',borderRadius:10,background:'var(--ms7-gray-100)'}}>{c.contas.length}</span></div>
-        <div style={{fontSize:12,fontWeight:600,marginTop:2,color:dispCount?'var(--text-secondary)':'var(--ms7-error)',display:'flex',alignItems:'center',flexWrap:'wrap',gap:5}}><DS.Icon name="key-round" size={12}/>{dispCount?dispCount+' chaves PIX disponíveis no '+gpc:'Sem chaves PIX disponíveis no '+gpc}{dispCount?<button type="button" onClick={function(){setBlocoCh(true);}} style={{whiteSpace:'nowrap',flexShrink:0,display:'inline-flex',alignItems:'center',gap:4,marginLeft:4,height:24,padding:'0 9px',border:'1px solid var(--border-default)',borderRadius:7,background:'var(--surface-card)',color:'var(--text-primary)',font:'700 12px var(--font-sans)',cursor:'pointer'}}><DS.Icon name="list" size={12}/>{'Ver e copiar '+dispCount+(dispCount===1?' chave':' chaves')}</button>:null}</div></div>
-      <div style={{display:'flex',alignItems:'center',gap:6,height:36,padding:'0 10px',border:'1px solid var(--border-default)',borderRadius:10,flex:'0 1 260px',minWidth:180}}><DS.Icon name="search" size={15} color="var(--text-secondary)"/><input value={busca} onChange={function(e){setBusca(e.target.value);}} placeholder="Buscar usuário ou valor" style={{flex:1,minWidth:0,height:30,border:'none',background:'transparent',fontFamily:'inherit',fontSize:13,fontWeight:600,color:'var(--text-primary)',outline:'none'}}/>{bq?<span style={{fontSize:12,fontWeight:700,color:'var(--text-secondary)',whiteSpace:'nowrap'}}>{achados}</span>:null}{bq?<IconButton icon="x" size={24} iconSize={12} label="Limpar busca" onClick={function(){setBusca('');}}/>:null}</div>
-      <div style={{display:'flex',alignItems:'center',gap:6,height:36,padding:'0 4px 0 12px',border:'1px solid var(--border-default)',borderRadius:10}}><span style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)',whiteSpace:'nowrap'}}>Depositantes</span>
-        <input value={qd} onChange={function(e){setQd(e.target.value.replace(/\D/g,''));}} onKeyDown={function(e){if(e.key==='Enter')DB.A.setDepositantes(c.id,qd);}} style={{width:48,height:28,border:'none',background:'var(--ms7-gray-100)',borderRadius:6,textAlign:'center',fontFamily:'inherit',fontSize:13,fontWeight:700,color:'var(--text-primary)',outline:'none'}}/>
-        <IconButton icon="check" size={28} iconSize={14} label="Aplicar" disabled={String(c.depositantes)===qd} onClick={function(){DB.A.setDepositantes(c.id,qd);}}/></div>
-      <IconButton icon={compacto?'table-2':'notebook-pen'} size={34} iconSize={16} label={compacto?'Ver como tabela':'Ver como bloco de notas (pequeno)'} onClick={function(){setModoP(compacto?'tabela':'bloco');}}/>
-      {compacto||!canAdmin?null:<div style={{position:'relative'}}><Button size="sm" variant="ghost" iconLeft="columns-3" onClick={function(){setColsOpen(!colsOpen);}}>Colunas</Button>
-        {colsOpen?<div style={{position:'absolute',right:0,top:40,zIndex:20,width:200,padding:10,borderRadius:12,background:'var(--surface-card, #fff)',boxShadow:'var(--shadow-pop)',display:'flex',flexDirection:'column',gap:8}}><div style={{fontSize:11,fontWeight:700,letterSpacing:'.04em',textTransform:'uppercase',color:'var(--text-secondary)'}}>Vale para você e o operador</div>{COLS_DEF.map(function(x){return <Checkbox key={x.id} label={x.l} checked={!hideAt[x.id]} disabled={x.id==='usuario'} onChange={function(v){const n=Object.assign({},hideAt);if(v)delete n[x.id];else n[x.id]=1;setHide(n);DB.A.setColsHide(c.id,n);}}/>;})}</div>:null}</div>}
-      <Button size="sm" variant="outline" iconLeft="send" onClick={function(){setImp(true);}}>Importar</Button>
-      <Button size="sm" variant="outline" iconLeft="key-round" onClick={function(){setCtxt('');setColar(true);}}>Colar chaves PIX</Button>
-      <Button size="sm" variant="brand" iconLeft="plus" onClick={function(){DB.A.setDepositantes(c.id,c.contas.length+1);}}>Adicionar conta</Button>
-    </div>
-    {apAlvo||tot.aposta?<div style={{display:'flex',alignItems:'center',gap:14,padding:'10px 20px',borderBottom:'1px solid var(--border-subtle)',flexWrap:'wrap'}}>
-      <span style={{display:'flex',alignItems:'center',gap:6,fontSize:13,fontWeight:700}}><DS.Icon name="target" size={15} color="var(--ms7-green)"/>Aposta válida</span>
-      <span style={{fontSize:14,fontWeight:800,fontVariantNumeric:'tabular-nums'}}>{MS7.brl(tot.aposta)+(apAlvo?' de '+MS7.brl(apAlvo):'')}</span>
-      {apAlvo?<div style={{flex:'1 1 160px',height:8,borderRadius:4,background:'var(--ms7-gray-100)',overflow:'hidden',minWidth:120}}><div style={{width:apPct+'%',height:'100%',background:apFalta?'var(--ms7-green)':'var(--ms7-lime-500)',transition:'width .4s'}}></div></div>:<span style={{flex:1}}></span>}
-      {apAlvo?<b style={{fontSize:14,fontVariantNumeric:'tabular-nums',color:apFalta?'var(--ms7-orange)':'var(--ms7-green)'}}>{apFalta?'Falta '+MS7.brl(apFalta):'Meta batida'}</b>:<span style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>Coloque o rollover (ex.: 10000 ou 3x) no lápis da cooperação para ver quanto falta</span>}
-    </div>:null}
-    {ids.length?<div style={{display:'flex',alignItems:'center',gap:10,padding:'10px 20px',background:'var(--ms7-lime-100)',color:'var(--ms7-green-ink, #005D3B)',flexWrap:'wrap'}}><b style={{fontSize:13}}>{ids.length+' selecionada(s)'}</b><span style={{flex:1}}></span>
-      <div style={{width:170}}><Select variant="pill" value="" onChange={function(e){if(e.target.value){DB.A.statusContas(c.id,ids,e.target.value);setSel({});}}} options={[{value:'',label:'Mudar status…'}].concat(CONTA_ST.map(function(s){return {value:s,label:s};}))}/></div>
-      <Button size="sm" variant="secondary" iconLeft="trash-2" onClick={function(){if(confirm('Remover '+ids.length+' conta(s)?')){DB.A.removeContas(c.id,ids);setSel({});}}}>Remover</Button><Button size="sm" variant="ghost" onClick={function(){setSel({});}}>Limpar</Button></div>:null}
-    {compacto?<div style={{overflow:'auto',maxHeight:'calc(100vh - 160px)'}}>
-      {c.contas.map(function(r,i){if(!bateBusca(r))return null;const on=ativa===r.id,res=DB.contaRes(r),fora=!!(+c.depositantes)&&i>=(+c.depositantes)&&!String(r.usuario||'').trim();return <div key={r.id} onFocusCapture={function(){setAtiva(r.id);}} onMouseDown={function(){setAtiva(r.id);}} style={{padding:'6px 8px 8px',borderBottom:'1px solid var(--border-subtle)',background:on?'color-mix(in oklab, var(--ms7-lime-500) 26%, transparent)':r.status==='Bloqueado'?'color-mix(in oklab, var(--ms7-error) 6%, transparent)':'transparent',boxShadow:on?'inset 3px 0 0 var(--ms7-green)':'none',opacity:fora&&!on?0.45:1}}>
-        <div style={{display:'flex',alignItems:'center',gap:4}}><span style={{width:34,flexShrink:0,display:'inline-flex',alignItems:'center',gap:3,fontSize:12,fontWeight:700,color:'var(--text-secondary)',fontVariantNumeric:'tabular-nums',paddingLeft:2}}>{i+1}{r.rolo?<span style={{display:'inline-flex',width:15,height:15,borderRadius:4,alignItems:'center',justifyContent:'center',background:'var(--ms7-lime-500, #C9F76A)',color:'var(--text-on-lime, #0C3B26)',fontSize:9,fontWeight:800}}>R</span>:null}</span>
-          <div style={{flex:1,minWidth:0}}><Cell value={r.usuario} bold placeholder="usuário" onCommit={function(v){set(r,'usuario',v);}}/></div>
-          <div style={{width:112,flexShrink:0}}><CellSelect pill value={r.status} options={CONTA_ST} color={ST_COL[r.status]} onChange={function(v){set(r,'status',v);}}/></div></div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(3,minmax(0,1fr))',gap:2,marginLeft:34}}>{[['deposito','Depósito'],['saque','Saque'],['aposta','Aposta']].map(function(x){return <div key={x[0]} style={{minWidth:0,borderRadius:8,background:'var(--surface-sunken, var(--ms7-gray-50))'}}><div style={{fontSize:10,fontWeight:700,letterSpacing:'.04em',textTransform:'uppercase',color:'var(--text-secondary)',padding:'0 8px'}}>{x[1]}</div><Cell value={r[x[0]]||''} ro={x[0]==='deposito'&&!superAdm} money placeholder="0,00" onCommit={function(v){set(r,x[0],v);}}/></div>;})}</div>
-        <div style={{display:'flex',alignItems:'center',gap:4,marginLeft:34,marginTop:2}}><div style={{flex:1,minWidth:0}}><CellSelect value={r.pix||''} options={pixOptsFor(r)} color={!r.pix?'var(--text-secondary)':undefined} onChange={function(v){DB.A.pixAtribuir(c.id,r.id,v);}}/></div><PixCopyBtn r={r} keyInfo={keyInfo}/><span style={{fontSize:12,fontWeight:800,fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',color:res>0?'var(--ms7-green)':res<0?'var(--ms7-error)':'var(--text-secondary)'}}>{MS7.brl(res)}</span></div>
-        {(canAdmin?!hideAt.obs:!hideOp.obs)?<div style={{marginLeft:34,marginTop:4}}><Cell value={r.obs||''} placeholder="Observação" onCommit={function(v){set(r,'obs',v);}}/></div>:null}
-      </div>;})}
-      <div style={{display:'flex',alignItems:'center',gap:6,padding:'6px 10px'}}><DS.Icon name="plus" size={14} color="var(--text-secondary)"/><input value={nu} onChange={function(e){setNu(e.target.value);}} onKeyDown={function(e){if(e.key==='Enter')add();}} onBlur={add} placeholder="Novo usuário + Enter" style={{flex:1,minWidth:0,height:34,border:'none',background:'transparent',fontFamily:'var(--font-sans)',fontSize:13,fontWeight:600,color:'var(--text-primary)',outline:'none'}}/></div>
-      <div style={{position:'sticky',bottom:0,display:'grid',gridTemplateColumns:'repeat(4,minmax(0,1fr))',gap:4,padding:'8px 10px',background:'var(--ms7-gray-50)',borderTop:'1px solid var(--border-default)'}}>{[['Depósito',tot.deposito],['Saque',tot.saque],['Aposta',tot.aposta],['Resultado',tot.res]].map(function(x){return <div key={x[0]} style={{minWidth:0}}><div style={{fontSize:10,fontWeight:700,textTransform:'uppercase',color:'var(--text-secondary)'}}>{x[0]}</div><b style={{fontSize:13,fontVariantNumeric:'tabular-nums',color:x[0]==='Resultado'?(x[1]>=0?'var(--ms7-green)':'var(--ms7-error)'):'var(--text-primary)'}}>{MS7.brl(x[1])}</b></div>;})}</div>
-    </div>:<div style={{overflow:'auto',maxHeight:'calc(100vh - 220px)'}}>
-    <table style={{width:'100%',borderCollapse:'separate',borderSpacing:0,tableLayout:'fixed',minWidth:Math.round(cols.reduce(function(a,x){return a+x.w;},0)*0.62)+112,fontFamily:'var(--font-sans)'}}>
-      <colgroup><col style={{width:36}}/><col style={{width:42}}/>{(function(){const sw=cols.reduce(function(a,x){return a+x.w;},0)||1;return cols.map(function(x){return <col key={x.id} style={{width:(x.w/sw*100).toFixed(2)+'%'}}/>;});})()}<col style={{width:34}}/></colgroup>
-      <thead><tr><th style={Object.assign({},th,{padding:'0 0 0 14px'})}><Checkbox checked={!!allOn} onChange={function(v){const n={};if(v)c.contas.forEach(function(r){n[r.id]=1;});setSel(n);}}/></th><th style={th}>#</th>{cols.map(function(x){return <th key={x.id} style={Object.assign({},th,{textAlign:x.r?'right':'left'})}>{x.l}</th>;})}<th style={th}></th></tr></thead>
-      <tbody>
-        {c.contas.map(function(r,i){if(!bateBusca(r))return null;const ck=!!sel[r.id],on=ativa===r.id,fora=!!(+c.depositantes)&&i>=(+c.depositantes)&&!String(r.usuario||'').trim();return <tr key={r.id} onFocusCapture={function(){setAtiva(r.id);}} onMouseDown={function(){setAtiva(r.id);}} style={{background:on?'color-mix(in oklab, var(--ms7-lime-500) 30%, transparent)':ck?'color-mix(in oklab, var(--ms7-lime-500) 14%, transparent)':r.status==='Bloqueado'?'color-mix(in oklab, var(--ms7-error) 6%, transparent)':'transparent',boxShadow:on?'inset 4px 0 0 var(--ms7-green)':'none',opacity:fora&&!on?0.4:1}} title={fora?'Fora da conta: acima do número de depositantes':undefined}>
-          <td style={Object.assign({},td,{padding:'0 0 0 14px'})}><Checkbox checked={ck} onChange={function(v){setSel(function(s){const n=Object.assign({},s);if(v)n[r.id]=1;else delete n[r.id];return n;});}}/></td>
-          <td style={Object.assign({},td,{padding:'0 10px',fontSize:12,fontWeight:700,color:'var(--text-secondary)',fontVariantNumeric:'tabular-nums'})}><span style={{display:'inline-flex',alignItems:'center',gap:4}}>{i+1}{r.rolo?<span title="Conta de rolo" style={{display:'inline-flex',width:18,height:18,borderRadius:5,alignItems:'center',justifyContent:'center',background:'var(--ms7-lime-500, #C9F76A)',color:'var(--text-on-lime, #0C3B26)',fontSize:10,fontWeight:800}}>R</span>:null}</span></td>
-          {cols.map(function(x){return <td key={x.id} style={td}>{cellFor(r,x)}</td>;})}
-          <td style={Object.assign({},td,{textAlign:'center'})}><IconButton icon="trash-2" size={26} iconSize={13} label="Remover" onClick={function(){DB.A.removeConta(c.id,r.id);}}/></td>
-        </tr>;})}
-        <tr><td style={td}></td><td style={Object.assign({},td,{padding:'0 10px',color:'var(--text-secondary)'})}><DS.Icon name="plus" size={14}/></td>
-          <td style={td} colSpan={cols.length+1}><input value={nu} onChange={function(e){setNu(e.target.value);}} onKeyDown={function(e){if(e.key==='Enter')add();}} onBlur={add} placeholder="Digite um usuário e aperte Enter para adicionar mais uma linha" style={{width:'100%',boxSizing:'border-box',height:40,padding:'0 10px',border:'none',background:'transparent',fontFamily:'var(--font-sans)',fontSize:13,fontWeight:600,color:'var(--text-primary)',outline:'none'}}/></td></tr>
-      </tbody>
-      <tfoot><tr>{[0,1].map(function(i){return <td key={i} style={{background:'var(--ms7-gray-50)',position:'sticky',bottom:0}}></td>;})}{cols.map(function(x,i){const v=tot[x.id];return <td key={x.id} style={{height:44,padding:'0 10px',textAlign:x.r?'right':'left',fontSize:13,fontWeight:800,fontVariantNumeric:'tabular-nums',background:'var(--ms7-gray-50)',position:'sticky',bottom:0,color:x.id==='res'?(v>=0?'var(--ms7-green)':'var(--ms7-error)'):'var(--text-primary)'}}>{i===0?'Total':v!=null?MS7.brl(v):''}</td>;})}<td style={{background:'var(--ms7-gray-50)',position:'sticky',bottom:0}}></td></tr></tfoot>
-    </table></div>}
-    {(function(){const limpaL=function(l){l=String(l||'').trim().replace(/^\s*\d{1,3}\s*[-.)–—:]\s+/,'').replace(/^(telefone|celular|tel|cpf|cnpj|e-?mail|email|aleat[oó]ria|chave|pix)\s*[·:\-–—]?\s*/i,'').replace(/^[·:\-–—\s]+/,'').trim();return l;};
-      const canon={};(dbx.pix||[]).forEach(function(g){(g.chaves||[]).forEach(function(k){const n=chNorm(k.valor);if(n&&!canon[n])canon[n]={v:k.valor,g:g};});});
-      const acha=function(l){const x=limpaL(l);if(!x)return null;let hit=canon[chNorm(x)];if(!hit){const d=x.replace(/\D/g,'');if(d.length>=10)hit=canon[d]||canon[d.length>=12&&d.indexOf('55')===0?d.slice(2):'55'+d];}return hit?{v:hit.v,g:hit.g,ok:true}:{v:x,ok:false};};
-      const keys=ctxt.split(/\n/).map(function(l){return l.trim();}).filter(Boolean).map(acha).filter(Boolean);const alvo=c.contas.filter(function(r){return (+r.saque||0)>0&&!r.pix;});const n=Math.min(keys.length,alvo.length);
-      function aplicar(){if(!n)return;for(let i=0;i<n;i++)DB.A.pixAtribuir(c.id,alvo[i].id,keys[i].v);setColar(false);setCtxt('');setTimeout(function(){toast(n+(n===1?' chave vinculada':' chaves vinculadas')+' às contas com saque');},50);}
-      return <Modal open={colar} onClose={function(){setColar(false);}} title="Colar chaves PIX" subtitle="Uma chave por linha, na ordem das contas com saque" footer={<React.Fragment><Button variant="secondary" onClick={function(){setColar(false);}}>Cancelar</Button><Button variant="brand" iconLeft="check" disabled={!n} onClick={aplicar}>{n?'Vincular '+n+(n===1?' chave':' chaves'):'Vincular'}</Button></React.Fragment>}>
-        <div style={{display:'flex',flexDirection:'column',gap:12}}>
-          <Input multiline rows={7} value={ctxt} onChange={function(e){setCtxt(e.target.value);}} placeholder={'529.982.247-25\n(11) 98888-1020\npix@email.com'}/>
-          <div style={{fontSize:13,fontWeight:600,lineHeight:1.5,color:'var(--text-secondary)'}}>{alvo.length?(alvo.length+(alvo.length===1?' conta com saque e sem chave: ':' contas com saque e sem chave: ')+alvo.map(function(r,i){return (i+1)+'. '+(r.usuario||'sem usuário')+(keys[i]?' → '+keys[i].v+(keys[i].ok?' ✓':' (não está nos grupos)'):'');}).join(' · ')):'Nenhuma conta com saque está sem chave. Preencha o saque primeiro.'}</div>
-          {keys.some(function(k){return !k.ok;})?<div style={{fontSize:13,fontWeight:700,color:'var(--ms7-orange)'}}>{keys.filter(function(k){return !k.ok;}).length+' chave(s) não foram achadas nos grupos de chaves PIX. Elas entram na conta, mas não ficam marcadas como usadas.'}</div>:null}
-          {keys.length>alvo.length&&alvo.length?<div style={{fontSize:13,fontWeight:700,color:'var(--ms7-orange)'}}>{(keys.length-alvo.length)+' chave(s) a mais serão ignoradas.'}</div>:null}
+    );
+  }
+  function CoopWizard({ open, onClose, session, bau, meu }) {
+    const PR_KEY = 'ms7op-plat-recentes';
+    const [platRec, setPlatRec] = React.useState(function () {
+      try {
+        const v = JSON.parse(localStorage.getItem(PR_KEY) || '[]');
+        return Array.isArray(v) ? v : [];
+      } catch (e) {
+        return [];
+      }
+    });
+    const gravaPlat = function (l) {
+      setPlatRec(l);
+      try {
+        localStorage.setItem(PR_KEY, JSON.stringify(l));
+      } catch (e) {}
+    };
+    const redeDe = function (p) {
+      const n = DB.platNorm(String(p || '').replace(/\s*[-·|]?\s*link\s*\d+\s*$/i, ''));
+      if (!n) return '';
+      const l = (DB.get().coops || []).filter(function (x) {
+        return x.rede && DB.platNorm(x.plataforma) === n;
+      });
+      if (!l.length) return '';
+      const num = function (x) {
+        return +String(x.id || '').replace(/\D/g, '') || 0;
+      };
+      l.sort(function (a, b) {
+        const da = String(a.inicio || ''),
+          db2 = String(b.inicio || '');
+        if (da !== db2) return db2 < da ? -1 : 1;
+        return num(b) - num(a);
+      });
+      return l[0].rede;
+    };
+    const setPlat = function (p) {
+      const r = redeDe(p);
+      setF(function (x) {
+        const n = Object.assign({}, x, { plataforma: p });
+        if (r) n.rede = r;
+        return n;
+      });
+    };
+    const tiraPlat = function (p) {
+      gravaPlat(
+        platRec.filter(function (x) {
+          return x !== p;
+        }),
+      );
+    };
+    const guardaPlat = function (p) {
+      p = String(p || '')
+        .trim()
+        .replace(/\s+/g, ' ')
+        .replace(/\s*[-·|]?\s*link\s*\d+\s*$/i, '')
+        .trim();
+      if (!p) return;
+      gravaPlat(
+        [p]
+          .concat(
+            platRec.filter(function (x) {
+              return DB.platNorm(x) !== DB.platNorm(p);
+            }),
+          )
+          .slice(0, 12),
+      );
+    };
+    const { Modal, Stepper, Select, Input, Button, Tabs } = DS;
+    const db = DB.get();
+    const semOp = !!window.ms7SemOp || !!meu;
+    const st0 = semOp ? 2 : 1;
+    const [step, setStep] = React.useState(st0);
+    const init = function () {
+      const oid = session.role === 'operador' ? session.opId : ((db.operadores || [])[0] || {}).id || '';
+      const o0 =
+        (db.operadores || []).find(function (x) {
+          return x.id === oid;
+        }) || {};
+      return semOp
+        ? { opId: '', comTipo: 'fixo', comValor: '0', plataforma: '', rede: '', qtd: '20', cliente: '' }
+        : {
+            opId: oid,
+            comTipo: o0.comTipo || 'pct',
+            comValor: String(o0.comValor != null ? o0.comValor : o0.pct != null ? o0.pct : 15),
+            plataforma: '',
+            rede: '',
+            qtd: '20',
+            cliente: '',
+          };
+    };
+    const [f, setF] = React.useState(init);
+    const [novo, setNovo] = React.useState({ col: null, v: '' });
+    React.useEffect(
+      function () {
+        if (open) {
+          setF(init());
+          setStep(st0);
+          setNovo({ col: null, v: '' });
+        }
+      },
+      [open],
+    );
+    React.useEffect(
+      function () {
+        setF(function (p) {
+          const n = Object.assign({}, p);
+          if (
+            n.rede &&
+            !db.redes.some(function (x) {
+              return x.nome === n.rede;
+            })
+          )
+            n.rede = (db.redes[0] || {}).nome || '';
+          return n;
+        });
+      },
+      [db.plataformas.length, db.redes.length],
+    );
+    function pick(k, col) {
+      return function (e) {
+        const v = e.target.value;
+        if (v === '__new') {
+          setNovo({ col: col, v: '' });
+          return;
+        }
+        u(k)(e);
+      };
+    }
+    function criar() {
+      const nome = String(novo.v || '').trim();
+      if (!nome) return;
+      DB.A.addLista(novo.col, nome);
+      const k = novo.col === 'plataformas' ? 'plataforma' : 'rede';
+      setF(function (p) {
+        const n = Object.assign({}, p);
+        n[k] = nome;
+        return n;
+      });
+      setNovo({ col: null, v: '' });
+    }
+    function NovoBox(col) {
+      if (novo.col !== col) return null;
+      return (
+        <div
+          style={{
+            gridColumn: '1 / -1',
+            display: 'flex',
+            gap: 8,
+            alignItems: 'flex-end',
+            padding: 12,
+            borderRadius: 12,
+            background: 'var(--ms7-gray-50)',
+          }}
+        >
+          <div
+            style={{ flex: 1 }}
+            onKeyDown={function (e) {
+              if (e.key === 'Enter') criar();
+            }}
+          >
+            <Input
+              label={col === 'plataformas' ? 'Nova plataforma' : 'Nova rede'}
+              value={novo.v}
+              onChange={function (e) {
+                setNovo({ col: col, v: e.target.value });
+              }}
+              placeholder={col === 'plataformas' ? 'Nome da plataforma' : 'Nome da rede'}
+            />
+          </div>
+          <Button variant="brand" iconLeft="plus" onClick={criar}>
+            Adicionar
+          </Button>
+          <Button
+            variant="secondary"
+            onClick={function () {
+              setNovo({ col: null, v: '' });
+            }}
+          >
+            Cancelar
+          </Button>
         </div>
-      </Modal>;})()}
-    {blocoCh?(function(){const L=listaChaves();const txt=L.join('\n');return <Modal open={true} onClose={function(){setBlocoCh(false);}} title={L.length+(L.length===1?' chave PIX disponível':' chaves PIX disponíveis')} subtitle={'Plataforma '+gpc+' · separadas por grupo, uma por linha. Chave usada nesta plataforma some daqui para todos os operadores.'} footer={<React.Fragment><DS.Button variant="secondary" onClick={function(){setBlocoCh(false);}}>Fechar</DS.Button><DS.Button variant="brand" iconLeft="copy" disabled={!L.length} onClick={copiarChaves}>{'Copiar todas ('+L.length+')'}</DS.Button></React.Fragment>}>
-      <div style={{display:'flex',flexDirection:'column',gap:14}}>{gruposDisp().map(function(x){const t=x.ks.join('\n');return <div key={x.g.id} style={{display:'flex',flexDirection:'column',gap:6}}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}><div style={{flex:1,minWidth:0}}><div style={{fontSize:13,fontWeight:800,textTransform:'uppercase',color:'var(--ms7-green-ink, var(--ms7-green))'}}>{x.g.pagamento||x.g.nome}</div><div style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{(x.g.pagamento?x.g.nome+' · ':'')+x.ks.length+(x.ks.length===1?' chave':' chaves')}</div></div><DS.Button size="sm" variant="outline" iconLeft="copy" onClick={function(){copiarTxt(t,x.ks.length);}}>{'Copiar '+x.ks.length}</DS.Button></div>
-        <textarea readOnly value={t} onFocus={function(e){e.target.select();}} rows={Math.min(14,Math.max(3,x.ks.length))} style={{width:'100%',boxSizing:'border-box',padding:'10px 12px',border:'1px solid var(--border-default)',borderRadius:12,background:'var(--surface-sunken, var(--surface-card))',color:'var(--text-primary)',font:'500 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace',resize:'vertical'}}></textarea>
-      </div>;})}{!L.length?<div style={{fontSize:13,color:'var(--text-secondary)'}}>Nenhuma chave disponível nos grupos desta cooperação.</div>:null}</div>
-    </Modal>;})():null}
-    <Modal open={imp} onClose={function(){setImp(false);}} title="Importar" subtitle={impT==='tg'?'Cole a lista numerada: 1 – 90 – R (R = conta de rolo)':impT==='dep'?'Cole a lista de depósitos: usuário e valor, ou só os valores':'Cole a lista do Telegram ou de uma lista global'} footer={<React.Fragment><Button variant="secondary" onClick={function(){setImp(false);}}>Cancelar</Button><Button variant="brand" iconLeft="upload" onClick={importar}>{impT==='tg'?'Importar '+parseTg(txt).length+' contas':'Importar'}</Button></React.Fragment>}>
-      <div style={{display:'flex',flexDirection:'column',gap:12,marginBottom:12}}><DS.Tabs variant="chips" value={impT} onChange={function(v){setImpT(v);setTxt('');}} items={superAdm?[{id:'tg',label:'Lista do Telegram'},{id:'contas',label:'Contas (usuário e senha)'},{id:'dep',label:'Depósitos'}]:[{id:'contas',label:'Contas (usuário e senha)'}]}/>{impT==='dep'?<DS.Tabs variant="chips" value={impC} onChange={setImpC} items={[{id:'deposito',label:'Depósito'},{id:'redeposito',label:'Re-depósito'},{id:'saque',label:'Saque'}]}/>:null}</div>
-      {impT==='tg'?(function(){const rows=parseTg(txt);const nr=rows.filter(function(r){return r.rolo;}).length,ns=rows.length-nr,vr=num(tgR),vs=num(tgS);const dep=rows.reduce(function(a,r){return a+r.valor;},0),com=nr*vr+ns*vs;
-        const kp=function(l,v,hl){return <div style={{flex:'1 1 130px',padding:'12px 14px',borderRadius:12,background:hl?'var(--ms7-green)':'var(--ms7-gray-50)',color:hl?'#fff':'var(--text-primary)'}}><div style={{fontSize:11,fontWeight:700,letterSpacing:'.05em',textTransform:'uppercase',opacity:hl?.85:.7}}>{l}</div><div style={{fontSize:18,fontWeight:800,fontVariantNumeric:'tabular-nums',marginTop:2}}>{v}</div></div>;};
-        return <div style={{display:'flex',flexDirection:'column',gap:14}}>
-          <Input label="Lista numerada (número – valor – R)" multiline rows={8} placeholder={'1 – 90 – R\n2 – 12\n3 – 65 – R\n4 – 14'} value={txt} onChange={function(e){setTxt(e.target.value);}} hint="O número diz a linha da tabela. As linhas de total do Telegram são ignoradas. O operador preenche depois só usuário, saque e chave PIX."/>
-          <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}><Input label="Comissão por conta com R" prefix="R$" value={tgR} onChange={function(e){setTgR(e.target.value);}}/><Input label="Comissão por conta sem R" prefix="R$" value={tgS} onChange={function(e){setTgS(e.target.value);}}/></div>
-          {rows.length?<React.Fragment>
-            <div style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)'}}>{rows.length+' contas · '+nr+' com R × '+MS7.brl(vr)+' = '+MS7.brl(nr*vr)+' · '+ns+' sem R × '+MS7.brl(vs)+' = '+MS7.brl(ns*vs)}</div>
-            <div style={{display:'flex',gap:10,flexWrap:'wrap'}}>{kp('Total depósito',MS7.brl(dep))}{kp('Comissão',MS7.brl(com))}{kp('Total p/ envio',MS7.brl(dep+com),true)}</div>
-            <div style={{maxHeight:240,overflow:'auto',border:'1px solid var(--border-subtle)',borderRadius:12}}><table style={{width:'100%',borderCollapse:'collapse',fontSize:13}}><thead><tr><th style={Object.assign({},th,{width:60})}>#</th><th style={Object.assign({},th,{textAlign:'right'})}>Valor</th><th style={Object.assign({},th,{width:70,textAlign:'center'})}>R</th></tr></thead><tbody>{rows.map(function(r,i){return <tr key={i}><td style={{padding:'7px 10px',borderBottom:'1px solid var(--border-subtle)',fontWeight:700,color:'var(--text-secondary)'}}>{r.n}</td><td style={{padding:'7px 10px',borderBottom:'1px solid var(--border-subtle)',textAlign:'right',fontWeight:700,fontVariantNumeric:'tabular-nums'}}>{MS7.brl(r.valor)}</td><td style={{padding:'7px 10px',borderBottom:'1px solid var(--border-subtle)',textAlign:'center'}}>{r.rolo?<span style={{display:'inline-flex',width:22,height:22,borderRadius:6,alignItems:'center',justifyContent:'center',background:'var(--ms7-lime-500, #C9F76A)',color:'var(--text-on-lime, #0C3B26)',fontSize:12,fontWeight:800}}>R</span>:null}</td></tr>;})}</tbody></table></div>
-          </React.Fragment>:null}
-        </div>;})():impT==='dep'?<Input label="Uma linha por conta: usuário | valor (ou só o valor, na ordem)" multiline rows={9} placeholder={'julioferreira | 50\nmicheleromao | 30,00\n\nou só os valores:\n50\n30\n20'} value={txt} onChange={function(e){setTxt(e.target.value);}} hint="Com usuário: preenche a conta desse usuário (ou a próxima linha vazia, se ele ainda não existir). Só valor: preenche na ordem as contas que ainda não têm esse valor."/>:
-      <Input label="Uma conta por linha: usuário | senha | senha saque" multiline rows={9} placeholder={'julioferreira | senha123 | 4321\nmicheleromao | abc456'} value={txt} onChange={function(e){setTxt(e.target.value);}} hint="As contas preenchem primeiro as linhas vazias; se faltar linha, novas são criadas."/>}
-    </Modal>
-  </div>;
-}
-function LotesPix({c,canAdmin}){
-  const {Button,Modal,Checkbox,Badge,IconButton}=DS;const db=DB.get();const gp=PIXV.gp(db,c.plataforma)||'Geral';const [ed,setEd]=React.useState(false);const [tr,setTr]=React.useState(false);const [sel,setSel]=React.useState([]);
-  const ativos=['Ativa','Em andamento'];const sel0=c.pixGrupos||[];
-  const lotes=DB.pixOrd((db.pix||[]).filter(function(g){return g.ativo!==false;}));
-  const outro=function(gid){const x=(db.coops||[]).find(function(o){return o.id!==c.id&&(o.opId||'')!==(c.opId||'')&&(ativos.indexOf(o.status)>=0||o.status==='Finalizada')&&DB.platNorm(o.plataforma)===DB.platNorm(c.plataforma)&&(o.pixGrupos||[]).indexOf(gid)>=0;});return x?[DB.coopNome(x),DB.opName(x.opId)].filter(Boolean).join(' · '):'';};
-  const st=function(g){let disp=0,aqui=0,bloq=0,outra=0;g.chaves.forEach(function(k){const s=PIXV.st(k,gp);if(s.status==='disponivel')disp++;else if(s.status==='bloqueada')bloq++;else if(s.conta&&s.conta.coopId===c.id)aqui++;else outra++;});return {disp:disp,aqui:aqui,bloq:bloq,outra:outra,total:g.chaves.length};};
-  const meus=lotes.filter(function(g){return sel0.indexOf(g.id)>=0;});
-  if(!canAdmin&&!meus.length)return null;
-  const fim=ativos.indexOf(c.status)<0;
-  const selG=lotes.filter(function(g){return sel.indexOf(g.id)>=0;});const porTit={};let totDisp=0,totAll=0;
-  selG.forEach(function(g){const s=st(g);const k=String(g.nome||'Sem nome').trim();const t=porTit[k]||(porTit[k]={nome:k,grupos:0,disp:0,total:0,cada:[]});t.grupos++;t.disp+=s.disp;t.total+=s.total;t.cada.push(s.disp);totDisp+=s.disp;totAll+=s.total;});
-  const titList=Object.keys(porTit).sort(function(a,b){return a.localeCompare(b,'pt-BR',{numeric:true,sensitivity:'base'});}).map(function(k){const t=porTit[k];const igual=t.cada.every(function(x){return x===t.cada[0];});t.conta=t.grupos>1&&igual?t.grupos+' × '+t.cada[0]+' = '+t.disp:t.cada.join(' + ')+(t.grupos>1?' = '+t.disp:'');return t;});
-  return <div style={{background:'var(--surface-card)',borderRadius:'var(--radius-lg)',boxShadow:'var(--shadow-card)',padding:'16px 20px',display:'flex',flexDirection:'column',gap:12}}>
-    <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}><DS.Icon name="key-round" size={18}/><b style={{fontSize:17,flex:1}}>{'Grupos de chaves PIX'+(meus.length?' · '+meus.length:'')}</b>
-      {canAdmin&&!fim?<Button size="sm" variant="outline" iconLeft="pencil" onClick={function(){setSel(sel0.slice());setEd(true);}}>{meus.length?'Trocar grupos':'Escolher grupos'}</Button>:null}</div>
-    {!meus.length?<div style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)'}}>Nenhum grupo escolhido. O operador vê os lotes do operador e da plataforma. Escolha os grupos para ele trabalhar só com eles.</div>
-    :<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(min(100%,240px),1fr))',gap:10}}>{meus.map(function(g){const s=st(g);return <div key={g.id} style={{border:'1px solid var(--border-subtle)',borderRadius:12,padding:'10px 12px',display:'flex',flexDirection:'column',gap:6}}>
-      <div style={{display:'flex',alignItems:'flex-start',gap:6}}><span style={{alignSelf:'flex-start',padding:'4px 10px',borderRadius:8,background:'#005D3B',color:'#fff',fontSize:13,fontWeight:800,letterSpacing:'.02em',textTransform:'uppercase'}}>{g.nome}</span><span style={{flex:1}}></span>{canAdmin&&!fim?<IconButton icon="x" size={28} iconSize={14} label={'Tirar '+g.nome+(g.pagamento?' · '+g.pagamento:'')+' desta cooperação'} onClick={function(){const nome=g.nome+(g.pagamento?' · '+g.pagamento:'');if(!confirm('Tirar o grupo '+nome+' desta cooperação? O operador deixa de ver essas chaves aqui. As chaves já usadas continuam usadas.'))return;DB.A.setPixGrupos(c.id,(c.pixGrupos||[]).filter(function(x){return x!==g.id;}));}}/>:null}</div>{g.pagamento?<span style={{fontSize:12,fontWeight:700,color:'var(--text-secondary)',marginTop:-4}}>{g.pagamento}</span>:null}
-      <div style={{display:'flex',gap:6,flexWrap:'wrap'}}><Badge size="sm" variant="soft" tone="blue">{s.aqui+' usadas aqui'}</Badge><Badge size="sm" variant="soft" tone="green">{s.disp+(s.disp===1?' sobrando':' sobrando')}</Badge>{s.bloq?<Badge size="sm" variant="soft" tone="error">{s.bloq+' bloqueadas'}</Badge>:null}{s.outra?<Badge size="sm" variant="soft" tone="gray">{s.outra+' em outra coop'}</Badge>:null}</div>
-    </div>;})}</div>}
-    {meus.length&&fim?<div style={{fontSize:13,fontWeight:600,color:'var(--ms7-green)'}}>Cooperação encerrada: as chaves que sobraram estão livres para mandar para outro operador.</div>:null}
-    <Modal open={ed} onClose={function(){setEd(false);}} title="Grupos de chaves PIX" subtitle={'Escolha os grupos que '+DB.opName(c.opId)+' vai usar nesta cooperação'} footer={<React.Fragment><Button variant="secondary" onClick={function(){setEd(false);}}>Cancelar</Button><Button variant="brand" iconLeft="check" onClick={function(){DB.A.setPixGrupos(c.id,sel);setEd(false);}}>{selG.length?'Salvar · '+totDisp+' chaves':'Salvar'}</Button></React.Fragment>}>
-      <div style={{position:'sticky',top:0,zIndex:2,marginBottom:12,padding:'14px 16px',borderRadius:14,background:'var(--ms7-lime-100, #E9F7D9)',color:'var(--ms7-green-ink, #005D3B)',display:'flex',flexDirection:'column',gap:8}}>
-        <div style={{display:'flex',alignItems:'baseline',gap:10,flexWrap:'wrap'}}><b style={{fontSize:30,lineHeight:1,fontVariantNumeric:'tabular-nums'}}>{totDisp}</b><b style={{fontSize:15}}>{totDisp===1?'chave disponível para enviar':'chaves disponíveis para enviar'}</b><span style={{flex:1}}></span><span style={{fontSize:13,fontWeight:700}}>{selG.length+(selG.length===1?' grupo selecionado':' grupos selecionados')}</span></div>
-        {titList.length?<div style={{display:'flex',flexDirection:'column',gap:4,borderTop:'1px solid color-mix(in oklab, currentColor 20%, transparent)',paddingTop:8}}>{titList.map(function(t){return <div key={t.nome} style={{display:'flex',alignItems:'baseline',gap:8,fontSize:14,fontWeight:700}}><span style={{textTransform:'uppercase'}}>{t.nome}</span><span style={{fontWeight:600,opacity:.85}}>{t.grupos+(t.grupos===1?' grupo':' grupos')}</span><span style={{flex:1}}></span><span style={{fontVariantNumeric:'tabular-nums'}}>{t.conta+' chaves'}</span></div>;})}</div>:<span style={{fontSize:13,fontWeight:600}}>Marque os grupos abaixo para ver o total.</span>}
-        {totAll>totDisp?<span style={{fontSize:12,fontWeight:600,opacity:.85}}>{(totAll-totDisp)+' chaves desses grupos já estão em uso ou bloqueadas e não entram na conta.'}</span>:null}
+      );
+    }
+    function next() {
+      if (step === 2 && !f.plataforma) {
+        toast('Digite o nome da plataforma');
+        return;
+      }
+      setStep(step + 1);
+    }
+    const u = function (k) {
+      return function (e) {
+        const v = e && e.target ? e.target.value : e;
+        setF(function (p) {
+          const n = Object.assign({}, p);
+          n[k] = v;
+          if (k === 'comTipo') {
+            n.comValor = { pct: '15', conta: '25', fixo: '900', misto: '50' }[v];
+            n.comConta = v === 'misto' ? '2' : '';
+          }
+          if (k === 'opId') {
+            const o = (db.operadores || []).find(function (x) {
+              return x.id === v;
+            });
+            if (o) {
+              n.comTipo = ['pct', 'conta', 'fixo'].indexOf(o.comTipo) >= 0 ? o.comTipo : 'pct';
+              n.comValor = String(o.comValor != null ? o.comValor : o.pct != null ? o.pct : 15);
+              n.comConta = o.comConta != null ? String(o.comConta) : '';
+            }
+          }
+          return n;
+        });
+      };
+    };
+    function close() {
+      setStep(st0);
+      setF(init());
+      onClose();
+    }
+    const lb = { fontSize: 13, fontWeight: 600, marginBottom: 6 };
+    const hn = { fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', marginTop: 6 };
+    const inS = {
+      width: '100%',
+      boxSizing: 'border-box',
+      height: 44,
+      padding: '0 12px',
+      border: '1px solid var(--border-default)',
+      borderRadius: 12,
+      background: 'var(--surface-card)',
+      color: 'var(--text-primary)',
+      fontFamily: 'inherit',
+      fontSize: 14,
+      fontWeight: 600,
+    };
+    const chip = function (on) {
+      return {
+        height: 34,
+        minWidth: 48,
+        padding: '0 12px',
+        borderRadius: 10,
+        border: '1px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-default)'),
+        background: on ? 'color-mix(in oklab, var(--ms7-lime-500) 28%, transparent)' : 'transparent',
+        color: on ? 'var(--ms7-green-ink, var(--ms7-green))' : 'var(--text-primary)',
+        fontFamily: 'inherit',
+        fontSize: 13,
+        fontWeight: 700,
+        cursor: 'pointer',
+      };
+    };
+    const est = (+f.qtd || 0) * (parseFloat(String(f.mediaDep || '').replace(',', '.')) || 0);
+    const falta = [!String(f.plataforma || '').trim() ? 'plataforma' : null, !f.rede ? 'rede' : null].filter(Boolean);
+    const prev =
+      f.comTipo === 'misto'
+        ? 'Ex.: 45 contas → ' +
+          MS7.brl(parseFloat(String(f.comValor).replace(',', '.')) || 0) +
+          ' + 45 × ' +
+          MS7.brl(parseFloat(String(f.comConta || '').replace(',', '.')) || 0) +
+          ' = ' +
+          MS7.brl((parseFloat(String(f.comValor).replace(',', '.')) || 0) + 45 * (parseFloat(String(f.comConta || '').replace(',', '.')) || 0))
+        : f.comTipo === 'pct'
+          ? 'Ex.: resultado de R$ 4.000 → comissão de ' + MS7.brl((4000 * (parseFloat(f.comValor) || 0)) / 100)
+          : f.comTipo === 'conta'
+            ? 'Ex.: 10 contas → comissão de ' + MS7.brl(10 * (parseFloat(f.comValor) || 0))
+            : 'Valor total que o operador recebe por esta cooperação (todas as contas): ' +
+              MS7.brl(parseFloat(String(f.comValor).replace(',', '.')) || 0);
+    return (
+      <Modal
+        open={open}
+        onClose={soX(close)}
+        title={bau ? 'Novo baú' : 'Nova cooperação'}
+        size="md"
+        footer={
+          <React.Fragment>
+            <Button
+              variant="secondary"
+              iconLeft="chevron-left"
+              onClick={function () {
+                step === st0 ? close() : setStep(step - 1);
+              }}
+            >
+              {step === st0 ? 'Cancelar' : 'Voltar'}
+            </Button>
+            {step < 3 ? (
+              <Button iconRight="chevron-right" onClick={next}>
+                Próxima etapa
+              </Button>
+            ) : (
+              <Button
+                variant="brand"
+                iconLeft="check"
+                onClick={function () {
+                  if (!f.opId && !semOp) {
+                    toast('Cadastre um operador em Gestão → Operadores antes de criar a cooperação');
+                    return;
+                  }
+                  guardaPlat(f.plataforma);
+                  DB.A.createCoop(
+                    Object.assign(
+                      {},
+                      f,
+                      { tipo: bau ? 'bau' : 'coop' },
+                      meu || f.opId === '__eu' ? { proprio: true, opId: '', comTipo: 'fixo', comValor: '0', comConta: '' } : {},
+                    ),
+                  );
+                  close();
+                }}
+              >
+                {meu ? 'Criar minha cooperação' : bau ? 'Criar baú' : 'Criar cooperação'}
+              </Button>
+            )}
+          </React.Fragment>
+        }
+      >
+        {semOp ? null : <Stepper steps={3} current={step} />}
+        <h4 style={{ margin: '18px 0 14px', fontSize: 18, fontWeight: 700 }}>{['Comissão', 'Informações', 'Valores'][step - 1]}</h4>
+        {step === 1 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            {session.role !== 'operador' ? (
+              <Select
+                label="Operador"
+                required
+                value={f.opId}
+                onChange={u('opId')}
+                options={[{ value: '__eu', label: 'Eu (admin) · sem operador' }].concat(
+                  db.operadores
+                    .filter(function (o) {
+                      return o.ativo;
+                    })
+                    .map(function (o) {
+                      return { value: o.id, label: o.nome };
+                    }),
+                )}
+              />
+            ) : null}
+            {f.opId === '__eu' ? (
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+                Cooperação sua: sem operador e sem comissão. Fica junto das outras em Cooperações e entra no lucro total.
+              </div>
+            ) : null}
+            {f.opId === '__eu' ? null : <div style={{ fontSize: 13, fontWeight: 600 }}>Tipo de comissão</div>}
+            {f.opId === '__eu' ? null : (
+              <Tabs
+                value={f.comTipo}
+                onChange={u('comTipo')}
+                items={[
+                  { id: 'pct', label: '% do lucro' },
+                  { id: 'conta', label: 'Valor por conta' },
+                  { id: 'fixo', label: 'Valor fixo' },
+                ]}
+              />
+            )}
+            {f.opId === '__eu' ? null : f.comTipo === 'misto' ? (
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                <Input label="Valor fixo" prefix="R$" value={f.comValor} onChange={u('comValor')} />
+                <Input label="Mais por conta" prefix="R$" value={f.comConta || ''} onChange={u('comConta')} />
+                <div style={{ gridColumn: '1 / -1', fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{prev}</div>
+              </div>
+            ) : (
+              <Input
+                label={f.comTipo === 'pct' ? 'Percentual do lucro' : f.comTipo === 'conta' ? 'Valor por conta' : 'Valor fixo da cooperação'}
+                prefix={f.comTipo === 'pct' ? '%' : 'R$'}
+                value={f.comValor}
+                onChange={u('comValor')}
+                hint={prev}
+              />
+            )}
+          </div>
+        ) : null}
+        {step === 2 ? (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <Select
+              label="Rede"
+              value={f.rede}
+              onChange={pick('rede', 'redes')}
+              options={[{ value: '', label: db.redes.length ? 'Sem rede' : 'Nenhuma rede cadastrada' }]
+                .concat(
+                  db.redes.map(function (r) {
+                    return { value: r.nome, label: r.nome };
+                  }),
+                )
+                .concat([{ value: '__new', label: '+ Cadastrar nova rede' }])}
+            />
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+              <Input
+                label="Plataforma"
+                required
+                placeholder="Ex.: Azul 777"
+                value={f.plataforma}
+                onChange={function (e) {
+                  setPlat(e.target.value);
+                }}
+                hint={
+                  redeDe(f.plataforma)
+                    ? 'Rede escolhida sozinha: ' + redeDe(f.plataforma) + ' (usada antes nesta plataforma)'
+                    : 'Primeira vez: escolha a rede. Nas próximas ela vem sozinha.'
+                }
+              />
+              {platRec.length ? (
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6 }}>
+                  {platRec.map(function (p) {
+                    const on = DB.platNorm(p) === DB.platNorm(f.plataforma);
+                    return (
+                      <span
+                        key={p}
+                        style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          height: 30,
+                          borderRadius: 15,
+                          border: '1px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-default)'),
+                          background: on ? 'color-mix(in oklab, var(--ms7-lime-500) 22%, transparent)' : 'var(--surface-card)',
+                          overflow: 'hidden',
+                        }}
+                      >
+                        <button
+                          type="button"
+                          onClick={function () {
+                            setPlat(p);
+                          }}
+                          style={{
+                            height: '100%',
+                            padding: '0 4px 0 12px',
+                            border: 0,
+                            background: 'transparent',
+                            color: 'var(--text-primary)',
+                            fontFamily: 'inherit',
+                            fontSize: 13,
+                            fontWeight: 700,
+                            lineHeight: 1,
+                            cursor: 'pointer',
+                          }}
+                        >
+                          {p}
+                        </button>
+                        <button
+                          type="button"
+                          aria-label={'Tirar ' + p}
+                          title="Tirar da lista"
+                          onClick={function () {
+                            tiraPlat(p);
+                          }}
+                          style={{
+                            width: 28,
+                            height: '100%',
+                            border: 0,
+                            background: 'transparent',
+                            color: 'var(--text-secondary)',
+                            cursor: 'pointer',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          <DS.Icon name="x" size={14} />
+                        </button>
+                      </span>
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
+            <Input
+              label="Link"
+              placeholder={f.opId && f.opId !== '__eu' ? 'Automático: ' + DB.proxLink(f.opId) : 'Automático (Link 1, 2, 3…)'}
+              value={f.linkN || ''}
+              onChange={u('linkN')}
+              hint="Em branco: numera sozinho por operador"
+            />
+            {NovoBox('redes')}
+            <Input label="Qtd. depositantes" type="number" value={f.qtd} onChange={u('qtd')} />
+            <Input label="Link da conta mãe" icon="link" placeholder="https://" value={f.link || ''} onChange={u('link')} />
+            <Input label="Usuário da conta mãe" icon="user" placeholder="usuário" value={f.muser || ''} onChange={u('muser')} />
+            <Input label="Senha da conta mãe" icon="lock" placeholder="senha" value={f.msenha || ''} onChange={u('msenha')} />
+            <div style={{ gridColumn: '1 / -1' }}>
+              <Input label="Nome do cliente" placeholder="Ex.: nome do blogueiro" value={f.cliente} onChange={u('cliente')} />
+            </div>
+          </div>
+        ) : null}
+        {step === 3 ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            <Input
+              label="Salário"
+              prefix="R$"
+              placeholder="0,00"
+              value={f.salario || ''}
+              onChange={u('salario')}
+              hint="Opcional (R$ 0,00 para comissão pura)"
+            />
+            <div
+              style={{ border: '1px solid var(--border-default)', borderRadius: 14, padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}
+            >
+              <Input label="Média de depósito" prefix="R$" placeholder="0,00" value={f.mediaDep || ''} onChange={u('mediaDep')} />
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <span style={{ fontSize: 13, fontWeight: 600 }}>Apostas válidas (multiplicador)</span>
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  {['N/A', '2x', '2.5x', '3x', '3.5x', '4x'].map(function (x) {
+                    const on = (f.rollover || 'N/A') === x;
+                    return (
+                      <button
+                        key={x}
+                        onClick={function () {
+                          setF(function (p) {
+                            return Object.assign({}, p, { rollover: x === 'N/A' ? '' : x });
+                          });
+                        }}
+                        style={{
+                          height: 40,
+                          minWidth: 60,
+                          padding: '0 14px',
+                          borderRadius: 10,
+                          border: '2px solid ' + (on ? 'var(--ms7-green-900)' : 'var(--border-default)'),
+                          background: on ? 'var(--ms7-lime-100)' : 'transparent',
+                          color: 'var(--text-primary)',
+                          fontFamily: 'inherit',
+                          fontSize: 15,
+                          fontWeight: 700,
+                          cursor: 'pointer',
+                        }}
+                      >
+                        {x}
+                      </button>
+                    );
+                  })}
+                </div>
+                {f.rollover && f.mediaDep ? (
+                  <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                    {'Cada conta precisa apostar ' +
+                      MS7.brl((parseFloat(String(f.mediaDep).replace(',', '.')) || 0) * (parseFloat(f.rollover) || 0)) +
+                      ' em apostas válidas'}
+                  </span>
+                ) : null}
+              </div>
+            </div>
+            <Input
+              label="Descrição das apostas (opcional)"
+              placeholder="Ex: Apostas válidas entre 2x e 10x"
+              value={f.descricao || ''}
+              onChange={u('descricao')}
+            />
+          </div>
+        ) : null}
+      </Modal>
+    );
+  }
+  function ContaForm({ conta, onClose, onSave }) {
+    const { Modal, Input, Select, Button } = DS;
+    const [f, setF] = React.useState(conta);
+    const u = function (k) {
+      return function (e) {
+        const v = e.target.value;
+        setF(function (p) {
+          const n = Object.assign({}, p);
+          n[k] = v;
+          return n;
+        });
+      };
+    };
+    const res = (+f.saque || 0) - (+f.deposito || 0) - (+f.redeposito || 0);
+    return (
+      <Modal
+        open={true}
+        onClose={onClose}
+        title={conta.id ? 'Editar conta' : 'Adicionar conta'}
+        footer={
+          <React.Fragment>
+            <Button variant="secondary" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button
+              variant="brand"
+              iconLeft="check"
+              onClick={function () {
+                if (!f.usuario) {
+                  toast('Informe o usuário');
+                  return;
+                }
+                onSave(f);
+              }}
+            >
+              Salvar
+            </Button>
+          </React.Fragment>
+        }
+      >
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+          <Input label="Usuário" required value={f.usuario} onChange={u('usuario')} />
+          <Input label="Senha" type="password" value={f.senha} onChange={u('senha')} />
+          <Input label="Depósito" prefix="R$" type="number" value={f.deposito} onChange={u('deposito')} />
+          <Input label="Re-depósito" prefix="R$" type="number" value={f.redeposito} onChange={u('redeposito')} />
+          <Input label="Saque" prefix="R$" type="number" value={f.saque} onChange={u('saque')} />
+          <Select label="Status" value={f.status} onChange={u('status')} options={CONTA_ST} />
+          <div style={{ gridColumn: '1 / -1' }}>
+            <Input label="Observação" value={f.obs} onChange={u('obs')} />
+          </div>
+        </div>
+        <div style={{ marginTop: 14, fontSize: 14, fontWeight: 600 }}>
+          {'Resultado da conta: '}
+          <span style={{ color: res >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>{MS7.brl(res)}</span>
+          {f.status === 'Bloqueado' ? <span style={{ color: 'var(--ms7-error)' }}> · vai gerar alerta de conta bloqueada</span> : null}
+        </div>
+      </Modal>
+    );
+  }
+  const ST_COL = {
+    Aguardando: 'var(--text-secondary)',
+    'À sacar': 'var(--ms7-orange)',
+    Sacado: 'var(--ms7-green)',
+    'Não sacado': 'var(--ms7-error)',
+    Bloqueado: 'var(--ms7-error)',
+  };
+  function Cell({ value, onCommit, placeholder, align, bold, money, secret, ro }) {
+    const [v, setV] = React.useState(value == null ? '' : String(value));
+    const [show, setShow] = React.useState(false);
+    const [f, setF] = React.useState(false);
+    React.useEffect(
+      function () {
+        setV(value == null ? '' : String(value));
+      },
+      [value],
+    );
+    function commit() {
+      setF(false);
+      if (ro) return;
+      if (String(value == null ? '' : value) !== v) onCommit(v);
+    }
+    const shown = money && !f ? (+String(v).replace(',', '.') ? MS7.brl(+String(v).replace(',', '.')) : '') : v;
+    return (
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+        <input
+          value={shown}
+          readOnly={!!ro}
+          title={ro ? 'Só o super admin altera' : undefined}
+          type={secret && !show ? 'password' : 'text'}
+          placeholder={placeholder}
+          inputMode={money ? 'decimal' : undefined}
+          onChange={function (e) {
+            setV(e.target.value);
+          }}
+          onFocus={function (e) {
+            setF(true);
+            e.target.style.borderColor = 'var(--border-focus, var(--ms7-green))';
+            e.target.style.boxShadow = '0 0 0 3px color-mix(in oklab, var(--border-focus, var(--ms7-green)) 22%, transparent)';
+          }}
+          onBlur={function (e) {
+            e.target.style.borderColor = 'var(--border-default)';
+            e.target.style.boxShadow = 'none';
+            commit();
+          }}
+          onKeyDown={function (e) {
+            if (e.key !== 'Enter' && e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+            const td = e.target.closest('td'),
+              tr = td && td.parentElement;
+            const up = e.key === 'ArrowUp' || (e.key === 'Enter' && e.shiftKey);
+            let nx = tr && (up ? tr.previousElementSibling : tr.nextElementSibling);
+            let inp = null;
+            while (nx && !inp) {
+              const c = nx.children[td.cellIndex];
+              inp = c && nx.children.length === tr.children.length ? c.querySelector('input') : null;
+              if (!inp) nx = up ? nx.previousElementSibling : nx.nextElementSibling;
+            }
+            if (e.key !== 'Enter' && !inp) return;
+            e.preventDefault();
+            e.target.blur();
+            if (inp)
+              setTimeout(function () {
+                inp.focus();
+                inp.select && inp.select();
+              }, 0);
+          }}
+          style={{
+            width: '100%',
+            boxSizing: 'border-box',
+            height: 36,
+            padding: secret ? '0 30px 0 12px' : '0 12px',
+            border: '1px solid ' + (ro ? 'transparent' : 'var(--border-default)'),
+            borderRadius: 10,
+            background: ro ? 'transparent' : 'var(--surface-page)',
+            cursor: ro ? 'default' : 'text',
+            transition: 'border-color .15s, box-shadow .15s',
+            fontFamily: 'var(--font-sans)',
+            fontSize: 13,
+            fontWeight: bold ? 700 : 600,
+            color: money && !+String(v).replace(',', '.') ? 'var(--text-secondary)' : 'var(--text-primary)',
+            textAlign: align || 'left',
+            fontVariantNumeric: 'tabular-nums',
+            outline: 'none',
+          }}
+        />
+        {secret && v ? (
+          <button
+            onClick={function () {
+              setShow(!show);
+            }}
+            aria-label={show ? 'Ocultar' : 'Mostrar'}
+            style={{
+              position: 'absolute',
+              right: 4,
+              border: 'none',
+              background: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              padding: 4,
+              color: 'var(--text-secondary)',
+            }}
+          >
+            <DS.Icon name={show ? 'eye-off' : 'eye'} size={14} />
+          </button>
+        ) : null}
       </div>
-      <div style={{display:'flex',flexDirection:'column',gap:8}}>{lotes.length?lotes.map(function(g){const s=st(g);const o=outro(g.id);const on=sel.indexOf(g.id)>=0;const trav=!!o&&!on;return <div key={g.id} style={{display:'flex',alignItems:'center',gap:10,padding:'10px 12px',border:'1px solid '+(on?'var(--ms7-green)':'var(--border-subtle)'),borderRadius:12,opacity:trav?.55:1}}>
-        {trav?<span title="Reservado para outra cooperação" style={{width:20,display:'flex',justifyContent:'center',color:'var(--text-secondary)'}}><DS.Icon name="lock" size={16}/></span>:<Checkbox checked={on} onChange={function(v){setSel(v?sel.concat([g.id]):sel.filter(function(x){return x!==g.id;}));}}/>}
-        <div style={{flex:1,minWidth:0}}><b style={{fontSize:14}}>{g.nome}</b>{g.pagamento?<span style={{fontSize:12,fontWeight:700,color:'var(--text-secondary)'}}>{' · '+g.pagamento}</span>:null}<div style={{fontSize:12,fontWeight:700,color:s.disp?'var(--ms7-green)':'var(--text-secondary)'}}>{s.disp+' de '+s.total+' chaves livres para usar'}</div>{o?<div style={{fontSize:12,fontWeight:600,color:'var(--soft-warn-fg, #8A3B00)',display:'flex',alignItems:'center',gap:4}}><DS.Icon name="lock" size={12}/>{'Reservado para '+o+'. Volta a ficar livre quando a cooperação dele encerrar.'}</div>:null}</div>
-      </div>;}):<div style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)'}}>Nenhum lote cadastrado. Cadastre em Gestão → Chaves PIX.</div>}</div>
-    </Modal>
-  </div>;
-}
-function EditCoop({c,open,onClose}){
-  const {Modal,Button,Input,Select}=DS;const db=DB.get();
-  const init=function(){const cm=c.contaMae||{};return {cliente:c.cliente||'',opId:c.opId||'',plataforma:c.plataforma||'',linkN:c.linkN||'',rede:c.rede||'',comTipo:c.comTipo||'pct',comValor:String(c.comValor!=null?c.comValor:''),comConta:c.comConta!=null?String(c.comConta):'',comR:String(c.comR!=null?c.comR:2).replace('.',','),comS:String(c.comS!=null?c.comS:1.5).replace('.',','),link:cm.link||'',muser:cm.usuario||'',mtipo:cm.tipo||'Senha',msenha:cm.senha||'',salario:c.salario?String(c.salario).replace('.',','):'',depositantes:String(c.depositantes||c.contas.length||''),mediaDep:c.mediaDep?String(c.mediaDep).replace('.',','):'',rollover:c.rollover||'',descricao:c.descricao||''};};
-  const [f,setF]=React.useState(init);React.useEffect(function(){if(open)setF(init());},[open]);
-  const u=function(k){return function(e){const v=e&&e.target?e.target.value:e;setF(function(p){const n=Object.assign({},p);n[k]=v;return n;});};};
-  const ops=(db.operadores||[]).map(function(o){return {value:o.id,label:o.nome};});
-  const pls=(db.plataformas||[]).map(function(p){return {value:p.nome,label:p.nome};});if(f.plataforma&&!pls.some(function(p){return p.value===f.plataforma;}))pls.unshift({value:f.plataforma,label:f.plataforma});
-  const rds=[{value:'',label:'Sem rede'}].concat((db.redes||[]).map(function(r){return {value:r.nome,label:r.nome};}));
-  const grid={display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(200px,1fr))',gap:14};
-  const sec={fontSize:12,fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase',color:'var(--text-secondary)',gridColumn:'1 / -1',marginTop:6};
-  return <Modal open={open} onClose={soX(onClose)} title={'Editar · '+DB.coopNome(c)} size="md" footer={<React.Fragment><Button variant="secondary" onClick={onClose}>Cancelar</Button><Button variant="brand" iconLeft="check" onClick={function(){DB.A.editCoop(c.id,f);onClose();}}>Salvar alterações</Button></React.Fragment>}>
-    <div style={grid}>
-      <div style={sec}>Informações</div>
-      <div style={{gridColumn:'1 / -1'}}><Input label="Nome da cooperação" value={f.cliente} onChange={u('cliente')}/></div>
-      <Select label="Operador" value={f.opId} onChange={u('opId')} options={ops}/>
-      <Select label="Rede" value={f.rede} onChange={u('rede')} options={rds}/>
-      <Input label="Plataforma" placeholder="Ex.: Azul 777" value={f.plataforma} onChange={u('plataforma')}/>
-      <Input label="Link" placeholder="Ex.: Link 1" value={f.linkN||''} onChange={u('linkN')}/>
-      <div style={sec}>Comissão</div>
-      <Select label="Tipo" value={f.comTipo} onChange={u('comTipo')} options={[{value:'pct',label:'% do lucro'},{value:'conta',label:'Valor por conta'},{value:'fixo',label:'Valor fixo'}].concat(f.comTipo==='rolo'?[{value:'rolo',label:'Lista do Telegram: com R / sem R'}]:[])}/>
-      {f.comTipo==='rolo'?<Input label="Por conta com R (R$)" value={f.comR} onChange={u('comR')}/>:<Input label={f.comTipo==='pct'?'Porcentagem do lucro (%)':f.comTipo==='conta'?'Valor por conta (R$)':'Valor fixo da cooperação (R$)'} value={f.comValor} onChange={u('comValor')}/>}
-      {f.comTipo==='rolo'?<Input label="Por conta sem R (R$)" value={f.comS} onChange={u('comS')}/>:null}
-      {f.comTipo==='misto'?<Input label="Mais por conta (R$)" value={f.comConta} onChange={u('comConta')}/>:null}
-      <div style={sec}>Conta mãe</div>
-      <div style={{gridColumn:'1 / -1'}}><Input label="Link" value={f.link} onChange={u('link')}/></div>
-      <Input label="Usuário" value={f.muser} onChange={u('muser')}/>
-      <Input label="Senha" value={f.msenha} onChange={u('msenha')}/>
-      <div style={sec}>Metas</div>
-      <Input label="Média de depósito (R$)" value={f.mediaDep} onChange={u('mediaDep')}/>
-      <Input label="Rollover" value={f.rollover} onChange={u('rollover')} placeholder="Ex.: 10x"/>
-      <Input label="Salário (R$)" value={f.salario} onChange={u('salario')}/><Input label="Depositantes (contas que contam)" type="number" value={f.depositantes} onChange={u('depositantes')} hint="Parou antes? Ex.: 50 → 20. Depósito e comissão contam só essas."/>
-      <div style={{gridColumn:'1 / -1'}}><Input label="Descrição" multiline rows={3} value={f.descricao} onChange={u('descricao')}/></div>
-    </div>
-  </Modal>;
-}
-function CoopDetail({id,onClose,session}){
-  const {Button,Badge,IconButton}=DS;DB.useDB();const c=DB.coop(id);const [edOpen,setEdOpen]=React.useState(false);const [trOpen,setTrOpen]=React.useState(false);const [verSen,setVerSen]=React.useState(false);const canAdmin=!session||session.role!=='operador';
-  if(!c)return null;const k=DB.calc(c);const cm=c.contaMae||{};
-  const sobr=Math.max(0,c.contas.length-(+c.depositantes||0));const mult=parseFloat(String(c.rollover||'').replace(',','.'))||0;
-  const alvo=mult?(k.dep+k.red)*mult:0;const restante=c.mediaDep?Math.max(0,c.mediaDep*(+c.depositantes||0)-(k.dep+k.red)):null;
-  function copy(label,v){try{navigator.clipboard.writeText(v);}catch(e){}toast(label+' copiado');}
-  const kpis=[['Contas',c.contas.length,null],['Fora da conta',sobr,sobr?'var(--ms7-orange)':null],['Depósito',MS7.brl(k.dep),null],['Re-depósito',MS7.brl(k.red),null],['Saque',MS7.brl(k.saq),null],['Depósito × Saque',MS7.brl(k.ds),null]].concat(k.pend?[['Saque não contado',MS7.brl(k.pend),'var(--ms7-orange)']]:[]).concat(k.sal?[['Salário',MS7.brl(k.sal),'var(--ms7-green)']]:[]).concat([['Comissão do operador',MS7.brl(-k.com),'var(--ms7-purple)'],[k.lucro>=0?'Lucro final':'Prejuízo final',MS7.brl(k.lucro),k.lucro>=0?'var(--ms7-green)':'var(--ms7-error)']]);
-  const info=[];const cmId=cm.id||DB.linkId(cm.link);if(cmId)info.push(['ID da conta mãe',cmId,'hash']);if(cm.link)info.push(['Link da conta mãe',cm.link,'link',0,1]);if(cm.usuario)info.push(['Usuário',cm.usuario,'user']);if(cm.senha)info.push([cm.tipo&&cm.tipo!=='Senha'?cm.tipo:'Senha',cm.senha,'lock',1]);
-  const meta=[];if(restante!=null)meta.push(['Montante restante',MS7.brl(restante)]);if(alvo)meta.push(['Apostas válidas alvo ('+c.rollover+')',MS7.brl(alvo),1]);if(c.mediaDep)meta.push(['Média de depósito',MS7.brl(c.mediaDep)]);if(c.salario)meta.push(['Salário',MS7.brl(c.salario)]);
-  const acts=c.status==='Ativa'?[['play','Iniciar','Em andamento'],['flag','Finalizar','Finalizada']]:c.status==='Em andamento'?[['flag','Finalizar','Finalizada']]:c.status==='Finalizada'&&canAdmin?[['undo-2','Devolver','Em andamento'],['circle-check','Concluir','Concluída']]:c.status==='Concluída'&&canAdmin?[['rotate-ccw','Reabrir','Em andamento']]:[];
-  return <div style={{display:'flex',flexDirection:'column',gap:20,width:'100%'}}>
-    <div style={{display:'flex',alignItems:'center',gap:14,flexWrap:'wrap'}}>
-      <IconButton icon="arrow-left" size={40} iconSize={18} label="Voltar" onClick={onClose}/>
-      <div style={{flex:'1 1 260px',minWidth:0}}>
-        <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}><h2 style={{margin:0,fontSize:24,fontWeight:800}}>{DB.coopNome(c)}</h2><Badge size="sm" tone={MS7.statusTone[c.status]||'gray'}>{c.status}</Badge></div>
-        <div style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)',marginTop:2}}>{[c.plataforma,c.linkN,c.rede,DB.opName(c.opId)].filter(Boolean).join(' · ')}</div>{c.linkDiv?<a href={/^https?:/i.test(c.linkDiv)?c.linkDiv:'https://'+c.linkDiv} target="_blank" rel="noopener" style={{display:'inline-flex',alignItems:'center',gap:4,marginTop:4,fontSize:12,fontWeight:700,color:'var(--ms7-green)',wordBreak:'break-all'}}><DS.Icon name="link" size={12}/>{c.linkDiv}</a>:null}
+    );
+  }
+  function TransferirModal({ c, onClose }) {
+    const pend = DB.A.pendentesDe(c.id);
+    const ops = (DB.get().operadores || [])
+      .filter(function (o) {
+        return o.id !== c.opId && o.ativo !== false;
+      })
+      .sort(function (a, b) {
+        return a.nome.localeCompare(b.nome, 'pt-BR');
+      });
+    const [op, setOp] = React.useState('');
+    const [fin, setFin] = React.useState(true);
+    const dep = pend.reduce(function (a, k) {
+      return a + (+k.deposito || 0);
+    }, 0);
+    const nR = pend.filter(function (k) {
+      return k.rolo;
+    }).length;
+    const feitas =
+      DB.contasValidas(c).length -
+      pend.filter(function (k) {
+        return !k.virt;
+      }).length;
+    return (
+      <DS.Modal
+        open
+        onClose={onClose}
+        title="Passar contas para outro operador"
+        subtitle={DB.coopNome(c) + ' · ' + DB.opName(c.opId)}
+        size="sm"
+        footer={
+          <React.Fragment>
+            <DS.Button variant="secondary" onClick={onClose}>
+              Cancelar
+            </DS.Button>
+            <DS.Button
+              variant="brand"
+              iconLeft="arrow-right-left"
+              disabled={!op}
+              onClick={function () {
+                DB.A.transferirContas(c.id, op === '__eu' ? '' : op, fin);
+                onClose();
+              }}
+            >
+              {'Passar ' + pend.length + ' contas'}
+            </DS.Button>
+          </React.Fragment>
+        }
+      >
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
+            {[
+              ['Feitas', feitas],
+              ['Faltam', pend.length + (nR ? ' (' + nR + ' R)' : '')],
+              ['Depósito', MS7.brl(dep)],
+            ].map(function (x) {
+              return (
+                <div key={x[0]} style={{ padding: '10px 12px', borderRadius: 10, background: 'var(--surface-muted, var(--ms7-gray-100))' }}>
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                    {x[0]}
+                  </div>
+                  <div style={{ fontSize: 16, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>{x[1]}</div>
+                </div>
+              );
+            })}
+          </div>
+          <DS.Select
+            label="Novo operador"
+            value={op}
+            onChange={function (e) {
+              setOp(e.target.value);
+            }}
+            options={[
+              { value: '', label: 'Escolha o operador' },
+              { value: '__eu', label: 'Eu (admin) · sem operador' },
+            ].concat(
+              ops.map(function (o) {
+                return { value: o.id, label: o.nome };
+              }),
+            )}
+          />
+          {c.status === 'Ativa' || c.status === 'Em andamento' ? (
+            <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 600, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={fin}
+                onChange={function (e) {
+                  setFin(e.target.checked);
+                }}
+                style={{ width: 18, height: 18 }}
+              />
+              {'Finalizar a cooperação de ' + DB.opName(c.opId) + ' com ' + feitas + ' contas'}
+            </label>
+          ) : null}
+          <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+            Cria uma cooperação nova com a mesma plataforma, conta mãe, link, comissão e os depósitos das contas que faltam. A cooperação atual fica
+            com as contas feitas, e a devolução recalcula sozinha. Escolha os grupos de chaves PIX na cooperação nova.
+          </div>
+        </div>
+      </DS.Modal>
+    );
+  }
+  function CellSelect({ value, options, onChange, color, pill }) {
+    return (
+      <select
+        value={value || ''}
+        onChange={function (e) {
+          onChange(e.target.value);
+        }}
+        style={{
+          width: '100%',
+          boxSizing: 'border-box',
+          height: 36,
+          padding: '0 10px',
+          border:
+            '1px solid ' +
+            (pill ? 'color-mix(in oklab, ' + (color || 'var(--text-secondary)') + ' 35%, var(--border-default))' : 'var(--border-default)'),
+          borderRadius: 10,
+          background: pill ? 'color-mix(in oklab, ' + (color || 'var(--text-secondary)') + ' 10%, var(--surface-page))' : 'var(--surface-page)',
+          fontFamily: 'var(--font-sans)',
+          fontSize: 12,
+          fontWeight: 700,
+          color: color || 'var(--text-primary)',
+          cursor: 'pointer',
+          outline: 'none',
+          textOverflow: 'ellipsis',
+        }}
+      >
+        {options.map(function (o) {
+          if (o && o.group)
+            return (
+              <optgroup
+                key={'g' + o.group}
+                label={'■ ' + String(o.group).toUpperCase()}
+                style={{ color: 'var(--ms7-green-ink, #005D3B)', fontWeight: 800, background: 'var(--ms7-lime-100, #E9F7D9)' }}
+              >
+                {o.items.map(function (it) {
+                  return (
+                    <option key={it.value} value={it.value}>
+                      {it.label}
+                    </option>
+                  );
+                })}
+              </optgroup>
+            );
+          const ov = typeof o === 'string' ? o : o.value;
+          const ol = typeof o === 'string' ? o : o.label;
+          return (
+            <option key={ov} value={ov}>
+              {ol}
+            </option>
+          );
+        })}
+      </select>
+    );
+  }
+  function cpPix(r, keyInfo) {
+    const k = keyInfo && keyInfo[r.pix] && keyInfo[r.pix].k;
+    const t = k ? (typeof limpaChave === 'function' ? limpaChave(k) : k.valor) : String(r.pix || '');
+    (navigator.clipboard && navigator.clipboard.writeText ? navigator.clipboard.writeText(t) : Promise.reject()).then(
+      function () {
+        toast('Chave copiada');
+      },
+      function () {
+        window.prompt('Copie a chave:', t);
+      },
+    );
+  }
+  function PixCopyBtn({ r, keyInfo }) {
+    if (!r.pix) return null;
+    return (
+      <button
+        type="button"
+        title="Copiar chave"
+        aria-label="Copiar chave"
+        onClick={function (e) {
+          e.stopPropagation();
+          cpPix(r, keyInfo);
+        }}
+        style={{
+          width: 26,
+          height: 26,
+          flexShrink: 0,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          border: 0,
+          borderRadius: 6,
+          background: 'transparent',
+          color: 'var(--text-secondary)',
+          cursor: 'pointer',
+        }}
+      >
+        <DS.Icon name="copy" size={14} />
+      </button>
+    );
+  }
+  const COLS_DEF = [
+    { id: 'usuario', l: 'Usuário', w: 150 },
+    { id: 'senha', l: 'Senha', w: 100 },
+    { id: 'senhaSaque', l: 'Senha saque', w: 100 },
+    { id: 'deposito', l: 'Depósito', w: 110, r: 1 },
+    { id: 'redeposito', l: 'Re-dep.', w: 104, r: 1 },
+    { id: 'saque', l: 'Saque', w: 110, r: 1 },
+    { id: 'aposta', l: 'Aposta válida', w: 116, r: 1 },
+    { id: 'bau', l: 'Baú', w: 96, r: 1 },
+    { id: 'pix', l: 'Chave PIX', w: 180 },
+    { id: 'res', l: 'Resultado', w: 100, r: 1 },
+    { id: 'status', l: 'Status', w: 130 },
+    { id: 'obs', l: 'Observação', w: 170 },
+  ];
+  function alvoAposta(c, lst) {
+    const t = String(c.rollover || '').trim();
+    if (!t) return 0;
+    const m = t.match(/^(\d+(?:[.,]\d+)?)\s*x$/i);
+    const dep = lst.reduce(function (a, r) {
+      return a + (+r.deposito || 0) + (+r.redeposito || 0);
+    }, 0);
+    if (m) return dep * (parseFloat(m[1].replace(',', '.')) || 0);
+    return (
+      parseFloat(
+        t
+          .replace(/[^\d,.]/g, '')
+          .replace(/\./g, '')
+          .replace(',', '.'),
+      ) || 0
+    );
+  }
+  function num(v) {
+    return parseFloat(String(v).replace(/\./g, '').replace(',', '.')) || 0;
+  }
+  function Planilha({ c, canAdmin, superAdm }) {
+    React.useEffect(
+      function () {
+        const cc = DB.coop(c.id);
+        if (cc && cc.depositantes && cc.contas.length === 0 && cc.status !== 'Concluída' && cc.status !== 'Lixeira')
+          DB.A.gerarLinhas(cc.id, cc.depositantes);
+      },
+      [c.id],
+    );
+    const { Button, IconButton, Checkbox, Modal, Input, Select } = DS;
+    const [nu, setNu] = React.useState('');
+    const [sel, setSel] = React.useState({});
+    const [colsOpen, setColsOpen] = React.useState(false);
+    const [hide, setHide] = usePersist('ui-cols-hide', {});
+    React.useEffect(function () {
+      if (localStorage.getItem('ms7op-cols-v2')) return;
+      localStorage.setItem('ms7op-cols-v2', '1');
+      if (hide.res || hide.status || hide.obs) {
+        const n = Object.assign({}, hide);
+        delete n.res;
+        delete n.status;
+        delete n.obs;
+        setHide(n);
+      }
+    }, []);
+    const [qd, setQd] = React.useState(String(c.depositantes || c.contas.length));
+    React.useEffect(
+      function () {
+        setQd(String(c.depositantes || c.contas.length));
+      },
+      [c.depositantes],
+    );
+    const [imp, setImp] = React.useState(false);
+    const [txt, setTxt] = React.useState('');
+    const [impT, setImpT] = React.useState(superAdm ? 'tg' : 'contas');
+    const [impC, setImpC] = React.useState('deposito');
+    const [colar, setColar] = React.useState(false);
+    const [ctxt, setCtxt] = React.useState('');
+    const dbx = DB.get();
+    const gpc = PIXV.gp(dbx, c.plataforma) || 'Geral';
+    const grupos = DB.pixOrd(
+      gSel(dbx, c).length
+        ? (dbx.pix || []).filter(function (g) {
+            return g.ativo !== false && gSel(dbx, c).indexOf(g.id) >= 0;
+          })
+        : (dbx.pix || []).filter(function (g) {
+            return (
+              g.ativo !== false &&
+              !(dbx.coops || []).some(function (o) {
+                return (
+                  o.id !== c.id &&
+                  o.opId !== c.opId &&
+                  ['Ativa', 'Em andamento'].indexOf(o.status) >= 0 &&
+                  DB.platNorm(o.plataforma) === DB.platNorm(c.plataforma) &&
+                  (o.pixGrupos || []).indexOf(g.id) >= 0
+                );
+              }) &&
+              (!g.opId || g.opId === c.opId) &&
+              (!g.plataforma || g.plataforma === c.plataforma || g.plataforma === gpc)
+            );
+          }),
+    );
+    const keyInfo = {};
+    (dbx.pix || []).forEach(function (g) {
+      g.chaves.forEach(function (k) {
+        keyInfo[k.valor] = { k: k, g: g };
+      });
+    });
+    function pixOptsFor(r) {
+      const o = [{ value: '', label: r.pix ? '— Liberar chave —' : 'Selecionar chave' }];
+      if (r.pix) {
+        const ki = keyInfo[r.pix];
+        o.push({
+          value: r.pix,
+          label: (ki ? PIXV.LABEL[ki.k.tipo] + ' · ' : '') + r.pix + (ki && PIXV.st(ki.k, gpc).status === 'bloqueada' ? ' (BLOQUEADA)' : ''),
+        });
+      }
+      const usd = chavesUsadas(dbx, c, r.id);
+      grupos.forEach(function (g) {
+        const ks = g.chaves.filter(function (k) {
+          return PIXV.st(k, gpc).status === 'disponivel' && k.valor !== r.pix && !usd[chNorm(k.valor)];
+        });
+        if (ks.length)
+          o.push({
+            group: g.nome + (g.pagamento ? ' · ' + g.pagamento : '') + ' · ' + ks.length + (ks.length === 1 ? ' disponível' : ' disponíveis'),
+            items: ks.map(function (k) {
+              return { value: k.valor, label: PIXV.LABEL[k.tipo] + ' · ' + k.valor };
+            }),
+          });
+      });
+      return o;
+    }
+    const usd0 = chavesUsadas(dbx, c, null);
+    const dispCount = grupos.reduce(function (a, g) {
+      return (
+        a +
+        g.chaves.filter(function (k) {
+          return PIXV.st(k, gpc).status === 'disponivel' && !usd0[chNorm(k.valor)];
+        }).length
+      );
+    }, 0);
+    const [busca, setBusca] = React.useState('');
+    const bq = busca.trim().toLowerCase();
+    const bn = bq
+      .replace(/[^\d,.]/g, '')
+      .replace(/\./g, '')
+      .replace(',', '.');
+    function bateBusca(r) {
+      if (!bq) return true;
+      if (/^r?\$?\s*[\d.,]+$/.test(bq)) {
+        const n = parseFloat(bn);
+        if (String(r.usuario || '').toLowerCase() === bq) return true;
+        return (
+          !isNaN(n) &&
+          ['deposito', 'redeposito', 'saque'].some(function (k) {
+            const v = +r[k] || 0;
+            return v && Math.abs(v - n) < 0.005;
+          })
+        );
+      }
+      if (
+        String(r.usuario || '')
+          .toLowerCase()
+          .indexOf(bq) >= 0
+      )
+        return true;
+      if (
+        String(r.pix || '')
+          .toLowerCase()
+          .indexOf(bq) >= 0
+      )
+        return true;
+      return false;
+    }
+    const achados = bq ? c.contas.filter(bateBusca).length : c.contas.length;
+    function limpaChave(k) {
+      const v = String(k.valor || '').trim();
+      if (/@/.test(v)) return v;
+      if (/^(cpf|cnpj|tel|telefone|celular|phone)$/i.test(String(k.tipo || '')) || /^[\d\s().+\-\/]+$/.test(v)) return v.replace(/\D/g, '');
+      return v;
+    }
+    const [blocoCh, setBlocoCh] = React.useState(false);
+    const [ativa, setAtiva] = React.useState(null);
+    const wrapRef = React.useRef(null);
+    const [ww, setWw] = React.useState(1200);
+    const [modoP, setModoP] = usePersist('ui-planilha-modo', 'auto');
+    React.useEffect(function () {
+      const el = wrapRef.current;
+      if (!el || !window.ResizeObserver) return;
+      const ro = new ResizeObserver(function (e) {
+        setWw(e[0].contentRect.width);
+      });
+      ro.observe(el);
+      return function () {
+        ro.disconnect();
+      };
+    }, []);
+    const compacto = modoP === 'bloco' || (modoP !== 'tabela' && ww < (canAdmin ? 720 : 600));
+    function gruposDisp() {
+      return grupos
+        .map(function (g) {
+          return {
+            g: g,
+            ks: g.chaves
+              .filter(function (k) {
+                return PIXV.st(k, gpc).status === 'disponivel' && !usd0[chNorm(k.valor)];
+              })
+              .map(limpaChave),
+          };
+        })
+        .filter(function (x) {
+          return x.ks.length;
+        });
+    }
+    function copiarTxt(txt, n) {
+      const ok = function () {
+        toast(n + (n === 1 ? ' chave copiada' : ' chaves copiadas'));
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(txt).then(ok, function () {
+          fb();
+        });
+      else fb();
+      function fb() {
+        const t = document.createElement('textarea');
+        t.value = txt;
+        document.body.appendChild(t);
+        t.select();
+        try {
+          document.execCommand('copy');
+          ok();
+        } catch (e) {
+          toast('Selecione e copie manualmente');
+        }
+        document.body.removeChild(t);
+      }
+    }
+    function listaChaves() {
+      const L = [];
+      grupos.forEach(function (g) {
+        g.chaves.forEach(function (k) {
+          if (PIXV.st(k, gpc).status === 'disponivel' && !usd0[chNorm(k.valor)]) L.push(limpaChave(k));
+        });
+      });
+      return L;
+    }
+    function copiarChaves() {
+      const L = listaChaves();
+      if (!L.length) {
+        toast('Nenhuma chave disponível para copiar');
+        return;
+      }
+      const txt = L.join('\n');
+      const ok = function () {
+        toast(L.length + (L.length === 1 ? ' chave copiada' : ' chaves copiadas'));
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(txt).then(ok, function () {
+          window.prompt('Copie as chaves:', txt);
+        });
+      else window.prompt('Copie as chaves:', txt);
+    }
+    const used = {};
+    c.contas.forEach(function (r) {
+      if (r.pix) used[r.pix] = (used[r.pix] || 0) + 1;
+    });
+    function set(r, k, v) {
+      const n = Object.assign({}, r);
+      n[k] = k === 'deposito' || k === 'redeposito' || k === 'saque' || k === 'bau' || k === 'aposta' ? num(v) : v;
+      DB.A.saveConta(c.id, n, k !== 'status');
+    }
+    function add() {
+      if (!nu.trim()) return;
+      DB.A.saveConta(
+        c.id,
+        { usuario: nu.trim(), senha: '', senhaSaque: '', deposito: 0, redeposito: 0, saque: 0, bau: 0, status: 'Aguardando', pix: '', obs: '' },
+        true,
+      );
+      setNu('');
+    }
+    const OP_COLS = ['usuario', 'deposito', 'saque', 'aposta', 'pix', 'status'];
+    const hideOp =
+      c.colsHide ||
+      COLS_DEF.reduce(function (a, x) {
+        if (OP_COLS.indexOf(x.id) < 0) a[x.id] = 1;
+        return a;
+      }, {});
+    const hideAt = c.colsHide || hide;
+    const cols = COLS_DEF.filter(function (x) {
+      return canAdmin ? !hideAt[x.id] : !hideOp[x.id];
+    });
+    const ids = Object.keys(sel).filter(function (k) {
+      return sel[k];
+    });
+    const allOn = c.contas.length && ids.length === c.contas.length;
+    const tot = DB.contasValidas(c).reduce(
+      function (a, r) {
+        a.deposito += +r.deposito || 0;
+        a.redeposito += +r.redeposito || 0;
+        a.saque += DB.saqEf(r);
+        a.bau += +r.bau || 0;
+        a.aposta += +r.aposta || 0;
+        a.res += DB.contaRes(r);
+        return a;
+      },
+      { deposito: 0, redeposito: 0, saque: 0, bau: 0, aposta: 0, res: 0 },
+    );
+    const apAlvo = alvoAposta(c, DB.contasValidas(c));
+    const apFalta = Math.max(0, apAlvo - tot.aposta);
+    const apPct = apAlvo ? Math.min(100, Math.round((tot.aposta / apAlvo) * 100)) : 0;
+    const th = {
+      height: 36,
+      padding: '0 8px',
+      fontSize: 10.5,
+      fontWeight: 700,
+      letterSpacing: '.05em',
+      textTransform: 'uppercase',
+      color: 'var(--text-secondary)',
+      textAlign: 'left',
+      borderBottom: '1px solid var(--border-default)',
+      whiteSpace: 'nowrap',
+      background: 'var(--ms7-gray-50)',
+      position: 'sticky',
+      top: 0,
+      zIndex: 1,
+    };
+    const td = { padding: '5px 5px', borderBottom: '1px solid var(--border-subtle)' };
+    const [tgR, setTgR] = React.useState(String(c.comR != null ? c.comR : 2).replace('.', ','));
+    const [tgS, setTgS] = React.useState(String(c.comS != null ? c.comS : 1.5).replace('.', ','));
+    function parseTg(t) {
+      const out = [];
+      String(t || '')
+        .split(/\r?\n/)
+        .forEach(function (l) {
+          const m = l.trim().match(/^(\d{1,4})\s*[–—\-]\s*(?:R\$\s*)?([\d.,]+)\s*(?:[–—\-]?\s*(R))?\s*$/i);
+          if (m) {
+            const v = parseValor(m[2]);
+            if (!isNaN(v)) out.push({ n: +m[1], valor: v, rolo: !!m[3] });
+          }
+        });
+      return out;
+    }
+    function parseValor(v) {
+      v = String(v || '').replace(/[R$\s]/g, '');
+      if (!v) return NaN;
+      if (v.indexOf(',') >= 0) v = v.replace(/\./g, '').replace(',', '.');
+      return parseFloat(v);
+    }
+    function importarDep() {
+      const rows = [];
+      txt.split(/\n/).forEach(function (l) {
+        l = l.trim();
+        if (!l) return;
+        const p = l.split(/\s*[|;\t]\s*|\s+-\s+|\s+/).filter(Boolean);
+        const vi = p.map(parseValor);
+        let k = -1;
+        for (let i = p.length - 1; i >= 0; i--) {
+          if (!isNaN(vi[i]) && /\d/.test(p[i])) {
+            k = i;
+            break;
+          }
+        }
+        if (k < 0) return;
+        const u = p
+          .filter(function (x, i) {
+            return i !== k && !/^r\$$/i.test(x);
+          })
+          .join(' ')
+          .trim();
+        rows.push({ usuario: u, valor: vi[k] });
+      });
+      if (!rows.length) {
+        toast('Nenhum valor reconhecido');
+        return;
+      }
+      DB.A.importarDepositos(c.id, rows, impC);
+      setImp(false);
+      setTxt('');
+    }
+    function importar() {
+      if (impT === 'tg') {
+        const rows = parseTg(txt);
+        if (!rows.length) {
+          toast('Nenhuma linha reconhecida. Formato: 1 – 90 – R');
+          return;
+        }
+        DB.A.importarTelegram(c.id, rows, num(tgR), num(tgS));
+        setImp(false);
+        setTxt('');
+        return;
+      }
+      if (impT === 'dep') return importarDep();
+      const rows = txt
+        .split(/\r?\n/)
+        .map(function (l) {
+          return l.replace(/(usu[aá]rio|login|user|senha( de)? saque|senha|pass(word)?)\s*[:=]\s*/gi, ' ').trim();
+        })
+        .filter(Boolean)
+        .map(function (l) {
+          const p = l.split(/\s*[|;\t,:\/]\s*|\s+-\s+|\s+/).filter(Boolean);
+          return { usuario: p[0] || '', senha: p[1] || '', senhaSaque: p[2] || '' };
+        })
+        .filter(function (r) {
+          return r.usuario;
+        });
+      if (!rows.length) {
+        toast('Nenhuma conta reconhecida');
+        return;
+      }
+      DB.A.importarContas(c.id, rows);
+      setImp(false);
+      setTxt('');
+    }
+    function cellFor(r, col) {
+      const res = DB.contaRes(r);
+      if (col.id === 'usuario')
+        return (
+          <Cell
+            value={r.usuario}
+            bold
+            placeholder="usuário"
+            onCommit={function (v) {
+              set(r, 'usuario', v);
+            }}
+          />
+        );
+      if (col.id === 'senha' || col.id === 'senhaSaque')
+        return (
+          <Cell
+            value={r[col.id] || ''}
+            secret
+            placeholder="—"
+            onCommit={function (v) {
+              set(r, col.id, v);
+            }}
+          />
+        );
+      if (col.r && col.id !== 'res')
+        return (
+          <Cell
+            value={r[col.id] || ''}
+            ro={col.id === 'deposito' && !superAdm}
+            money
+            align="right"
+            placeholder="R$ 0,00"
+            onCommit={function (v) {
+              set(r, col.id, v);
+            }}
+          />
+        );
+      if (col.id === 'res')
+        return (
+          <div
+            style={{
+              textAlign: 'right',
+              padding: '0 6px',
+              fontSize: 14,
+              fontWeight: 800,
+              color: res > 0 ? 'var(--ms7-green)' : res < 0 ? 'var(--ms7-error)' : 'var(--text-secondary)',
+              fontVariantNumeric: 'tabular-nums',
+            }}
+          >
+            {MS7.brl(res)}
+          </div>
+        );
+      if (col.id === 'obs')
+        return (
+          <Cell
+            value={r.obs || ''}
+            placeholder="Observação"
+            onCommit={function (v) {
+              set(r, 'obs', v);
+            }}
+          />
+        );
+      if (col.id === 'status')
+        return (
+          <div>
+            <CellSelect
+              pill
+              value={r.status}
+              options={CONTA_ST}
+              color={ST_COL[r.status]}
+              onChange={function (v) {
+                set(r, 'status', v);
+              }}
+            />
+          </div>
+        );
+      if (col.id === 'pix')
+        return (
+          <div style={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <CellSelect
+                value={r.pix || ''}
+                options={pixOptsFor(r)}
+                color={
+                  !r.pix
+                    ? 'var(--text-secondary)'
+                    : keyInfo[r.pix] && PIXV.st(keyInfo[r.pix].k, gpc).status === 'bloqueada'
+                      ? 'var(--ms7-error)'
+                      : undefined
+                }
+                onChange={function (v) {
+                  DB.A.pixAtribuir(c.id, r.id, v);
+                }}
+              />
+            </div>
+            <PixCopyBtn r={r} keyInfo={keyInfo} />
+            {r.pix && used[r.pix] > 1 ? (
+              <span title="Chave usada em mais de uma conta" style={{ display: 'flex', color: 'var(--ms7-orange)' }}>
+                <DS.Icon name="triangle-alert" size={14} />
+              </span>
+            ) : null}
+          </div>
+        );
+    }
+    return (
+      <div
+        ref={wrapRef}
+        style={{ background: 'var(--surface-card)', borderRadius: 'var(--radius-lg)', boxShadow: 'var(--shadow-card)', overflow: 'hidden' }}
+      >
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: compacto ? 6 : 10,
+            padding: compacto ? '10px 12px' : '16px 20px',
+            flexWrap: 'wrap',
+            borderBottom: '1px solid var(--border-subtle)',
+          }}
+        >
+          <div style={{ flex: '1 1 220px', minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+              <b style={{ fontSize: 17 }}>Tabela de contas</b>
+              <span style={{ fontSize: 12, fontWeight: 700, padding: '2px 8px', borderRadius: 10, background: 'var(--ms7-gray-100)' }}>
+                {c.contas.length}
+              </span>
+            </div>
+            <div
+              style={{
+                fontSize: 12,
+                fontWeight: 600,
+                marginTop: 2,
+                color: dispCount ? 'var(--text-secondary)' : 'var(--ms7-error)',
+                display: 'flex',
+                alignItems: 'center',
+                flexWrap: 'wrap',
+                gap: 5,
+              }}
+            >
+              <DS.Icon name="key-round" size={12} />
+              {dispCount ? dispCount + ' chaves PIX disponíveis no ' + gpc : 'Sem chaves PIX disponíveis no ' + gpc}
+              {dispCount ? (
+                <button
+                  type="button"
+                  onClick={function () {
+                    setBlocoCh(true);
+                  }}
+                  style={{
+                    whiteSpace: 'nowrap',
+                    flexShrink: 0,
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: 4,
+                    marginLeft: 4,
+                    height: 24,
+                    padding: '0 9px',
+                    border: '1px solid var(--border-default)',
+                    borderRadius: 7,
+                    background: 'var(--surface-card)',
+                    color: 'var(--text-primary)',
+                    font: '700 12px var(--font-sans)',
+                    cursor: 'pointer',
+                  }}
+                >
+                  <DS.Icon name="list" size={12} />
+                  {'Ver e copiar ' + dispCount + (dispCount === 1 ? ' chave' : ' chaves')}
+                </button>
+              ) : null}
+            </div>
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              height: 36,
+              padding: '0 10px',
+              border: '1px solid var(--border-default)',
+              borderRadius: 10,
+              flex: '0 1 260px',
+              minWidth: 180,
+            }}
+          >
+            <DS.Icon name="search" size={15} color="var(--text-secondary)" />
+            <input
+              value={busca}
+              onChange={function (e) {
+                setBusca(e.target.value);
+              }}
+              placeholder="Buscar usuário ou valor"
+              style={{
+                flex: 1,
+                minWidth: 0,
+                height: 30,
+                border: 'none',
+                background: 'transparent',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                fontWeight: 600,
+                color: 'var(--text-primary)',
+                outline: 'none',
+              }}
+            />
+            {bq ? <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>{achados}</span> : null}
+            {bq ? (
+              <IconButton
+                icon="x"
+                size={24}
+                iconSize={12}
+                label="Limpar busca"
+                onClick={function () {
+                  setBusca('');
+                }}
+              />
+            ) : null}
+          </div>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              height: 36,
+              padding: '0 4px 0 12px',
+              border: '1px solid var(--border-default)',
+              borderRadius: 10,
+            }}
+          >
+            <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>Depositantes</span>
+            <input
+              value={qd}
+              onChange={function (e) {
+                setQd(e.target.value.replace(/\D/g, ''));
+              }}
+              onKeyDown={function (e) {
+                if (e.key === 'Enter') DB.A.setDepositantes(c.id, qd);
+              }}
+              style={{
+                width: 48,
+                height: 28,
+                border: 'none',
+                background: 'var(--ms7-gray-100)',
+                borderRadius: 6,
+                textAlign: 'center',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                fontWeight: 700,
+                color: 'var(--text-primary)',
+                outline: 'none',
+              }}
+            />
+            <IconButton
+              icon="check"
+              size={28}
+              iconSize={14}
+              label="Aplicar"
+              disabled={String(c.depositantes) === qd}
+              onClick={function () {
+                DB.A.setDepositantes(c.id, qd);
+              }}
+            />
+          </div>
+          <IconButton
+            icon={compacto ? 'table-2' : 'notebook-pen'}
+            size={34}
+            iconSize={16}
+            label={compacto ? 'Ver como tabela' : 'Ver como bloco de notas (pequeno)'}
+            onClick={function () {
+              setModoP(compacto ? 'tabela' : 'bloco');
+            }}
+          />
+          {compacto || !canAdmin ? null : (
+            <div style={{ position: 'relative' }}>
+              <Button
+                size="sm"
+                variant="ghost"
+                iconLeft="columns-3"
+                onClick={function () {
+                  setColsOpen(!colsOpen);
+                }}
+              >
+                Colunas
+              </Button>
+              {colsOpen ? (
+                <div
+                  style={{
+                    position: 'absolute',
+                    right: 0,
+                    top: 40,
+                    zIndex: 20,
+                    width: 200,
+                    padding: 10,
+                    borderRadius: 12,
+                    background: 'var(--surface-card, #fff)',
+                    boxShadow: 'var(--shadow-pop)',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 8,
+                  }}
+                >
+                  <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.04em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                    Vale para você e o operador
+                  </div>
+                  {COLS_DEF.map(function (x) {
+                    return (
+                      <Checkbox
+                        key={x.id}
+                        label={x.l}
+                        checked={!hideAt[x.id]}
+                        disabled={x.id === 'usuario'}
+                        onChange={function (v) {
+                          const n = Object.assign({}, hideAt);
+                          if (v) delete n[x.id];
+                          else n[x.id] = 1;
+                          setHide(n);
+                          DB.A.setColsHide(c.id, n);
+                        }}
+                      />
+                    );
+                  })}
+                </div>
+              ) : null}
+            </div>
+          )}
+          <Button
+            size="sm"
+            variant="outline"
+            iconLeft="send"
+            onClick={function () {
+              setImp(true);
+            }}
+          >
+            Importar
+          </Button>
+          <Button
+            size="sm"
+            variant="outline"
+            iconLeft="key-round"
+            onClick={function () {
+              setCtxt('');
+              setColar(true);
+            }}
+          >
+            Colar chaves PIX
+          </Button>
+          <Button
+            size="sm"
+            variant="brand"
+            iconLeft="plus"
+            onClick={function () {
+              DB.A.setDepositantes(c.id, c.contas.length + 1);
+            }}
+          >
+            Adicionar conta
+          </Button>
+        </div>
+        {apAlvo || tot.aposta ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 14,
+              padding: '10px 20px',
+              borderBottom: '1px solid var(--border-subtle)',
+              flexWrap: 'wrap',
+            }}
+          >
+            <span style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: 13, fontWeight: 700 }}>
+              <DS.Icon name="target" size={15} color="var(--ms7-green)" />
+              Aposta válida
+            </span>
+            <span style={{ fontSize: 14, fontWeight: 800, fontVariantNumeric: 'tabular-nums' }}>
+              {MS7.brl(tot.aposta) + (apAlvo ? ' de ' + MS7.brl(apAlvo) : '')}
+            </span>
+            {apAlvo ? (
+              <div style={{ flex: '1 1 160px', height: 8, borderRadius: 4, background: 'var(--ms7-gray-100)', overflow: 'hidden', minWidth: 120 }}>
+                <div
+                  style={{
+                    width: apPct + '%',
+                    height: '100%',
+                    background: apFalta ? 'var(--ms7-green)' : 'var(--ms7-lime-500)',
+                    transition: 'width .4s',
+                  }}
+                ></div>
+              </div>
+            ) : (
+              <span style={{ flex: 1 }}></span>
+            )}
+            {apAlvo ? (
+              <b style={{ fontSize: 14, fontVariantNumeric: 'tabular-nums', color: apFalta ? 'var(--ms7-orange)' : 'var(--ms7-green)' }}>
+                {apFalta ? 'Falta ' + MS7.brl(apFalta) : 'Meta batida'}
+              </b>
+            ) : (
+              <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                Coloque o rollover (ex.: 10000 ou 3x) no lápis da cooperação para ver quanto falta
+              </span>
+            )}
+          </div>
+        ) : null}
+        {ids.length ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '10px 20px',
+              background: 'var(--ms7-lime-100)',
+              color: 'var(--ms7-green-ink, #005D3B)',
+              flexWrap: 'wrap',
+            }}
+          >
+            <b style={{ fontSize: 13 }}>{ids.length + ' selecionada(s)'}</b>
+            <span style={{ flex: 1 }}></span>
+            <div style={{ width: 170 }}>
+              <Select
+                variant="pill"
+                value=""
+                onChange={function (e) {
+                  if (e.target.value) {
+                    DB.A.statusContas(c.id, ids, e.target.value);
+                    setSel({});
+                  }
+                }}
+                options={[{ value: '', label: 'Mudar status…' }].concat(
+                  CONTA_ST.map(function (s) {
+                    return { value: s, label: s };
+                  }),
+                )}
+              />
+            </div>
+            <Button
+              size="sm"
+              variant="secondary"
+              iconLeft="trash-2"
+              onClick={function () {
+                if (confirm('Remover ' + ids.length + ' conta(s)?')) {
+                  DB.A.removeContas(c.id, ids);
+                  setSel({});
+                }
+              }}
+            >
+              Remover
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={function () {
+                setSel({});
+              }}
+            >
+              Limpar
+            </Button>
+          </div>
+        ) : null}
+        {compacto ? (
+          <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 160px)' }}>
+            {c.contas.map(function (r, i) {
+              if (!bateBusca(r)) return null;
+              const on = ativa === r.id,
+                res = DB.contaRes(r),
+                fora = !!+c.depositantes && i >= +c.depositantes && !String(r.usuario || '').trim();
+              return (
+                <div
+                  key={r.id}
+                  onFocusCapture={function () {
+                    setAtiva(r.id);
+                  }}
+                  onMouseDown={function () {
+                    setAtiva(r.id);
+                  }}
+                  style={{
+                    padding: '6px 8px 8px',
+                    borderBottom: '1px solid var(--border-subtle)',
+                    background: on
+                      ? 'color-mix(in oklab, var(--ms7-lime-500) 26%, transparent)'
+                      : r.status === 'Bloqueado'
+                        ? 'color-mix(in oklab, var(--ms7-error) 6%, transparent)'
+                        : 'transparent',
+                    boxShadow: on ? 'inset 3px 0 0 var(--ms7-green)' : 'none',
+                    opacity: fora && !on ? 0.45 : 1,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+                    <span
+                      style={{
+                        width: 34,
+                        flexShrink: 0,
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: 3,
+                        fontSize: 12,
+                        fontWeight: 700,
+                        color: 'var(--text-secondary)',
+                        fontVariantNumeric: 'tabular-nums',
+                        paddingLeft: 2,
+                      }}
+                    >
+                      {i + 1}
+                      {r.rolo ? (
+                        <span
+                          style={{
+                            display: 'inline-flex',
+                            width: 15,
+                            height: 15,
+                            borderRadius: 4,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            background: 'var(--ms7-lime-500, #C9F76A)',
+                            color: 'var(--text-on-lime, #0C3B26)',
+                            fontSize: 9,
+                            fontWeight: 800,
+                          }}
+                        >
+                          R
+                        </span>
+                      ) : null}
+                    </span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <Cell
+                        value={r.usuario}
+                        bold
+                        placeholder="usuário"
+                        onCommit={function (v) {
+                          set(r, 'usuario', v);
+                        }}
+                      />
+                    </div>
+                    <div style={{ width: 112, flexShrink: 0 }}>
+                      <CellSelect
+                        pill
+                        value={r.status}
+                        options={CONTA_ST}
+                        color={ST_COL[r.status]}
+                        onChange={function (v) {
+                          set(r, 'status', v);
+                        }}
+                      />
+                    </div>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,minmax(0,1fr))', gap: 2, marginLeft: 34 }}>
+                    {[
+                      ['deposito', 'Depósito'],
+                      ['saque', 'Saque'],
+                      ['aposta', 'Aposta'],
+                    ].map(function (x) {
+                      return (
+                        <div key={x[0]} style={{ minWidth: 0, borderRadius: 8, background: 'var(--surface-sunken, var(--ms7-gray-50))' }}>
+                          <div
+                            style={{
+                              fontSize: 10,
+                              fontWeight: 700,
+                              letterSpacing: '.04em',
+                              textTransform: 'uppercase',
+                              color: 'var(--text-secondary)',
+                              padding: '0 8px',
+                            }}
+                          >
+                            {x[1]}
+                          </div>
+                          <Cell
+                            value={r[x[0]] || ''}
+                            ro={x[0] === 'deposito' && !superAdm}
+                            money
+                            placeholder="0,00"
+                            onCommit={function (v) {
+                              set(r, x[0], v);
+                            }}
+                          />
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginLeft: 34, marginTop: 2 }}>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <CellSelect
+                        value={r.pix || ''}
+                        options={pixOptsFor(r)}
+                        color={!r.pix ? 'var(--text-secondary)' : undefined}
+                        onChange={function (v) {
+                          DB.A.pixAtribuir(c.id, r.id, v);
+                        }}
+                      />
+                    </div>
+                    <PixCopyBtn r={r} keyInfo={keyInfo} />
+                    <span
+                      style={{
+                        fontSize: 12,
+                        fontWeight: 800,
+                        fontVariantNumeric: 'tabular-nums',
+                        whiteSpace: 'nowrap',
+                        color: res > 0 ? 'var(--ms7-green)' : res < 0 ? 'var(--ms7-error)' : 'var(--text-secondary)',
+                      }}
+                    >
+                      {MS7.brl(res)}
+                    </span>
+                  </div>
+                  {(canAdmin ? !hideAt.obs : !hideOp.obs) ? (
+                    <div style={{ marginLeft: 34, marginTop: 4 }}>
+                      <Cell
+                        value={r.obs || ''}
+                        placeholder="Observação"
+                        onCommit={function (v) {
+                          set(r, 'obs', v);
+                        }}
+                      />
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 6, padding: '6px 10px' }}>
+              <DS.Icon name="plus" size={14} color="var(--text-secondary)" />
+              <input
+                value={nu}
+                onChange={function (e) {
+                  setNu(e.target.value);
+                }}
+                onKeyDown={function (e) {
+                  if (e.key === 'Enter') add();
+                }}
+                onBlur={add}
+                placeholder="Novo usuário + Enter"
+                style={{
+                  flex: 1,
+                  minWidth: 0,
+                  height: 34,
+                  border: 'none',
+                  background: 'transparent',
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: 13,
+                  fontWeight: 600,
+                  color: 'var(--text-primary)',
+                  outline: 'none',
+                }}
+              />
+            </div>
+            <div
+              style={{
+                position: 'sticky',
+                bottom: 0,
+                display: 'grid',
+                gridTemplateColumns: 'repeat(4,minmax(0,1fr))',
+                gap: 4,
+                padding: '8px 10px',
+                background: 'var(--ms7-gray-50)',
+                borderTop: '1px solid var(--border-default)',
+              }}
+            >
+              {[
+                ['Depósito', tot.deposito],
+                ['Saque', tot.saque],
+                ['Aposta', tot.aposta],
+                ['Resultado', tot.res],
+              ].map(function (x) {
+                return (
+                  <div key={x[0]} style={{ minWidth: 0 }}>
+                    <div style={{ fontSize: 10, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>{x[0]}</div>
+                    <b
+                      style={{
+                        fontSize: 13,
+                        fontVariantNumeric: 'tabular-nums',
+                        color: x[0] === 'Resultado' ? (x[1] >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)') : 'var(--text-primary)',
+                      }}
+                    >
+                      {MS7.brl(x[1])}
+                    </b>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        ) : (
+          <div style={{ overflow: 'auto', maxHeight: 'calc(100vh - 220px)' }}>
+            <table
+              style={{
+                width: '100%',
+                borderCollapse: 'separate',
+                borderSpacing: 0,
+                tableLayout: 'fixed',
+                minWidth:
+                  Math.round(
+                    cols.reduce(function (a, x) {
+                      return a + x.w;
+                    }, 0) * 0.62,
+                  ) + 112,
+                fontFamily: 'var(--font-sans)',
+              }}
+            >
+              <colgroup>
+                <col style={{ width: 36 }} />
+                <col style={{ width: 42 }} />
+                {(function () {
+                  const sw =
+                    cols.reduce(function (a, x) {
+                      return a + x.w;
+                    }, 0) || 1;
+                  return cols.map(function (x) {
+                    return <col key={x.id} style={{ width: ((x.w / sw) * 100).toFixed(2) + '%' }} />;
+                  });
+                })()}
+                <col style={{ width: 34 }} />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th style={Object.assign({}, th, { padding: '0 0 0 14px' })}>
+                    <Checkbox
+                      checked={!!allOn}
+                      onChange={function (v) {
+                        const n = {};
+                        if (v)
+                          c.contas.forEach(function (r) {
+                            n[r.id] = 1;
+                          });
+                        setSel(n);
+                      }}
+                    />
+                  </th>
+                  <th style={th}>#</th>
+                  {cols.map(function (x) {
+                    return (
+                      <th key={x.id} style={Object.assign({}, th, { textAlign: x.r ? 'right' : 'left' })}>
+                        {x.l}
+                      </th>
+                    );
+                  })}
+                  <th style={th}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {c.contas.map(function (r, i) {
+                  if (!bateBusca(r)) return null;
+                  const ck = !!sel[r.id],
+                    on = ativa === r.id,
+                    fora = !!+c.depositantes && i >= +c.depositantes && !String(r.usuario || '').trim();
+                  return (
+                    <tr
+                      key={r.id}
+                      onFocusCapture={function () {
+                        setAtiva(r.id);
+                      }}
+                      onMouseDown={function () {
+                        setAtiva(r.id);
+                      }}
+                      style={{
+                        background: on
+                          ? 'color-mix(in oklab, var(--ms7-lime-500) 30%, transparent)'
+                          : ck
+                            ? 'color-mix(in oklab, var(--ms7-lime-500) 14%, transparent)'
+                            : r.status === 'Bloqueado'
+                              ? 'color-mix(in oklab, var(--ms7-error) 6%, transparent)'
+                              : 'transparent',
+                        boxShadow: on ? 'inset 4px 0 0 var(--ms7-green)' : 'none',
+                        opacity: fora && !on ? 0.4 : 1,
+                      }}
+                      title={fora ? 'Fora da conta: acima do número de depositantes' : undefined}
+                    >
+                      <td style={Object.assign({}, td, { padding: '0 0 0 14px' })}>
+                        <Checkbox
+                          checked={ck}
+                          onChange={function (v) {
+                            setSel(function (s) {
+                              const n = Object.assign({}, s);
+                              if (v) n[r.id] = 1;
+                              else delete n[r.id];
+                              return n;
+                            });
+                          }}
+                        />
+                      </td>
+                      <td
+                        style={Object.assign({}, td, {
+                          padding: '0 10px',
+                          fontSize: 12,
+                          fontWeight: 700,
+                          color: 'var(--text-secondary)',
+                          fontVariantNumeric: 'tabular-nums',
+                        })}
+                      >
+                        <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+                          {i + 1}
+                          {r.rolo ? (
+                            <span
+                              title="Conta de rolo"
+                              style={{
+                                display: 'inline-flex',
+                                width: 18,
+                                height: 18,
+                                borderRadius: 5,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                background: 'var(--ms7-lime-500, #C9F76A)',
+                                color: 'var(--text-on-lime, #0C3B26)',
+                                fontSize: 10,
+                                fontWeight: 800,
+                              }}
+                            >
+                              R
+                            </span>
+                          ) : null}
+                        </span>
+                      </td>
+                      {cols.map(function (x) {
+                        return (
+                          <td key={x.id} style={td}>
+                            {cellFor(r, x)}
+                          </td>
+                        );
+                      })}
+                      <td style={Object.assign({}, td, { textAlign: 'center' })}>
+                        <IconButton
+                          icon="trash-2"
+                          size={26}
+                          iconSize={13}
+                          label="Remover"
+                          onClick={function () {
+                            DB.A.removeConta(c.id, r.id);
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
+                <tr>
+                  <td style={td}></td>
+                  <td style={Object.assign({}, td, { padding: '0 10px', color: 'var(--text-secondary)' })}>
+                    <DS.Icon name="plus" size={14} />
+                  </td>
+                  <td style={td} colSpan={cols.length + 1}>
+                    <input
+                      value={nu}
+                      onChange={function (e) {
+                        setNu(e.target.value);
+                      }}
+                      onKeyDown={function (e) {
+                        if (e.key === 'Enter') add();
+                      }}
+                      onBlur={add}
+                      placeholder="Digite um usuário e aperte Enter para adicionar mais uma linha"
+                      style={{
+                        width: '100%',
+                        boxSizing: 'border-box',
+                        height: 40,
+                        padding: '0 10px',
+                        border: 'none',
+                        background: 'transparent',
+                        fontFamily: 'var(--font-sans)',
+                        fontSize: 13,
+                        fontWeight: 600,
+                        color: 'var(--text-primary)',
+                        outline: 'none',
+                      }}
+                    />
+                  </td>
+                </tr>
+              </tbody>
+              <tfoot>
+                <tr>
+                  {[0, 1].map(function (i) {
+                    return <td key={i} style={{ background: 'var(--ms7-gray-50)', position: 'sticky', bottom: 0 }}></td>;
+                  })}
+                  {cols.map(function (x, i) {
+                    const v = tot[x.id];
+                    return (
+                      <td
+                        key={x.id}
+                        style={{
+                          height: 44,
+                          padding: '0 10px',
+                          textAlign: x.r ? 'right' : 'left',
+                          fontSize: 13,
+                          fontWeight: 800,
+                          fontVariantNumeric: 'tabular-nums',
+                          background: 'var(--ms7-gray-50)',
+                          position: 'sticky',
+                          bottom: 0,
+                          color: x.id === 'res' ? (v >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)') : 'var(--text-primary)',
+                        }}
+                      >
+                        {i === 0 ? 'Total' : v != null ? MS7.brl(v) : ''}
+                      </td>
+                    );
+                  })}
+                  <td style={{ background: 'var(--ms7-gray-50)', position: 'sticky', bottom: 0 }}></td>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        )}
+        {(function () {
+          const limpaL = function (l) {
+            l = String(l || '')
+              .trim()
+              .replace(/^\s*\d{1,3}\s*[-.)–—:]\s+/, '')
+              .replace(/^(telefone|celular|tel|cpf|cnpj|e-?mail|email|aleat[oó]ria|chave|pix)\s*[·:\-–—]?\s*/i, '')
+              .replace(/^[·:\-–—\s]+/, '')
+              .trim();
+            return l;
+          };
+          const canon = {};
+          (dbx.pix || []).forEach(function (g) {
+            (g.chaves || []).forEach(function (k) {
+              const n = chNorm(k.valor);
+              if (n && !canon[n]) canon[n] = { v: k.valor, g: g };
+            });
+          });
+          const acha = function (l) {
+            const x = limpaL(l);
+            if (!x) return null;
+            let hit = canon[chNorm(x)];
+            if (!hit) {
+              const d = x.replace(/\D/g, '');
+              if (d.length >= 10) hit = canon[d] || canon[d.length >= 12 && d.indexOf('55') === 0 ? d.slice(2) : '55' + d];
+            }
+            return hit ? { v: hit.v, g: hit.g, ok: true } : { v: x, ok: false };
+          };
+          const keys = ctxt
+            .split(/\n/)
+            .map(function (l) {
+              return l.trim();
+            })
+            .filter(Boolean)
+            .map(acha)
+            .filter(Boolean);
+          const alvo = c.contas.filter(function (r) {
+            return (+r.saque || 0) > 0 && !r.pix;
+          });
+          const n = Math.min(keys.length, alvo.length);
+          function aplicar() {
+            if (!n) return;
+            for (let i = 0; i < n; i++) DB.A.pixAtribuir(c.id, alvo[i].id, keys[i].v);
+            setColar(false);
+            setCtxt('');
+            setTimeout(function () {
+              toast(n + (n === 1 ? ' chave vinculada' : ' chaves vinculadas') + ' às contas com saque');
+            }, 50);
+          }
+          return (
+            <Modal
+              open={colar}
+              onClose={function () {
+                setColar(false);
+              }}
+              title="Colar chaves PIX"
+              subtitle="Uma chave por linha, na ordem das contas com saque"
+              footer={
+                <React.Fragment>
+                  <Button
+                    variant="secondary"
+                    onClick={function () {
+                      setColar(false);
+                    }}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button variant="brand" iconLeft="check" disabled={!n} onClick={aplicar}>
+                    {n ? 'Vincular ' + n + (n === 1 ? ' chave' : ' chaves') : 'Vincular'}
+                  </Button>
+                </React.Fragment>
+              }
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                <Input
+                  multiline
+                  rows={7}
+                  value={ctxt}
+                  onChange={function (e) {
+                    setCtxt(e.target.value);
+                  }}
+                  placeholder={'529.982.247-25\n(11) 98888-1020\npix@email.com'}
+                />
+                <div style={{ fontSize: 13, fontWeight: 600, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+                  {alvo.length
+                    ? alvo.length +
+                      (alvo.length === 1 ? ' conta com saque e sem chave: ' : ' contas com saque e sem chave: ') +
+                      alvo
+                        .map(function (r, i) {
+                          return (
+                            i +
+                            1 +
+                            '. ' +
+                            (r.usuario || 'sem usuário') +
+                            (keys[i] ? ' → ' + keys[i].v + (keys[i].ok ? ' ✓' : ' (não está nos grupos)') : '')
+                          );
+                        })
+                        .join(' · ')
+                    : 'Nenhuma conta com saque está sem chave. Preencha o saque primeiro.'}
+                </div>
+                {keys.some(function (k) {
+                  return !k.ok;
+                }) ? (
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ms7-orange)' }}>
+                    {keys.filter(function (k) {
+                      return !k.ok;
+                    }).length + ' chave(s) não foram achadas nos grupos de chaves PIX. Elas entram na conta, mas não ficam marcadas como usadas.'}
+                  </div>
+                ) : null}
+                {keys.length > alvo.length && alvo.length ? (
+                  <div style={{ fontSize: 13, fontWeight: 700, color: 'var(--ms7-orange)' }}>
+                    {keys.length - alvo.length + ' chave(s) a mais serão ignoradas.'}
+                  </div>
+                ) : null}
+              </div>
+            </Modal>
+          );
+        })()}
+        {blocoCh
+          ? (function () {
+              const L = listaChaves();
+              const txt = L.join('\n');
+              return (
+                <Modal
+                  open={true}
+                  onClose={function () {
+                    setBlocoCh(false);
+                  }}
+                  title={L.length + (L.length === 1 ? ' chave PIX disponível' : ' chaves PIX disponíveis')}
+                  subtitle={
+                    'Plataforma ' + gpc + ' · separadas por grupo, uma por linha. Chave usada nesta plataforma some daqui para todos os operadores.'
+                  }
+                  footer={
+                    <React.Fragment>
+                      <DS.Button
+                        variant="secondary"
+                        onClick={function () {
+                          setBlocoCh(false);
+                        }}
+                      >
+                        Fechar
+                      </DS.Button>
+                      <DS.Button variant="brand" iconLeft="copy" disabled={!L.length} onClick={copiarChaves}>
+                        {'Copiar todas (' + L.length + ')'}
+                      </DS.Button>
+                    </React.Fragment>
+                  }
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                    {gruposDisp().map(function (x) {
+                      const t = x.ks.join('\n');
+                      return (
+                        <div key={x.g.id} style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+                          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                            <div style={{ flex: 1, minWidth: 0 }}>
+                              <div
+                                style={{ fontSize: 13, fontWeight: 800, textTransform: 'uppercase', color: 'var(--ms7-green-ink, var(--ms7-green))' }}
+                              >
+                                {x.g.pagamento || x.g.nome}
+                              </div>
+                              <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                                {(x.g.pagamento ? x.g.nome + ' · ' : '') + x.ks.length + (x.ks.length === 1 ? ' chave' : ' chaves')}
+                              </div>
+                            </div>
+                            <DS.Button
+                              size="sm"
+                              variant="outline"
+                              iconLeft="copy"
+                              onClick={function () {
+                                copiarTxt(t, x.ks.length);
+                              }}
+                            >
+                              {'Copiar ' + x.ks.length}
+                            </DS.Button>
+                          </div>
+                          <textarea
+                            readOnly
+                            value={t}
+                            onFocus={function (e) {
+                              e.target.select();
+                            }}
+                            rows={Math.min(14, Math.max(3, x.ks.length))}
+                            style={{
+                              width: '100%',
+                              boxSizing: 'border-box',
+                              padding: '10px 12px',
+                              border: '1px solid var(--border-default)',
+                              borderRadius: 12,
+                              background: 'var(--surface-sunken, var(--surface-card))',
+                              color: 'var(--text-primary)',
+                              font: '500 14px/1.7 ui-monospace, SFMono-Regular, Menlo, monospace',
+                              resize: 'vertical',
+                            }}
+                          ></textarea>
+                        </div>
+                      );
+                    })}
+                    {!L.length ? (
+                      <div style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Nenhuma chave disponível nos grupos desta cooperação.</div>
+                    ) : null}
+                  </div>
+                </Modal>
+              );
+            })()
+          : null}
+        <Modal
+          open={imp}
+          onClose={function () {
+            setImp(false);
+          }}
+          title="Importar"
+          subtitle={
+            impT === 'tg'
+              ? 'Cole a lista numerada: 1 – 90 – R (R = conta de rolo)'
+              : impT === 'dep'
+                ? 'Cole a lista de depósitos: usuário e valor, ou só os valores'
+                : 'Cole a lista do Telegram ou de uma lista global'
+          }
+          footer={
+            <React.Fragment>
+              <Button
+                variant="secondary"
+                onClick={function () {
+                  setImp(false);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button variant="brand" iconLeft="upload" onClick={importar}>
+                {impT === 'tg' ? 'Importar ' + parseTg(txt).length + ' contas' : 'Importar'}
+              </Button>
+            </React.Fragment>
+          }
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12, marginBottom: 12 }}>
+            <DS.Tabs
+              variant="chips"
+              value={impT}
+              onChange={function (v) {
+                setImpT(v);
+                setTxt('');
+              }}
+              items={
+                superAdm
+                  ? [
+                      { id: 'tg', label: 'Lista do Telegram' },
+                      { id: 'contas', label: 'Contas (usuário e senha)' },
+                      { id: 'dep', label: 'Depósitos' },
+                    ]
+                  : [{ id: 'contas', label: 'Contas (usuário e senha)' }]
+              }
+            />
+            {impT === 'dep' ? (
+              <DS.Tabs
+                variant="chips"
+                value={impC}
+                onChange={setImpC}
+                items={[
+                  { id: 'deposito', label: 'Depósito' },
+                  { id: 'redeposito', label: 'Re-depósito' },
+                  { id: 'saque', label: 'Saque' },
+                ]}
+              />
+            ) : null}
+          </div>
+          {impT === 'tg' ? (
+            (function () {
+              const rows = parseTg(txt);
+              const nr = rows.filter(function (r) {
+                  return r.rolo;
+                }).length,
+                ns = rows.length - nr,
+                vr = num(tgR),
+                vs = num(tgS);
+              const dep = rows.reduce(function (a, r) {
+                  return a + r.valor;
+                }, 0),
+                com = nr * vr + ns * vs;
+              const kp = function (l, v, hl) {
+                return (
+                  <div
+                    style={{
+                      flex: '1 1 130px',
+                      padding: '12px 14px',
+                      borderRadius: 12,
+                      background: hl ? 'var(--ms7-green)' : 'var(--ms7-gray-50)',
+                      color: hl ? '#fff' : 'var(--text-primary)',
+                    }}
+                  >
+                    <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', opacity: hl ? 0.85 : 0.7 }}>
+                      {l}
+                    </div>
+                    <div style={{ fontSize: 18, fontWeight: 800, fontVariantNumeric: 'tabular-nums', marginTop: 2 }}>{v}</div>
+                  </div>
+                );
+              };
+              return (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+                  <Input
+                    label="Lista numerada (número – valor – R)"
+                    multiline
+                    rows={8}
+                    placeholder={'1 – 90 – R\n2 – 12\n3 – 65 – R\n4 – 14'}
+                    value={txt}
+                    onChange={function (e) {
+                      setTxt(e.target.value);
+                    }}
+                    hint="O número diz a linha da tabela. As linhas de total do Telegram são ignoradas. O operador preenche depois só usuário, saque e chave PIX."
+                  />
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
+                    <Input
+                      label="Comissão por conta com R"
+                      prefix="R$"
+                      value={tgR}
+                      onChange={function (e) {
+                        setTgR(e.target.value);
+                      }}
+                    />
+                    <Input
+                      label="Comissão por conta sem R"
+                      prefix="R$"
+                      value={tgS}
+                      onChange={function (e) {
+                        setTgS(e.target.value);
+                      }}
+                    />
+                  </div>
+                  {rows.length ? (
+                    <React.Fragment>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                        {rows.length +
+                          ' contas · ' +
+                          nr +
+                          ' com R × ' +
+                          MS7.brl(vr) +
+                          ' = ' +
+                          MS7.brl(nr * vr) +
+                          ' · ' +
+                          ns +
+                          ' sem R × ' +
+                          MS7.brl(vs) +
+                          ' = ' +
+                          MS7.brl(ns * vs)}
+                      </div>
+                      <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+                        {kp('Total depósito', MS7.brl(dep))}
+                        {kp('Comissão', MS7.brl(com))}
+                        {kp('Total p/ envio', MS7.brl(dep + com), true)}
+                      </div>
+                      <div style={{ maxHeight: 240, overflow: 'auto', border: '1px solid var(--border-subtle)', borderRadius: 12 }}>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
+                          <thead>
+                            <tr>
+                              <th style={Object.assign({}, th, { width: 60 })}>#</th>
+                              <th style={Object.assign({}, th, { textAlign: 'right' })}>Valor</th>
+                              <th style={Object.assign({}, th, { width: 70, textAlign: 'center' })}>R</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {rows.map(function (r, i) {
+                              return (
+                                <tr key={i}>
+                                  <td
+                                    style={{
+                                      padding: '7px 10px',
+                                      borderBottom: '1px solid var(--border-subtle)',
+                                      fontWeight: 700,
+                                      color: 'var(--text-secondary)',
+                                    }}
+                                  >
+                                    {r.n}
+                                  </td>
+                                  <td
+                                    style={{
+                                      padding: '7px 10px',
+                                      borderBottom: '1px solid var(--border-subtle)',
+                                      textAlign: 'right',
+                                      fontWeight: 700,
+                                      fontVariantNumeric: 'tabular-nums',
+                                    }}
+                                  >
+                                    {MS7.brl(r.valor)}
+                                  </td>
+                                  <td style={{ padding: '7px 10px', borderBottom: '1px solid var(--border-subtle)', textAlign: 'center' }}>
+                                    {r.rolo ? (
+                                      <span
+                                        style={{
+                                          display: 'inline-flex',
+                                          width: 22,
+                                          height: 22,
+                                          borderRadius: 6,
+                                          alignItems: 'center',
+                                          justifyContent: 'center',
+                                          background: 'var(--ms7-lime-500, #C9F76A)',
+                                          color: 'var(--text-on-lime, #0C3B26)',
+                                          fontSize: 12,
+                                          fontWeight: 800,
+                                        }}
+                                      >
+                                        R
+                                      </span>
+                                    ) : null}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </table>
+                      </div>
+                    </React.Fragment>
+                  ) : null}
+                </div>
+              );
+            })()
+          ) : impT === 'dep' ? (
+            <Input
+              label="Uma linha por conta: usuário | valor (ou só o valor, na ordem)"
+              multiline
+              rows={9}
+              placeholder={'julioferreira | 50\nmicheleromao | 30,00\n\nou só os valores:\n50\n30\n20'}
+              value={txt}
+              onChange={function (e) {
+                setTxt(e.target.value);
+              }}
+              hint="Com usuário: preenche a conta desse usuário (ou a próxima linha vazia, se ele ainda não existir). Só valor: preenche na ordem as contas que ainda não têm esse valor."
+            />
+          ) : (
+            <Input
+              label="Uma conta por linha: usuário | senha | senha saque"
+              multiline
+              rows={9}
+              placeholder={'julioferreira | senha123 | 4321\nmicheleromao | abc456'}
+              value={txt}
+              onChange={function (e) {
+                setTxt(e.target.value);
+              }}
+              hint="As contas preenchem primeiro as linhas vazias; se faltar linha, novas são criadas."
+            />
+          )}
+        </Modal>
       </div>
-      {canAdmin&&c.status!=='Lixeira'?<Button size="sm" variant="outline" iconLeft="pencil" onClick={function(){setEdOpen(true);}}>Editar</Button>:null}
-      {canAdmin?<EditCoop c={c} open={edOpen} onClose={function(){setEdOpen(false);}}/>:null}
-      {canAdmin&&c.status!=='Lixeira'&&DB.A.pendentesDe(c.id).length?<Button size="sm" variant="outline" iconLeft="arrow-right-left" onClick={function(){setTrOpen(true);}}>{'Passar '+DB.A.pendentesDe(c.id).length+' contas'}</Button>:null}
-      {trOpen?<TransferirModal c={c} onClose={function(){setTrOpen(false);}}/>:null}
-      <Button size="sm" variant="ghost" iconLeft="download" onClick={function(){exportCSV('contas-'+c.id,[{label:'Usuário',get:function(r){return r.usuario;}},{label:'Depósito',get:function(r){return r.deposito;}},{label:'Re-depósito',get:function(r){return r.redeposito;}},{label:'Saque',get:function(r){return r.saque;}},{label:'Baú',get:function(r){return r.bau||0;}},{label:'Resultado',get:DB.contaRes},{label:'Status',get:function(r){return r.status;}},{label:'Chave PIX',get:function(r){return r.pix||'';}}],c.contas);}}>CSV</Button>
-      <div style={{display:'flex',alignItems:'center',gap:6,height:36,padding:'0 12px',borderRadius:18,border:'1px solid var(--border-subtle)',fontSize:12,fontWeight:700,color:'var(--text-secondary)'}} title="Toda conta nova com usuário entra no ciclo. Depois de 5 min sem mexer, o admin recebe: quantas contas, o depósito de todas e o saque das que tiveram."><DS.Icon name="bell-ring" size={14}/>{(function(){const fe=function(k){return String(k.usuario||'').trim()&&((k.status==='Sacado'&&(+k.saque||0)>0)||k.status==='Bloqueado'||k.status==='Não sacado');};const pf=c.contas.filter(function(k){return !k.ciclo&&fe(k);}).length;const p=pf||c.contas.filter(function(k){return !k.ciclo&&String(k.usuario||'').trim();}).length;return !p?'Envia ao admin 5 min depois que você parar de mexer':'Ciclo '+((c.ciclos||0)+1)+': '+p+(p===1?' conta registrada':' contas registradas')+' · envia 5 min depois da última mudança';})()}</div>
-      {(function(){const fe=function(k){return String(k.usuario||'').trim()&&((k.status==='Sacado'&&(+k.saque||0)>0)||k.status==='Bloqueado'||k.status==='Não sacado');};const pf=c.contas.filter(function(k){return !k.ciclo&&fe(k);}).length;const p=pf||c.contas.filter(function(k){return !k.ciclo&&String(k.usuario||'').trim();}).length;return <Button size="sm" variant={canAdmin?'outline':'brand'} iconLeft="send" disabled={!p} onClick={function(){if(confirm('Enviar '+p+(p===1?' conta':' contas')+' para o admin agora?'))DB.A.fecharCiclo(c.id);}}>{p?'Enviar '+p+(p===1?' conta':' contas')+' ao admin':'Nenhuma conta nova'}</Button>;})()}
-      {acts.map(function(a){return <Button key={a[1]} size="sm" variant={a[2]==='Concluída'||a[2]==='Finalizada'?'brand':'secondary'} iconLeft={a[0]} onClick={function(){DB.A.setStatus(c.id,a[2]);}}>{a[1]}</Button>;})}
-    </div>
-    {c.descricao?<div style={{display:'flex',gap:10,alignItems:'center',padding:'12px 16px',borderRadius:12,background:'var(--ms7-lime-100)',color:'var(--ms7-green-ink, #005D3B)',fontSize:14,fontWeight:600}}><DS.Icon name="megaphone" size={16}/><span style={{whiteSpace:'pre-line'}}>{c.descricao}</span></div>:null}
-    {info.length||meta.length?<div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
-      {info.map(function(x){return <div key={x[0]} style={{flex:'1 1 200px',minWidth:0,display:'flex',alignItems:'center',gap:10,padding:'10px 12px',borderRadius:12,background:'var(--surface-card)',boxShadow:'var(--shadow-card)'}}><span style={{width:32,height:32,borderRadius:8,background:'var(--ms7-gray-100)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><DS.Icon name={x[2]} size={15}/></span><div style={{flex:1,minWidth:0}}><div style={{fontSize:11,fontWeight:700,color:'var(--text-secondary)'}}>{x[0]}</div>{x[4]?null:<div style={{fontSize:13,fontWeight:700,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',fontFamily:x[2]==='hash'?'ui-monospace, monospace':'inherit'}}>{x[3]&&!verSen?'••••••••':x[1]}</div>}</div>{x[4]?<IconButton icon="external-link" size={28} iconSize={14} label="Abrir link" onClick={function(){window.open(/^https?:/i.test(x[1])?x[1]:'https://'+x[1],'_blank','noopener');}}/>:null}{x[3]?<IconButton icon={verSen?'eye-off':'eye'} size={28} iconSize={14} label={verSen?'Esconder senha':'Ver senha'} onClick={function(){setVerSen(!verSen);}}/>:null}<IconButton icon="copy" size={28} iconSize={14} label="Copiar" onClick={function(){copy(x[0],x[1]);}}/></div>;})}
-      {meta.map(function(x){return <div key={x[0]} style={{flex:'1 1 170px',padding:'10px 14px',borderRadius:12,background:'var(--surface-card)',boxShadow:'var(--shadow-card)'}}><div style={{fontSize:11,fontWeight:700,color:'var(--text-secondary)'}}>{x[0]}</div><div style={{fontSize:16,fontWeight:800,color:x[2]?'var(--ms7-green)':'var(--text-primary)'}}>{x[1]}</div></div>;})}
-    </div>:null}
-    <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(140px,1fr))',gap:12}}>{kpis.map(function(x){return <div key={x[0]} style={{padding:'14px 16px',borderRadius:14,background:'var(--surface-card)',boxShadow:'var(--shadow-card)',borderTop:x[2]?'3px solid '+x[2]:'3px solid transparent'}}><div style={{fontSize:11,fontWeight:700,letterSpacing:'.05em',textTransform:'uppercase',color:'var(--text-secondary)'}}>{x[0]}</div><div style={{fontSize:20,fontWeight:800,marginTop:4,color:x[2]||'var(--text-primary)',fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{x[1]}</div></div>;})}</div>
-    <div style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)',lineHeight:1.6}}>{'Conta do resultado: saque '+MS7.brl(k.saq)+(k.bau?' + baú '+MS7.brl(k.saq-k.saq+(k.ds-(k.saq-k.dep-k.red))):'')+(k.sal?' + salário '+MS7.brl(k.sal):'')+' − depósito '+MS7.brl(k.dep+k.red)+' − comissão '+MS7.brl(k.com)+' ('+DB.comText(c)+') = '+MS7.brl(k.lucro)+(k.pend?' · '+MS7.brl(k.pend)+' de saque fora da conta (contas que não estão como Sacado)':'')}</div>
-    <LotesPix c={c} canAdmin={canAdmin}/>
-    <Planilha c={c} canAdmin={canAdmin} superAdm={!session||session.role==='super'||session.role==='cliente'}/>
-  </div>;
-}
-function CooperacoesScreen({session,bau,meu}){const pk=meu?'meu':bau?'bau':'coop';
-  const {Button,Input,Select,Tabs}=DS;const db=DB.useDB();const isOp=session.role==='operador';
-  const [st0,setSt]=usePersist(pk+'-st','ativas');const st=(st0==='todas'||st0==='andamento')?'ativas':st0;const [op,setOp]=usePersist(pk+'-op','');const [q,setQ]=React.useState('');const [per,setPer]=usePersist(pk+'-per','Todos');
-  const [wiz,setWiz]=React.useState(false);const [open,setOpen]=React.useState(function(){const x=localStorage.getItem('ms7op-open-coop');localStorage.removeItem('ms7op-open-coop');return x;});
-  const [dt,setDt]=usePersist(pk+'-dt','Todos');const [de0,setDe0]=usePersist(pk+'-de','');const [ate0,setAte0]=usePersist(pk+'-ate','');
-  const hoje=DB.iso(DB.today);const rng=(de0||ate0)?[de0||'0000-00-00',ate0||'9999-12-31']:null;
-  const escolhe=function(v){setDt(v);if(v==='Diário'){setDe0(hoje);setAte0(hoje);}else if(v==='Semanal'){setDe0(DB.semanaIni(hoje));setAte0(hoje);}else if(v==='Mensal'){setDe0(hoje.slice(0,8)+'01');setAte0(hoje);}else{setDe0('');setAte0('');}};
-  const dataDe=function(c){return c.status==='Concluída'?DB.comData(c):(c.status==='Finalizada'||c.status==='Lixeira')?(DB.dIso(c.finalizadaEm)||DB.dIso(c.fim)||DB.dIni(c)):DB.dIni(c);};
-  const naData=function(c){if(!rng)return true;const d=dataDe(c);return !!d&&d>=rng[0]&&d<=rng[1];};
-  const base=DB.coopsFor({opId:meu?null:isOp?session.opId:op||null,per:'Todos',lixeira:true}).filter(function(c){return (bau?c.tipo==='bau':c.tipo!=='bau')&&naData(c);});
-  const qn=function(v){return String(v||'').toLowerCase().replace(/^https?:\/\//,'').replace(/^www\./,'').replace(/\/+$/,'').trim();};const qq=qn(q);
-  const metasL=(function(){const k=(db.kv||[]).find(function(x){return x.id==='metas';});let v=k?k.v:null;if(!v){try{v=JSON.parse(localStorage.getItem('ms7op-p-metas')||'null');}catch(e){}}return Array.isArray(v)?v:[];})();
-  const txt=function(c){const cm=c.contaMae||{};const mt=metasL.filter(function(m){return m.coopId===c.id;}).map(function(m){return m.link+' '+m.nome;}).join(' ');return [c.cliente,c.plataforma,c.linkN,c.rede,c.id,String(c.id).replace(/^C-/,''),DB.opName(c.opId),DB.coopNome(c),cm.link,cm.usuario,mt].map(qn).join(' | ');};
-  const naAba=function(c){return st==='ativas'?(c.status==='Em andamento'||c.status==='Ativa'):st==='finalizadas'?c.status==='Finalizada':st==='concluidas'?c.status==='Concluída':c.status==='Lixeira';};
-  const vis=base.filter(function(c){if(!qq)return naAba(c);if(txt(c).indexOf(qq)<0)return false;return st==='lixeira'?c.status==='Lixeira':c.status!=='Lixeira';});
-  const tk=vis.reduce(function(a,c){const k=DB.calc(c);a.dep+=k.dep+k.red;a.saq+=k.saq;a.ds+=k.ds;a.sal+=k.sal||0;a.com+=k.com;a.lucro+=k.lucro;a.pend+=k.pend||0;return a;},{dep:0,saq:0,ds:0,sal:0,com:0,lucro:0,pend:0});
-  const abaNome=qq?'Resultado da busca':st==='ativas'?'Ativas':st==='finalizadas'?'Finalizadas':st==='concluidas'?'Concluídas':'Lixeira';
-  const final=!qq&&st==='concluidas';const fimV=final?tk.lucro:tk.ds;
-  const fimL=final?(fimV>=0?'Lucro final':'Prejuízo final'):st==='ativas'&&!qq?(fimV>=0?'Resultado parcial':'Prejuízo parcial'):'Depósito × Saque';
-  const count=function(fn){return base.filter(fn).length;};
-  if(open&&DB.coop(open))return <CoopDetail id={open} session={session} onClose={function(){setOpen(null);}}/>;
-  return <div style={{display:'flex',flexDirection:'column',gap:24}}>
-    <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}>
-      <div style={{display:'flex',flexDirection:'column',gap:10}}>
-        <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}><input type="date" aria-label="De" value={de0} max={ate0||undefined} onChange={function(e){setDe0(e.target.value);setDt('');}} style={{height:34,padding:'0 10px',border:'1px solid var(--border-default)',borderRadius:10,background:'var(--surface-card)',color:'var(--text-primary)',fontFamily:'inherit',fontSize:14,fontWeight:600}}/><span style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)'}}>até</span><input type="date" aria-label="Até" value={ate0} min={de0||undefined} onChange={function(e){setAte0(e.target.value);setDt('');}} style={{height:34,padding:'0 10px',border:'1px solid var(--border-default)',borderRadius:10,background:'var(--surface-card)',color:'var(--text-primary)',fontFamily:'inherit',fontSize:14,fontWeight:600}}/>{rng?<span style={{fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{st==='ativas'&&!qq?'Ativas: pela data de início':st==='concluidas'&&!qq?'Pela data em que foi concluída':st==='finalizadas'&&!qq?'Pela data em que foi finalizada':'Fechadas pela data de fechamento; ativas pela de início'}</span>:null}</div>
-        <Tabs variant="chips" value={rng?dt:'Todos'} onChange={escolhe} items={['Diário','Semanal','Mensal','Todos']}/>
+    );
+  }
+  function LotesPix({ c, canAdmin }) {
+    const { Button, Modal, Checkbox, Badge, IconButton } = DS;
+    const db = DB.get();
+    const gp = PIXV.gp(db, c.plataforma) || 'Geral';
+    const [ed, setEd] = React.useState(false);
+    const [tr, setTr] = React.useState(false);
+    const [sel, setSel] = React.useState([]);
+    const ativos = ['Ativa', 'Em andamento'];
+    const sel0 = c.pixGrupos || [];
+    const lotes = DB.pixOrd(
+      (db.pix || []).filter(function (g) {
+        return g.ativo !== false;
+      }),
+    );
+    const outro = function (gid) {
+      const x = (db.coops || []).find(function (o) {
+        return (
+          o.id !== c.id &&
+          (o.opId || '') !== (c.opId || '') &&
+          (ativos.indexOf(o.status) >= 0 || o.status === 'Finalizada') &&
+          DB.platNorm(o.plataforma) === DB.platNorm(c.plataforma) &&
+          (o.pixGrupos || []).indexOf(gid) >= 0
+        );
+      });
+      return x ? [DB.coopNome(x), DB.opName(x.opId)].filter(Boolean).join(' · ') : '';
+    };
+    const st = function (g) {
+      let disp = 0,
+        aqui = 0,
+        bloq = 0,
+        outra = 0;
+      g.chaves.forEach(function (k) {
+        const s = PIXV.st(k, gp);
+        if (s.status === 'disponivel') disp++;
+        else if (s.status === 'bloqueada') bloq++;
+        else if (s.conta && s.conta.coopId === c.id) aqui++;
+        else outra++;
+      });
+      return { disp: disp, aqui: aqui, bloq: bloq, outra: outra, total: g.chaves.length };
+    };
+    const meus = lotes.filter(function (g) {
+      return sel0.indexOf(g.id) >= 0;
+    });
+    if (!canAdmin && !meus.length) return null;
+    const fim = ativos.indexOf(c.status) < 0;
+    const selG = lotes.filter(function (g) {
+      return sel.indexOf(g.id) >= 0;
+    });
+    const porTit = {};
+    let totDisp = 0,
+      totAll = 0;
+    selG.forEach(function (g) {
+      const s = st(g);
+      const k = String(g.nome || 'Sem nome').trim();
+      const t = porTit[k] || (porTit[k] = { nome: k, grupos: 0, disp: 0, total: 0, cada: [] });
+      t.grupos++;
+      t.disp += s.disp;
+      t.total += s.total;
+      t.cada.push(s.disp);
+      totDisp += s.disp;
+      totAll += s.total;
+    });
+    const titList = Object.keys(porTit)
+      .sort(function (a, b) {
+        return a.localeCompare(b, 'pt-BR', { numeric: true, sensitivity: 'base' });
+      })
+      .map(function (k) {
+        const t = porTit[k];
+        const igual = t.cada.every(function (x) {
+          return x === t.cada[0];
+        });
+        t.conta = t.grupos > 1 && igual ? t.grupos + ' × ' + t.cada[0] + ' = ' + t.disp : t.cada.join(' + ') + (t.grupos > 1 ? ' = ' + t.disp : '');
+        return t;
+      });
+    return (
+      <div
+        style={{
+          background: 'var(--surface-card)',
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: 'var(--shadow-card)',
+          padding: '16px 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 12,
+        }}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <DS.Icon name="key-round" size={18} />
+          <b style={{ fontSize: 17, flex: 1 }}>{'Grupos de chaves PIX' + (meus.length ? ' · ' + meus.length : '')}</b>
+          {canAdmin && !fim ? (
+            <Button
+              size="sm"
+              variant="outline"
+              iconLeft="pencil"
+              onClick={function () {
+                setSel(sel0.slice());
+                setEd(true);
+              }}
+            >
+              {meus.length ? 'Trocar grupos' : 'Escolher grupos'}
+            </Button>
+          ) : null}
+        </div>
+        {!meus.length ? (
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+            Nenhum grupo escolhido. O operador vê os lotes do operador e da plataforma. Escolha os grupos para ele trabalhar só com eles.
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,240px),1fr))', gap: 10 }}>
+            {meus.map(function (g) {
+              const s = st(g);
+              return (
+                <div
+                  key={g.id}
+                  style={{
+                    border: '1px solid var(--border-subtle)',
+                    borderRadius: 12,
+                    padding: '10px 12px',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: 6,
+                  }}
+                >
+                  <div style={{ display: 'flex', alignItems: 'flex-start', gap: 6 }}>
+                    <span
+                      style={{
+                        alignSelf: 'flex-start',
+                        padding: '4px 10px',
+                        borderRadius: 8,
+                        background: '#005D3B',
+                        color: '#fff',
+                        fontSize: 13,
+                        fontWeight: 800,
+                        letterSpacing: '.02em',
+                        textTransform: 'uppercase',
+                      }}
+                    >
+                      {g.nome}
+                    </span>
+                    <span style={{ flex: 1 }}></span>
+                    {canAdmin && !fim ? (
+                      <IconButton
+                        icon="x"
+                        size={28}
+                        iconSize={14}
+                        label={'Tirar ' + g.nome + (g.pagamento ? ' · ' + g.pagamento : '') + ' desta cooperação'}
+                        onClick={function () {
+                          const nome = g.nome + (g.pagamento ? ' · ' + g.pagamento : '');
+                          if (
+                            !confirm(
+                              'Tirar o grupo ' +
+                                nome +
+                                ' desta cooperação? O operador deixa de ver essas chaves aqui. As chaves já usadas continuam usadas.',
+                            )
+                          )
+                            return;
+                          DB.A.setPixGrupos(
+                            c.id,
+                            (c.pixGrupos || []).filter(function (x) {
+                              return x !== g.id;
+                            }),
+                          );
+                        }}
+                      />
+                    ) : null}
+                  </div>
+                  {g.pagamento ? (
+                    <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)', marginTop: -4 }}>{g.pagamento}</span>
+                  ) : null}
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    <Badge size="sm" variant="soft" tone="blue">
+                      {s.aqui + ' usadas aqui'}
+                    </Badge>
+                    <Badge size="sm" variant="soft" tone="green">
+                      {s.disp + (s.disp === 1 ? ' sobrando' : ' sobrando')}
+                    </Badge>
+                    {s.bloq ? (
+                      <Badge size="sm" variant="soft" tone="error">
+                        {s.bloq + ' bloqueadas'}
+                      </Badge>
+                    ) : null}
+                    {s.outra ? (
+                      <Badge size="sm" variant="soft" tone="gray">
+                        {s.outra + ' em outra coop'}
+                      </Badge>
+                    ) : null}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        )}
+        {meus.length && fim ? (
+          <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--ms7-green)' }}>
+            Cooperação encerrada: as chaves que sobraram estão livres para mandar para outro operador.
+          </div>
+        ) : null}
+        <Modal
+          open={ed}
+          onClose={function () {
+            setEd(false);
+          }}
+          title="Grupos de chaves PIX"
+          subtitle={'Escolha os grupos que ' + DB.opName(c.opId) + ' vai usar nesta cooperação'}
+          footer={
+            <React.Fragment>
+              <Button
+                variant="secondary"
+                onClick={function () {
+                  setEd(false);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="brand"
+                iconLeft="check"
+                onClick={function () {
+                  DB.A.setPixGrupos(c.id, sel);
+                  setEd(false);
+                }}
+              >
+                {selG.length ? 'Salvar · ' + totDisp + ' chaves' : 'Salvar'}
+              </Button>
+            </React.Fragment>
+          }
+        >
+          <div
+            style={{
+              position: 'sticky',
+              top: 0,
+              zIndex: 2,
+              marginBottom: 12,
+              padding: '14px 16px',
+              borderRadius: 14,
+              background: 'var(--ms7-lime-100, #E9F7D9)',
+              color: 'var(--ms7-green-ink, #005D3B)',
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 8,
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
+              <b style={{ fontSize: 30, lineHeight: 1, fontVariantNumeric: 'tabular-nums' }}>{totDisp}</b>
+              <b style={{ fontSize: 15 }}>{totDisp === 1 ? 'chave disponível para enviar' : 'chaves disponíveis para enviar'}</b>
+              <span style={{ flex: 1 }}></span>
+              <span style={{ fontSize: 13, fontWeight: 700 }}>
+                {selG.length + (selG.length === 1 ? ' grupo selecionado' : ' grupos selecionados')}
+              </span>
+            </div>
+            {titList.length ? (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                  borderTop: '1px solid color-mix(in oklab, currentColor 20%, transparent)',
+                  paddingTop: 8,
+                }}
+              >
+                {titList.map(function (t) {
+                  return (
+                    <div key={t.nome} style={{ display: 'flex', alignItems: 'baseline', gap: 8, fontSize: 14, fontWeight: 700 }}>
+                      <span style={{ textTransform: 'uppercase' }}>{t.nome}</span>
+                      <span style={{ fontWeight: 600, opacity: 0.85 }}>{t.grupos + (t.grupos === 1 ? ' grupo' : ' grupos')}</span>
+                      <span style={{ flex: 1 }}></span>
+                      <span style={{ fontVariantNumeric: 'tabular-nums' }}>{t.conta + ' chaves'}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              <span style={{ fontSize: 13, fontWeight: 600 }}>Marque os grupos abaixo para ver o total.</span>
+            )}
+            {totAll > totDisp ? (
+              <span style={{ fontSize: 12, fontWeight: 600, opacity: 0.85 }}>
+                {totAll - totDisp + ' chaves desses grupos já estão em uso ou bloqueadas e não entram na conta.'}
+              </span>
+            ) : null}
+          </div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {lotes.length ? (
+              lotes.map(function (g) {
+                const s = st(g);
+                const o = outro(g.id);
+                const on = sel.indexOf(g.id) >= 0;
+                const trav = !!o && !on;
+                return (
+                  <div
+                    key={g.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 10,
+                      padding: '10px 12px',
+                      border: '1px solid ' + (on ? 'var(--ms7-green)' : 'var(--border-subtle)'),
+                      borderRadius: 12,
+                      opacity: trav ? 0.55 : 1,
+                    }}
+                  >
+                    {trav ? (
+                      <span
+                        title="Reservado para outra cooperação"
+                        style={{ width: 20, display: 'flex', justifyContent: 'center', color: 'var(--text-secondary)' }}
+                      >
+                        <DS.Icon name="lock" size={16} />
+                      </span>
+                    ) : (
+                      <Checkbox
+                        checked={on}
+                        onChange={function (v) {
+                          setSel(
+                            v
+                              ? sel.concat([g.id])
+                              : sel.filter(function (x) {
+                                  return x !== g.id;
+                                }),
+                          );
+                        }}
+                      />
+                    )}
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <b style={{ fontSize: 14 }}>{g.nome}</b>
+                      {g.pagamento ? (
+                        <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--text-secondary)' }}>{' · ' + g.pagamento}</span>
+                      ) : null}
+                      <div style={{ fontSize: 12, fontWeight: 700, color: s.disp ? 'var(--ms7-green)' : 'var(--text-secondary)' }}>
+                        {s.disp + ' de ' + s.total + ' chaves livres para usar'}
+                      </div>
+                      {o ? (
+                        <div
+                          style={{
+                            fontSize: 12,
+                            fontWeight: 600,
+                            color: 'var(--soft-warn-fg, #8A3B00)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 4,
+                          }}
+                        >
+                          <DS.Icon name="lock" size={12} />
+                          {'Reservado para ' + o + '. Volta a ficar livre quando a cooperação dele encerrar.'}
+                        </div>
+                      ) : null}
+                    </div>
+                  </div>
+                );
+              })
+            ) : (
+              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                Nenhum lote cadastrado. Cadastre em Gestão → Chaves PIX.
+              </div>
+            )}
+          </div>
+        </Modal>
       </div>
-      <Button size="sm" variant="ghost" iconLeft="refresh-cw" style={{marginLeft:'auto'}} onClick={function(){toast('Dados atualizados');}}>Atualizar</Button>
-    </div>
-    {(function(){const tq=vis.reduce(function(a,c){const k=DB.calc(c);a.dep+=k.dep;a.red+=k.red;a.bau+=k.ds-(k.saq-k.dep-k.red);a.depos+=(+c.depositantes||c.contas.length);return a;},{dep:0,red:0,bau:0,depos:0});
-      const Q=[['Total ativas',count(function(c){return c.status==='Ativa'||c.status==='Em andamento';}),'cooperações em andamento','activity','#1FA971'],['Concluídas',count(function(c){return c.status==='Concluída';}),'cooperações fechadas','circle-check','#2F6BFF'],['Depositantes',tq.depos,abaNome.toLowerCase(),'users','#B8406E'],['Depósito',MS7.brl(tq.dep),null,'arrow-down-to-line','#3B5FC4'],['Re-depósito',MS7.brl(tq.red),null,'circle-dollar-sign','#3B5FC4'],['Saque',MS7.brl(tk.saq),null,'arrow-up-from-line','#3B5FC4'],['Baú',MS7.brl(tq.bau),null,'package','#C8901E'],[isOp?'Minha comissão':fimL,MS7.brl(isOp?tk.com:fimV),null,'trending-up',(isOp?tk.com:fimV)>=0?'#1FA971':'#B8466A']];
-      return <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(max(210px, calc((100% - 42px) / 4)),1fr))',gap:14}}>{Q.map(function(x){return <div key={x[0]} style={{padding:'14px 16px',borderRadius:'var(--radius-lg)',border:'1px solid color-mix(in oklab, '+x[4]+' 42%, transparent)',background:'linear-gradient(135deg, color-mix(in oklab, '+x[4]+' 34%, var(--surface-card)) 0%, color-mix(in oklab, '+x[4]+' 11%, var(--surface-card)) 100%)',minWidth:0,display:'flex',flexDirection:'column'}}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}><span style={{flex:1,minWidth:0,fontSize:12,fontWeight:700,letterSpacing:'.06em',textTransform:'uppercase',color:'var(--text-secondary)',whiteSpace:'nowrap',overflow:'hidden',textOverflow:'ellipsis'}}>{x[0]}</span><span style={{width:30,height:30,flexShrink:0,borderRadius:8,display:'flex',alignItems:'center',justifyContent:'center',background:'color-mix(in oklab, var(--surface-page) 62%, transparent)'}}><DS.Icon name={x[3]} size={16} color={'color-mix(in oklab, '+x[4]+' 75%, #fff)'}/></span></div>
-        <div style={{fontSize:24,fontWeight:800,marginTop:8,fontVariantNumeric:'tabular-nums',color:'var(--text-primary)',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>{x[1]}</div>
-        </div>;})}</div>;})()}
-    {!isOp&&final&&vis.length?<div style={{marginTop:-12,fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{'Dep. × Saque '+MS7.brl(tk.ds)+(tk.sal?' + salário '+MS7.brl(tk.sal):'')+' − comissão '+MS7.brl(tk.com)+' = '+MS7.brl(tk.lucro)}</div>:null}
-    {!isOp&&!final&&!qq&&st!=='lixeira'&&vis.length?<div style={{marginTop:-12,fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{st==='ativas'?'Só depósito e saque lançados até agora. Salário, baú e comissão entram quando a cooperação for concluída.':'Depósito × saque das finalizadas. Salário, baú e comissão entram quando você marcar como Concluída.'}</div>:null}
-    <div style={{display:'flex',alignItems:'center',gap:12,flexWrap:'wrap'}}>
-      <Tabs variant="chips" value={st} onChange={setSt} items={[{id:'ativas',label:'Ativas',count:count(function(c){return c.status==='Ativa'||c.status==='Em andamento';})},{id:'finalizadas',label:'Finalizadas',count:count(function(c){return c.status==='Finalizada';})},{id:'concluidas',label:'Concluídas',count:count(function(c){return c.status==='Concluída';})},{id:'lixeira',label:'Lixeira',count:count(function(c){return c.status==='Lixeira';})}]}/>
-      {!isOp&&!window.ms7SemOp&&!meu?<Select variant="pill" value={op} onChange={function(e){setOp(e.target.value);}} options={[{value:'',label:'Todos os operadores'}].concat(db.operadores.map(function(o){return {value:o.id,label:o.nome};}))}/>:null}
-      <div style={{flex:'1 1 200px',maxWidth:300,marginLeft:'auto'}}><Input icon="search" placeholder="Buscar link, ID, plataforma ou operador" value={q} onChange={function(e){setQ(e.target.value);}}/></div>
-      <Button variant="outline" iconLeft="download" onClick={function(){exportCSV('cooperacoes',[{label:'ID',get:function(c){return c.id;}},{label:'Cliente',get:function(c){return c.cliente;}},{label:'Operador',get:function(c){return DB.opName(c.opId);}},{label:'Plataforma',get:function(c){return c.plataforma;}},{label:'Rede',get:function(c){return c.rede;}},{label:'Status',get:function(c){return c.status;}},{label:'Início',get:function(c){return c.inicio;}},{label:'Contas',get:function(c){return DB.calc(c).n;}},{label:'Depósito',get:function(c){const k=DB.calc(c);return k.dep+k.red;}},{label:'Saque',get:function(c){return DB.calc(c).saq;}},{label:'Resultado',get:function(c){return DB.calc(c).res;}},{label:'Comissão',get:function(c){return DB.calc(c).com;}},{label:'Custo',get:function(c){return DB.calc(c).custo;}},{label:'Lucro líquido',get:function(c){return DB.calc(c).lucro;}}],vis);}}>Exportar</Button>
-      <Button iconLeft="plus" onClick={function(){setWiz(true);}}>{meu?'Nova cooperação minha':bau?'Novo baú':'Nova cooperação'}</Button>
-    </div>
-    {vis.length?<div style={{display:'flex',flexDirection:'column',gap:16}}>{vis.map(function(c){return <CoopCard key={c.id} c={c} canAdmin={!isOp} onOpen={function(){setOpen(c.id);}}/>;})}</div>
-      :<DS.Card><Empty icon={bau?'package':'briefcase'} title={bau?'Nenhum baú encontrado':'Nenhuma cooperação encontrada'} sub={bau?'Ajuste os filtros ou crie um novo baú.':'Ajuste os filtros ou crie uma nova cooperação.'}/></DS.Card>}
-    <CoopWizard open={wiz} session={session} bau={bau} meu={meu} onClose={function(){setWiz(false);}}/>
-  </div>;
-}
-function ListasScreen(){
-  const {Card,DataTable,Badge,Button,IconButton,Tabs,Input,Modal,Select}=DS;const db=DB.useDB();
-  const [tab,setTab]=usePersist('listas-tab','geral');const [q,setQ]=React.useState('');const [st,setSt]=React.useState('Todos');
-  const [listas,setListas]=usePersist('listas',MS7.listas);const [nova,setNova]=React.useState(false);const [nome,setNome]=React.useState('');const [tg,setTg]=React.useState(false);
-  const all=[];db.coops.forEach(function(c){if(c.status==='Lixeira')return;c.contas.forEach(function(k){all.push(Object.assign({coopId:c.id,operador:DB.opName(c.opId),plataforma:c.plataforma},k));});});
-  const rows=all.filter(function(r){return (st==='Todos'||r.status===st)&&(r.usuario+r.operador+r.plataforma+r.coopId).toLowerCase().indexOf(q.toLowerCase())>=0;});
-  return <div style={{display:'flex',flexDirection:'column',gap:20}}>
-    <Tabs value={tab} onChange={setTab} items={[{id:'geral',label:'Lista geral de contas'},{id:'globais',label:'Listas globais'}]} style={{maxWidth:460}}/>
-    {tab==='geral'?<Card title={'Lista geral de contas · '+rows.length} action={<div style={{display:'flex',gap:10,alignItems:'center',flexWrap:'wrap'}}><Select variant="pill" value={st} onChange={function(e){setSt(e.target.value);}} options={['Todos'].concat(CONTA_ST)}/><div style={{width:220}}><Input icon="search" placeholder="Buscar conta" value={q} onChange={function(e){setQ(e.target.value);}}/></div><Button size="sm" variant="outline" iconLeft="download" onClick={function(){exportCSV('contas',[{label:'Cooperação',get:function(r){return r.coopId;}},{label:'Operador',get:function(r){return r.operador;}},{label:'Plataforma',get:function(r){return r.plataforma;}},{label:'Usuário',get:function(r){return r.usuario;}},{label:'Depósito',get:function(r){return r.deposito;}},{label:'Re-depósito',get:function(r){return r.redeposito;}},{label:'Saque',get:function(r){return r.saque;}},{label:'Resultado',get:DB.contaRes},{label:'Status',get:function(r){return r.status;}},{label:'Criada',get:function(r){return r.criada;}}],rows);}}>Exportar</Button></div>}>
-      <DataTable rows={rows.slice(0,60)} onRowClick={function(r){localStorage.setItem('ms7op-open-coop',r.coopId);window.ms7Go('cooperacoes');}} columns={[{key:'coopId',label:'Coop.'},{key:'operador',label:'Operador'},{key:'plataforma',label:'Plataforma'},{key:'usuario',label:'Usuário',render:function(r){return <b>{r.usuario}</b>;}},{key:'deposito',label:'Depósito',align:'right',render:function(r){return MS7.brl(r.deposito+r.redeposito);}},{key:'saque',label:'Saque',align:'right',render:function(r){return MS7.brl(r.saque);}},{key:'res',label:'Resultado',align:'right',render:function(r){return <Money v={DB.contaRes(r)} signed/>;}},{key:'status',label:'Status',align:'center',render:function(r){return <Badge size="sm" tone={MS7.statusTone[r.status]}>{r.status}</Badge>;}},{key:'criada',label:'Criada',render:function(r){return DB.fmtDate(r.criada);}}]}/>
-      {rows.length===0?<Empty icon="list" title="Nenhum resultado."/>:rows.length>60?<Hint>{'Mostrando 60 de '+rows.length+'. Use a busca ou exporte para ver todas.'}</Hint>:null}
-    </Card>:<Card title="Listas globais" action={<div style={{display:'flex',gap:10}}><Button size="sm" variant="outline" iconLeft="send" onClick={function(){setTg(true);}}>Importar do Telegram</Button><Button size="sm" iconLeft="plus" onClick={function(){setNova(true);}}>Nova lista</Button></div>}>
-      <Hint>Catálogos reutilizáveis de contas.</Hint>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fill,minmax(260px,1fr))',gap:14}}>{listas.map(function(l){return <div key={l.id} style={{border:'1px solid var(--border-subtle)',borderRadius:14,padding:16,display:'flex',flexDirection:'column',gap:8}}>
-        <div style={{display:'flex',alignItems:'center',gap:8}}><DS.Icon name="list-checks" size={18}/><b style={{flex:1,fontSize:15}}>{l.nome}</b><IconButton icon="trash-2" size={28} iconSize={14} onClick={function(){setListas(listas.filter(function(x){return x.id!==l.id;}));}}/></div>
-        <span style={{fontSize:13,fontWeight:500,color:'var(--text-secondary)'}}>{l.descricao}</span>
-        <div style={{display:'flex',gap:6}}><Badge size="sm" variant="soft" tone="green">{l.contas+' contas'}</Badge><Badge size="sm" variant="soft" tone="gray">{l.dono}</Badge></div></div>;})}</div>
-    </Card>}
-    <Modal open={nova} onClose={function(){setNova(false);}} title="Nova lista global" footer={<React.Fragment><Button variant="secondary" onClick={function(){setNova(false);}}>Cancelar</Button><Button variant="brand" onClick={function(){setListas(listas.concat([{id:Date.now(),nome:nome||'Nova lista',descricao:'Sem descrição.',contas:0,dono:'Admin'}]));setNome('');setNova(false);toast('Lista criada');}}>Salvar</Button></React.Fragment>}>
-      <Input label="Nome" required value={nome} onChange={function(e){setNome(e.target.value);}}/>
-    </Modal>
-    <Modal open={tg} onClose={function(){setTg(false);}} title="Importar lista do Telegram" size="lg" footer={<React.Fragment><Button variant="secondary" onClick={function(){setTg(false);}}>Cancelar</Button><Button variant="brand" iconLeft="upload" onClick={function(){setTg(false);toast('Lista importada');}}>Importar</Button></React.Fragment>}>
-      <Input label="Cole a lista do Telegram" multiline rows={8} placeholder={'usuario1 | senha | 300\nusuario2 | senha | 450'}/>
-    </Modal>
-  </div>;
-}
-function AvisosScreen({session}){
-  const {Card,Input,Checkbox,Button,IconButton,Badge}=DS;const isOp=session.role==='operador';
-  const [list,setList]=usePersist('avisos',MS7.avisos);const [t,setT]=React.useState('');const [c,setC]=React.useState('');const [all,setAll]=React.useState(true);const [gs,setGs]=React.useState([]);
-  const ok=t&&c&&(all||gs.length);
-  function pub(){setList([{id:Date.now(),titulo:t,conteudo:c,data:DB.fmtDate(DB.iso(DB.today))+' '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}),publico:all?'Todos os usuários':gs.join(', ')}].concat(list));setT('');setC('');setGs([]);setAll(true);toast('Aviso publicado');}
-  const listCard=<Card title="Avisos publicados">{list.length?<div style={{display:'flex',flexDirection:'column',gap:10}}>{list.map(function(a){return <div key={a.id} style={{display:'flex',gap:12,padding:14,border:'1px solid var(--border-subtle)',borderRadius:12}}>
-      <span style={{width:36,height:36,borderRadius:10,background:'var(--ms7-lime-100)',color:'var(--ms7-green-ink, #005D3B)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><DS.Icon name="megaphone" size={18}/></span>
-      <div style={{flex:1,minWidth:0}}><b style={{fontSize:15}}>{a.titulo}</b><p style={{margin:'4px 0 8px',fontSize:13,fontWeight:500,lineHeight:1.45,whiteSpace:'pre-line'}}>{a.conteudo}</p><div style={{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}><span style={{fontSize:11,fontWeight:600,color:'var(--text-secondary)'}}>{a.data}</span><Badge size="sm" variant="soft" tone="blue">{a.publico}</Badge></div></div>
-      {!isOp?<IconButton icon="trash-2" size={32} iconSize={16} label="Remover aviso" onClick={function(){setList(list.filter(function(x){return x.id!==a.id;}));}}/>:null}
-    </div>;})}</div>:<Empty icon="megaphone" title="Nenhum aviso publicado ainda"/>}</Card>;
-  if(isOp)return listCard;
-  return <Grid min={340}>
-    <Card title="Publicar aviso"><div style={{display:'flex',flexDirection:'column',gap:14}}>
-      <Input label="Título do aviso" value={t} onChange={function(e){setT(e.target.value);}}/>
-      <Input label="Conteúdo" multiline rows={6} placeholder="Escreva o aviso…" value={c} onChange={function(e){setC(e.target.value);}}/>
-      <div style={{background:'var(--ms7-gray-50)',borderRadius:12,padding:14,display:'flex',flexDirection:'column',gap:10}}>
-        <span style={{fontSize:12,fontWeight:700,display:'flex',alignItems:'center',gap:6}}><DS.Icon name="users" size={14}/>Público-alvo</span>
-        <Checkbox label="Notificar todos os usuários" checked={all} onChange={setAll}/>
-        {!all?MS7.grupos.map(function(g){return <Checkbox key={g} label={g} checked={gs.indexOf(g)>=0} onChange={function(v){setGs(v?gs.concat([g]):gs.filter(function(x){return x!==g;}));}} style={{paddingLeft:28}}/>;}):null}
+    );
+  }
+  function EditCoop({ c, open, onClose }) {
+    const { Modal, Button, Input, Select } = DS;
+    const db = DB.get();
+    const init = function () {
+      const cm = c.contaMae || {};
+      return {
+        cliente: c.cliente || '',
+        opId: c.opId || '',
+        plataforma: c.plataforma || '',
+        linkN: c.linkN || '',
+        rede: c.rede || '',
+        comTipo: c.comTipo || 'pct',
+        comValor: String(c.comValor != null ? c.comValor : ''),
+        comConta: c.comConta != null ? String(c.comConta) : '',
+        comR: String(c.comR != null ? c.comR : 2).replace('.', ','),
+        comS: String(c.comS != null ? c.comS : 1.5).replace('.', ','),
+        link: cm.link || '',
+        muser: cm.usuario || '',
+        mtipo: cm.tipo || 'Senha',
+        msenha: cm.senha || '',
+        salario: c.salario ? String(c.salario).replace('.', ',') : '',
+        depositantes: String(c.depositantes || c.contas.length || ''),
+        mediaDep: c.mediaDep ? String(c.mediaDep).replace('.', ',') : '',
+        rollover: c.rollover || '',
+        descricao: c.descricao || '',
+      };
+    };
+    const [f, setF] = React.useState(init);
+    React.useEffect(
+      function () {
+        if (open) setF(init());
+      },
+      [open],
+    );
+    const u = function (k) {
+      return function (e) {
+        const v = e && e.target ? e.target.value : e;
+        setF(function (p) {
+          const n = Object.assign({}, p);
+          n[k] = v;
+          return n;
+        });
+      };
+    };
+    const ops = (db.operadores || []).map(function (o) {
+      return { value: o.id, label: o.nome };
+    });
+    const pls = (db.plataformas || []).map(function (p) {
+      return { value: p.nome, label: p.nome };
+    });
+    if (
+      f.plataforma &&
+      !pls.some(function (p) {
+        return p.value === f.plataforma;
+      })
+    )
+      pls.unshift({ value: f.plataforma, label: f.plataforma });
+    const rds = [{ value: '', label: 'Sem rede' }].concat(
+      (db.redes || []).map(function (r) {
+        return { value: r.nome, label: r.nome };
+      }),
+    );
+    const grid = { display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 };
+    const sec = {
+      fontSize: 12,
+      fontWeight: 700,
+      letterSpacing: '.06em',
+      textTransform: 'uppercase',
+      color: 'var(--text-secondary)',
+      gridColumn: '1 / -1',
+      marginTop: 6,
+    };
+    return (
+      <Modal
+        open={open}
+        onClose={soX(onClose)}
+        title={'Editar · ' + DB.coopNome(c)}
+        size="md"
+        footer={
+          <React.Fragment>
+            <Button variant="secondary" onClick={onClose}>
+              Cancelar
+            </Button>
+            <Button
+              variant="brand"
+              iconLeft="check"
+              onClick={function () {
+                DB.A.editCoop(c.id, f);
+                onClose();
+              }}
+            >
+              Salvar alterações
+            </Button>
+          </React.Fragment>
+        }
+      >
+        <div style={grid}>
+          <div style={sec}>Informações</div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <Input label="Nome da cooperação" value={f.cliente} onChange={u('cliente')} />
+          </div>
+          <Select label="Operador" value={f.opId} onChange={u('opId')} options={ops} />
+          <Select label="Rede" value={f.rede} onChange={u('rede')} options={rds} />
+          <Input label="Plataforma" placeholder="Ex.: Azul 777" value={f.plataforma} onChange={u('plataforma')} />
+          <Input label="Link" placeholder="Ex.: Link 1" value={f.linkN || ''} onChange={u('linkN')} />
+          <div style={sec}>Comissão</div>
+          <Select
+            label="Tipo"
+            value={f.comTipo}
+            onChange={u('comTipo')}
+            options={[
+              { value: 'pct', label: '% do lucro' },
+              { value: 'conta', label: 'Valor por conta' },
+              { value: 'fixo', label: 'Valor fixo' },
+            ].concat(f.comTipo === 'rolo' ? [{ value: 'rolo', label: 'Lista do Telegram: com R / sem R' }] : [])}
+          />
+          {f.comTipo === 'rolo' ? (
+            <Input label="Por conta com R (R$)" value={f.comR} onChange={u('comR')} />
+          ) : (
+            <Input
+              label={
+                f.comTipo === 'pct' ? 'Porcentagem do lucro (%)' : f.comTipo === 'conta' ? 'Valor por conta (R$)' : 'Valor fixo da cooperação (R$)'
+              }
+              value={f.comValor}
+              onChange={u('comValor')}
+            />
+          )}
+          {f.comTipo === 'rolo' ? <Input label="Por conta sem R (R$)" value={f.comS} onChange={u('comS')} /> : null}
+          {f.comTipo === 'misto' ? <Input label="Mais por conta (R$)" value={f.comConta} onChange={u('comConta')} /> : null}
+          <div style={sec}>Conta mãe</div>
+          <div style={{ gridColumn: '1 / -1' }}>
+            <Input label="Link" value={f.link} onChange={u('link')} />
+          </div>
+          <Input label="Usuário" value={f.muser} onChange={u('muser')} />
+          <Input label="Senha" value={f.msenha} onChange={u('msenha')} />
+          <div style={sec}>Metas</div>
+          <Input label="Média de depósito (R$)" value={f.mediaDep} onChange={u('mediaDep')} />
+          <Input label="Rollover" value={f.rollover} onChange={u('rollover')} placeholder="Ex.: 10x" />
+          <Input label="Salário (R$)" value={f.salario} onChange={u('salario')} />
+          <Input
+            label="Depositantes (contas que contam)"
+            type="number"
+            value={f.depositantes}
+            onChange={u('depositantes')}
+            hint="Parou antes? Ex.: 50 → 20. Depósito e comissão contam só essas."
+          />
+          <div style={{ gridColumn: '1 / -1' }}>
+            <Input label="Descrição" multiline rows={3} value={f.descricao} onChange={u('descricao')} />
+          </div>
+        </div>
+      </Modal>
+    );
+  }
+  function CoopDetail({ id, onClose, session }) {
+    const { Button, Badge, IconButton } = DS;
+    DB.useDB();
+    const c = DB.coop(id);
+    const [edOpen, setEdOpen] = React.useState(false);
+    const [trOpen, setTrOpen] = React.useState(false);
+    const [verSen, setVerSen] = React.useState(false);
+    const canAdmin = !session || session.role !== 'operador';
+    if (!c) return null;
+    const k = DB.calc(c);
+    const cm = c.contaMae || {};
+    const sobr = Math.max(0, c.contas.length - (+c.depositantes || 0));
+    const mult = parseFloat(String(c.rollover || '').replace(',', '.')) || 0;
+    const alvo = mult ? (k.dep + k.red) * mult : 0;
+    const restante = c.mediaDep ? Math.max(0, c.mediaDep * (+c.depositantes || 0) - (k.dep + k.red)) : null;
+    function copy(label, v) {
+      try {
+        navigator.clipboard.writeText(v);
+      } catch (e) {}
+      toast(label + ' copiado');
+    }
+    const kpis = [
+      ['Contas', c.contas.length, null],
+      ['Fora da conta', sobr, sobr ? 'var(--ms7-orange)' : null],
+      ['Depósito', MS7.brl(k.dep), null],
+      ['Re-depósito', MS7.brl(k.red), null],
+      ['Saque', MS7.brl(k.saq), null],
+      ['Depósito × Saque', MS7.brl(k.ds), null],
+    ]
+      .concat(k.pend ? [['Saque não contado', MS7.brl(k.pend), 'var(--ms7-orange)']] : [])
+      .concat(k.sal ? [['Salário', MS7.brl(k.sal), 'var(--ms7-green)']] : [])
+      .concat([
+        ['Comissão do operador', MS7.brl(-k.com), 'var(--ms7-purple)'],
+        [k.lucro >= 0 ? 'Lucro final' : 'Prejuízo final', MS7.brl(k.lucro), k.lucro >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)'],
+      ]);
+    const info = [];
+    const cmId = cm.id || DB.linkId(cm.link);
+    if (cmId) info.push(['ID da conta mãe', cmId, 'hash']);
+    if (cm.link) info.push(['Link da conta mãe', cm.link, 'link', 0, 1]);
+    if (cm.usuario) info.push(['Usuário', cm.usuario, 'user']);
+    if (cm.senha) info.push([cm.tipo && cm.tipo !== 'Senha' ? cm.tipo : 'Senha', cm.senha, 'lock', 1]);
+    const meta = [];
+    if (restante != null) meta.push(['Montante restante', MS7.brl(restante)]);
+    if (alvo) meta.push(['Apostas válidas alvo (' + c.rollover + ')', MS7.brl(alvo), 1]);
+    if (c.mediaDep) meta.push(['Média de depósito', MS7.brl(c.mediaDep)]);
+    if (c.salario) meta.push(['Salário', MS7.brl(c.salario)]);
+    const acts =
+      c.status === 'Ativa'
+        ? [
+            ['play', 'Iniciar', 'Em andamento'],
+            ['flag', 'Finalizar', 'Finalizada'],
+          ]
+        : c.status === 'Em andamento'
+          ? [['flag', 'Finalizar', 'Finalizada']]
+          : c.status === 'Finalizada' && canAdmin
+            ? [
+                ['undo-2', 'Devolver', 'Em andamento'],
+                ['circle-check', 'Concluir', 'Concluída'],
+              ]
+            : c.status === 'Concluída' && canAdmin
+              ? [['rotate-ccw', 'Reabrir', 'Em andamento']]
+              : [];
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, width: '100%' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+          <IconButton icon="arrow-left" size={40} iconSize={18} label="Voltar" onClick={onClose} />
+          <div style={{ flex: '1 1 260px', minWidth: 0 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800 }}>{DB.coopNome(c)}</h2>
+              <Badge size="sm" tone={MS7.statusTone[c.status] || 'gray'}>
+                {c.status}
+              </Badge>
+            </div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginTop: 2 }}>
+              {[c.plataforma, c.linkN, c.rede, DB.opName(c.opId)].filter(Boolean).join(' · ')}
+            </div>
+            {c.linkDiv ? (
+              <a
+                href={/^https?:/i.test(c.linkDiv) ? c.linkDiv : 'https://' + c.linkDiv}
+                target="_blank"
+                rel="noopener"
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: 4,
+                  marginTop: 4,
+                  fontSize: 12,
+                  fontWeight: 700,
+                  color: 'var(--ms7-green)',
+                  wordBreak: 'break-all',
+                }}
+              >
+                <DS.Icon name="link" size={12} />
+                {c.linkDiv}
+              </a>
+            ) : null}
+          </div>
+          {canAdmin && c.status !== 'Lixeira' ? (
+            <Button
+              size="sm"
+              variant="outline"
+              iconLeft="pencil"
+              onClick={function () {
+                setEdOpen(true);
+              }}
+            >
+              Editar
+            </Button>
+          ) : null}
+          {canAdmin ? (
+            <EditCoop
+              c={c}
+              open={edOpen}
+              onClose={function () {
+                setEdOpen(false);
+              }}
+            />
+          ) : null}
+          {canAdmin && c.status !== 'Lixeira' && DB.A.pendentesDe(c.id).length ? (
+            <Button
+              size="sm"
+              variant="outline"
+              iconLeft="arrow-right-left"
+              onClick={function () {
+                setTrOpen(true);
+              }}
+            >
+              {'Passar ' + DB.A.pendentesDe(c.id).length + ' contas'}
+            </Button>
+          ) : null}
+          {trOpen ? (
+            <TransferirModal
+              c={c}
+              onClose={function () {
+                setTrOpen(false);
+              }}
+            />
+          ) : null}
+          <Button
+            size="sm"
+            variant="ghost"
+            iconLeft="download"
+            onClick={function () {
+              exportCSV(
+                'contas-' + c.id,
+                [
+                  {
+                    label: 'Usuário',
+                    get: function (r) {
+                      return r.usuario;
+                    },
+                  },
+                  {
+                    label: 'Depósito',
+                    get: function (r) {
+                      return r.deposito;
+                    },
+                  },
+                  {
+                    label: 'Re-depósito',
+                    get: function (r) {
+                      return r.redeposito;
+                    },
+                  },
+                  {
+                    label: 'Saque',
+                    get: function (r) {
+                      return r.saque;
+                    },
+                  },
+                  {
+                    label: 'Baú',
+                    get: function (r) {
+                      return r.bau || 0;
+                    },
+                  },
+                  { label: 'Resultado', get: DB.contaRes },
+                  {
+                    label: 'Status',
+                    get: function (r) {
+                      return r.status;
+                    },
+                  },
+                  {
+                    label: 'Chave PIX',
+                    get: function (r) {
+                      return r.pix || '';
+                    },
+                  },
+                ],
+                c.contas,
+              );
+            }}
+          >
+            CSV
+          </Button>
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              height: 36,
+              padding: '0 12px',
+              borderRadius: 18,
+              border: '1px solid var(--border-subtle)',
+              fontSize: 12,
+              fontWeight: 700,
+              color: 'var(--text-secondary)',
+            }}
+            title="Toda conta nova com usuário entra no ciclo. Depois de 5 min sem mexer, o admin recebe: quantas contas, o depósito de todas e o saque das que tiveram."
+          >
+            <DS.Icon name="bell-ring" size={14} />
+            {(function () {
+              const fe = function (k) {
+                return (
+                  String(k.usuario || '').trim() &&
+                  ((k.status === 'Sacado' && (+k.saque || 0) > 0) || k.status === 'Bloqueado' || k.status === 'Não sacado')
+                );
+              };
+              const pf = c.contas.filter(function (k) {
+                return !k.ciclo && fe(k);
+              }).length;
+              const p =
+                pf ||
+                c.contas.filter(function (k) {
+                  return !k.ciclo && String(k.usuario || '').trim();
+                }).length;
+              return !p
+                ? 'Envia ao admin 5 min depois que você parar de mexer'
+                : 'Ciclo ' +
+                    ((c.ciclos || 0) + 1) +
+                    ': ' +
+                    p +
+                    (p === 1 ? ' conta registrada' : ' contas registradas') +
+                    ' · envia 5 min depois da última mudança';
+            })()}
+          </div>
+          {(function () {
+            const fe = function (k) {
+              return (
+                String(k.usuario || '').trim() &&
+                ((k.status === 'Sacado' && (+k.saque || 0) > 0) || k.status === 'Bloqueado' || k.status === 'Não sacado')
+              );
+            };
+            const pf = c.contas.filter(function (k) {
+              return !k.ciclo && fe(k);
+            }).length;
+            const p =
+              pf ||
+              c.contas.filter(function (k) {
+                return !k.ciclo && String(k.usuario || '').trim();
+              }).length;
+            return (
+              <Button
+                size="sm"
+                variant={canAdmin ? 'outline' : 'brand'}
+                iconLeft="send"
+                disabled={!p}
+                onClick={function () {
+                  if (confirm('Enviar ' + p + (p === 1 ? ' conta' : ' contas') + ' para o admin agora?')) DB.A.fecharCiclo(c.id);
+                }}
+              >
+                {p ? 'Enviar ' + p + (p === 1 ? ' conta' : ' contas') + ' ao admin' : 'Nenhuma conta nova'}
+              </Button>
+            );
+          })()}
+          {acts.map(function (a) {
+            return (
+              <Button
+                key={a[1]}
+                size="sm"
+                variant={a[2] === 'Concluída' || a[2] === 'Finalizada' ? 'brand' : 'secondary'}
+                iconLeft={a[0]}
+                onClick={function () {
+                  DB.A.setStatus(c.id, a[2]);
+                }}
+              >
+                {a[1]}
+              </Button>
+            );
+          })}
+        </div>
+        {c.descricao ? (
+          <div
+            style={{
+              display: 'flex',
+              gap: 10,
+              alignItems: 'center',
+              padding: '12px 16px',
+              borderRadius: 12,
+              background: 'var(--ms7-lime-100)',
+              color: 'var(--ms7-green-ink, #005D3B)',
+              fontSize: 14,
+              fontWeight: 600,
+            }}
+          >
+            <DS.Icon name="megaphone" size={16} />
+            <span style={{ whiteSpace: 'pre-line' }}>{c.descricao}</span>
+          </div>
+        ) : null}
+        {info.length || meta.length ? (
+          <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+            {info.map(function (x) {
+              return (
+                <div
+                  key={x[0]}
+                  style={{
+                    flex: '1 1 200px',
+                    minWidth: 0,
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '10px 12px',
+                    borderRadius: 12,
+                    background: 'var(--surface-card)',
+                    boxShadow: 'var(--shadow-card)',
+                  }}
+                >
+                  <span
+                    style={{
+                      width: 32,
+                      height: 32,
+                      borderRadius: 8,
+                      background: 'var(--ms7-gray-100)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <DS.Icon name={x[2]} size={15} />
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)' }}>{x[0]}</div>
+                    {x[4] ? null : (
+                      <div
+                        style={{
+                          fontSize: 13,
+                          fontWeight: 700,
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          whiteSpace: 'nowrap',
+                          fontFamily: x[2] === 'hash' ? 'ui-monospace, monospace' : 'inherit',
+                        }}
+                      >
+                        {x[3] && !verSen ? '••••••••' : x[1]}
+                      </div>
+                    )}
+                  </div>
+                  {x[4] ? (
+                    <IconButton
+                      icon="external-link"
+                      size={28}
+                      iconSize={14}
+                      label="Abrir link"
+                      onClick={function () {
+                        window.open(/^https?:/i.test(x[1]) ? x[1] : 'https://' + x[1], '_blank', 'noopener');
+                      }}
+                    />
+                  ) : null}
+                  {x[3] ? (
+                    <IconButton
+                      icon={verSen ? 'eye-off' : 'eye'}
+                      size={28}
+                      iconSize={14}
+                      label={verSen ? 'Esconder senha' : 'Ver senha'}
+                      onClick={function () {
+                        setVerSen(!verSen);
+                      }}
+                    />
+                  ) : null}
+                  <IconButton
+                    icon="copy"
+                    size={28}
+                    iconSize={14}
+                    label="Copiar"
+                    onClick={function () {
+                      copy(x[0], x[1]);
+                    }}
+                  />
+                </div>
+              );
+            })}
+            {meta.map(function (x) {
+              return (
+                <div
+                  key={x[0]}
+                  style={{
+                    flex: '1 1 170px',
+                    padding: '10px 14px',
+                    borderRadius: 12,
+                    background: 'var(--surface-card)',
+                    boxShadow: 'var(--shadow-card)',
+                  }}
+                >
+                  <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--text-secondary)' }}>{x[0]}</div>
+                  <div style={{ fontSize: 16, fontWeight: 800, color: x[2] ? 'var(--ms7-green)' : 'var(--text-primary)' }}>{x[1]}</div>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(140px,1fr))', gap: 12 }}>
+          {kpis.map(function (x) {
+            return (
+              <div
+                key={x[0]}
+                style={{
+                  padding: '14px 16px',
+                  borderRadius: 14,
+                  background: 'var(--surface-card)',
+                  boxShadow: 'var(--shadow-card)',
+                  borderTop: x[2] ? '3px solid ' + x[2] : '3px solid transparent',
+                }}
+              >
+                <div style={{ fontSize: 11, fontWeight: 700, letterSpacing: '.05em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                  {x[0]}
+                </div>
+                <div
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 800,
+                    marginTop: 4,
+                    color: x[2] || 'var(--text-primary)',
+                    fontVariantNumeric: 'tabular-nums',
+                    whiteSpace: 'nowrap',
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                  }}
+                >
+                  {x[1]}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+        <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)', lineHeight: 1.6 }}>
+          {'Conta do resultado: saque ' +
+            MS7.brl(k.saq) +
+            (k.bau ? ' + baú ' + MS7.brl(k.saq - k.saq + (k.ds - (k.saq - k.dep - k.red))) : '') +
+            (k.sal ? ' + salário ' + MS7.brl(k.sal) : '') +
+            ' − depósito ' +
+            MS7.brl(k.dep + k.red) +
+            ' − comissão ' +
+            MS7.brl(k.com) +
+            ' (' +
+            DB.comText(c) +
+            ') = ' +
+            MS7.brl(k.lucro) +
+            (k.pend ? ' · ' + MS7.brl(k.pend) + ' de saque fora da conta (contas que não estão como Sacado)' : '')}
+        </div>
+        <LotesPix c={c} canAdmin={canAdmin} />
+        <Planilha c={c} canAdmin={canAdmin} superAdm={!session || session.role === 'super' || session.role === 'cliente'} />
       </div>
-      <div style={{display:'flex',justifyContent:'flex-end'}}><Button variant="brand" iconLeft="megaphone" disabled={!ok} onClick={pub}>Publicar aviso</Button></div>
-    </div></Card>
-    {listCard}
-  </Grid>;
-}
-function EnviosBau(){DB.useDB();const db=DB.get();const [led0,setLed]=usePersist('envios-bau',[]);const led=Array.isArray(led0)?led0:[];const [st,setSt]=React.useState('pend');const [reg,setReg]=React.useState(null);const [val,setVal]=React.useState('');const [hist,setHist]=React.useState('');
-  const r2=function(v){return Math.round(v*100)/100;};const nm=function(c){return [DB.coopNome(c),c.linkN].filter(Boolean).join(' · ');};
-  const L=(db.coops||[]).filter(function(c){return c.tipo==='bau'&&c.status!=='Lixeira';}).sort(function(a,b){return String(a.inicio||a.id).localeCompare(String(b.inicio||b.id));}).map(function(c){const V=DB.contasValidas(c);const dep=r2(V.reduce(function(a,k){return a+(+k.deposito||0)+(+k.redeposito||0);},0));const com=r2(c.proprio?0:(DB.calc(c).com||0));return {c:c,dep:dep,com:com,total:r2(dep+com)};}).filter(function(x){return x.total>0;});
-  const G={};L.forEach(function(x){const k=x.c.opId||'';(G[k]=G[k]||{l:[],led:[]}).l.push(x);});led.forEach(function(e){const k=e.opId||'';(G[k]=G[k]||{l:[],led:[]}).led.push(e);});
-  Object.keys(G).forEach(function(k){const g=G[k];let resto=r2(g.led.reduce(function(a,e){return a+(+e.v||0);},0));g.env=resto;g.dev=r2(g.l.reduce(function(a,x){return a+x.total;},0));g.l.forEach(function(x){x.env=r2(Math.min(resto,x.total));x.falta=r2(x.total-x.env);resto=r2(resto-x.env);});g.cred=r2(Math.max(0,resto));g.falta=r2(Math.max(0,g.dev-g.env));g.led.sort(function(a,b){return b.em-a.em;});});
-  const ks=Object.keys(G).filter(function(k){const g=G[k];return st==='todos'||(st==='pend'?g.falta>0:g.falta<=0);}).sort(function(a,b){return DB.opName(a).localeCompare(DB.opName(b),'pt-BR');});
-  const T=Object.keys(G).reduce(function(a,k){a.d+=G[k].dev;a.e+=G[k].env;a.f+=G[k].falta;return a;},{d:0,e:0,f:0});
-  const n=parseFloat(String(val).replace(/\./g,'').replace(',','.'))||0;
-  function salvarEnvio(){if(!(n>0))return;const g=G[reg.k]||{l:[]};setLed(function(cur){return (Array.isArray(cur)?cur:[]).concat([{id:'eb'+Date.now(),opId:reg.k,v:r2(n),em:Date.now(),refNome:g.l.filter(function(x){return x.falta>0;}).map(function(x){return nm(x.c);}).join(', ')}]);});setReg(null);toast('Envio de '+MS7.brl(n)+' anotado');}
-  const td={padding:'9px 8px',textAlign:'right',fontVariantNumeric:'tabular-nums',whiteSpace:'nowrap'};
-  return <div style={{display:'flex',flexDirection:'column',gap:16}}>
-    <KpiRow items={[{icon:'send',label:'Total p/ envio',value:MS7.brl(r2(T.d)),tone:'blue'},{icon:'circle-check',label:'Já enviado',value:MS7.brl(r2(T.e)),tone:'green'},{icon:'clock',label:'Falta enviar',value:MS7.brl(r2(T.f)),tone:'orange'}]}/>
-    <DS.Tabs variant="chips" value={st} onChange={setSt} items={[{id:'pend',label:'Falta enviar'},{id:'ok',label:'Enviados'},{id:'todos',label:'Todos'}]}/>
-    {ks.length?ks.map(function(k){const g=G[k];const nome=k?DB.opName(k):'Admin';return <div key={k||'x'} style={{background:'var(--surface-card)',borderRadius:'var(--radius-lg)',boxShadow:'var(--shadow-card)',padding:'14px 16px',display:'flex',flexDirection:'column',gap:8}}>
-      <div style={{display:'flex',alignItems:'center',gap:10,flexWrap:'wrap'}}><DS.Avatar name={nome} size={32}/><div style={{flex:1,minWidth:150}}><b style={{fontSize:16}}>{nome}</b><div style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)'}}>{'Total '+MS7.brl(g.dev)+' · enviado '+MS7.brl(g.env)}</div></div>
-        {g.falta>0?<b style={{color:'var(--ms7-orange)'}}>{'Falta '+MS7.brl(g.falta)}</b>:<b style={{color:'var(--ms7-green)'}}>Tudo enviado</b>}{g.cred>0?<span style={{fontSize:13,fontWeight:700}}>{'Crédito '+MS7.brl(g.cred)}</span>:null}
-        <DS.Button size="sm" variant="secondary" iconLeft="history" onClick={function(){setHist(hist===k?'':k);}}>{'Envios ('+g.led.length+')'}</DS.Button><DS.Button size="sm" variant="brand" iconLeft="banknote" onClick={function(){setVal(String(g.falta.toFixed(2)).replace('.',','));setReg({k:k,nome:nome,falta:g.falta});}}>Registrar envio</DS.Button></div>
-      {hist===k?<div style={{padding:'8px 12px',borderRadius:10,background:'var(--surface-muted, var(--ms7-gray-100))'}}>{g.led.length?g.led.map(function(e){return <div key={e.id} style={{display:'flex',alignItems:'center',gap:10,fontSize:13,fontWeight:600,minHeight:30}}><span style={{width:110,color:'var(--text-secondary)'}}>{new Date(e.em).toLocaleString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})}</span><b style={{width:100}}>{MS7.brl(e.v)}</b><span style={{flex:1,minWidth:0,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',color:'var(--text-secondary)'}}>{e.refNome||''}</span><DS.IconButton icon="trash-2" size={26} iconSize={13} label="Apagar envio" onClick={function(){if(confirm('Apagar este envio?'))setLed(function(cur){return cur.filter(function(y){return y.id!==e.id;});});}}/></div>;}):<span style={{fontSize:13,color:'var(--text-secondary)'}}>Nenhum envio anotado.</span>}</div>:null}
-      {g.l.length?<div style={{overflowX:'auto'}}><table style={{width:'100%',borderCollapse:'collapse',fontSize:14}}><thead><tr style={{fontSize:11,fontWeight:700,textTransform:'uppercase',color:'var(--text-secondary)'}}><th style={{textAlign:'left',padding:'6px 8px'}}>Baú</th><th style={td}>Depósito</th><th style={td}>Comissão</th><th style={td}>Total</th><th style={td}>Enviado</th><th style={td}>Falta</th></tr></thead>
-        <tbody>{g.l.map(function(x){return <tr key={x.c.id} style={{borderTop:'1px solid var(--border-subtle)'}}><td style={{padding:'9px 8px',fontWeight:700}}>{nm(x.c)}<span style={{marginLeft:6,fontSize:12,fontWeight:600,color:'var(--text-secondary)'}}>{x.c.status}</span></td><td style={td}>{MS7.brl(x.dep)}</td><td style={td}>{MS7.brl(x.com)}</td><td style={Object.assign({},td,{fontWeight:800})}>{MS7.brl(x.total)}</td><td style={td}>{x.env?MS7.brl(x.env):'—'}</td><td style={Object.assign({},td,{fontWeight:800,color:x.falta>0?'var(--ms7-orange)':'var(--ms7-green)'})}>{x.falta>0?MS7.brl(x.falta):'OK'}</td></tr>;})}</tbody></table></div>:<span style={{fontSize:13,color:'var(--text-secondary)'}}>Sem baú no momento. Os envios continuam anotados.</span>}
-    </div>;}):<div style={{padding:'40px 20px',textAlign:'center',color:'var(--text-secondary)',fontWeight:600,background:'var(--surface-card)',borderRadius:'var(--radius-lg)'}}>{st==='pend'?'Nada falta enviar nos baús.':'Nada aqui.'}</div>}
-    {reg?<DS.Modal open onClose={function(e){if(e&&e.currentTarget&&e.currentTarget.tagName==='BUTTON')setReg(null);}} title="Registrar envio" subtitle={reg.nome+' · falta '+MS7.brl(reg.falta)} size="sm" footer={<React.Fragment><DS.Button variant="secondary" onClick={function(){setReg(null);}}>Cancelar</DS.Button><DS.Button variant="brand" iconLeft="check" disabled={!(n>0)} onClick={salvarEnvio}>{'Registrar '+MS7.brl(n)}</DS.Button></React.Fragment>}><DS.Input label="Quanto você enviou agora" prefix="R$" value={val} onChange={function(e){setVal(e.target.value);}} autoFocus/></DS.Modal>:null}
-  </div>;}
-function BauScreen(p){const adm=!p.session||p.session.role!=='operador';const [aba,setAba]=usePersist('bau-aba','baus');if(!adm)return <CooperacoesScreen session={p.session} bau={true}/>;
-  return <div style={{display:'flex',flexDirection:'column',gap:20}}><DS.Tabs variant="dark" value={aba} onChange={setAba} items={[{id:'baus',label:'Baús'},{id:'metas',label:'Metas'},{id:'envios',label:'Envios e pagamentos'}]} style={{maxWidth:560}}/>{aba==='envios'?<EnviosBau/>:aba==='metas'?React.createElement(window.MetasScreen,{go:p.go,role:p.role||(p.session&&p.session.role),bau:true,onAbrir:function(){setAba('baus');}}):<CooperacoesScreen session={p.session} bau={true}/>}</div>;}
-function MinhasScreen(p){return <div style={{display:'flex',flexDirection:'column',gap:16}}><div style={{fontSize:13,fontWeight:600,color:'var(--text-secondary)'}}>Cooperações que você mesmo faz, sem operador e sem comissão. O resultado delas entra no lucro total do Dashboard e do Financeiro.</div><CooperacoesScreen session={p.session} meu={true}/></div>;}
-Object.assign(window,{MinhasScreen:MinhasScreen,BauScreen:BauScreen,CooperacoesScreen:CooperacoesScreen,ListasScreen:ListasScreen,AvisosScreen:AvisosScreen});
+    );
+  }
+  function CooperacoesScreen({ session, bau, meu }) {
+    const pk = meu ? 'meu' : bau ? 'bau' : 'coop';
+    const { Button, Input, Select, Tabs } = DS;
+    const db = DB.useDB();
+    const isOp = session.role === 'operador';
+    const [st0, setSt] = usePersist(pk + '-st', 'ativas');
+    const st = st0 === 'todas' || st0 === 'andamento' ? 'ativas' : st0;
+    const [op, setOp] = usePersist(pk + '-op', '');
+    const [q, setQ] = React.useState('');
+    const [per, setPer] = usePersist(pk + '-per', 'Todos');
+    const [wiz, setWiz] = React.useState(false);
+    const [open, setOpen] = React.useState(function () {
+      const x = localStorage.getItem('ms7op-open-coop');
+      localStorage.removeItem('ms7op-open-coop');
+      return x;
+    });
+    const [dt, setDt] = usePersist(pk + '-dt', 'Todos');
+    const [de0, setDe0] = usePersist(pk + '-de', '');
+    const [ate0, setAte0] = usePersist(pk + '-ate', '');
+    const hoje = DB.iso(DB.today);
+    const rng = de0 || ate0 ? [de0 || '0000-00-00', ate0 || '9999-12-31'] : null;
+    const escolhe = function (v) {
+      setDt(v);
+      if (v === 'Diário') {
+        setDe0(hoje);
+        setAte0(hoje);
+      } else if (v === 'Semanal') {
+        setDe0(DB.semanaIni(hoje));
+        setAte0(hoje);
+      } else if (v === 'Mensal') {
+        setDe0(hoje.slice(0, 8) + '01');
+        setAte0(hoje);
+      } else {
+        setDe0('');
+        setAte0('');
+      }
+    };
+    const dataDe = function (c) {
+      return c.status === 'Concluída'
+        ? DB.comData(c)
+        : c.status === 'Finalizada' || c.status === 'Lixeira'
+          ? DB.dIso(c.finalizadaEm) || DB.dIso(c.fim) || DB.dIni(c)
+          : DB.dIni(c);
+    };
+    const naData = function (c) {
+      if (!rng) return true;
+      const d = dataDe(c);
+      return !!d && d >= rng[0] && d <= rng[1];
+    };
+    const base = DB.coopsFor({ opId: meu ? null : isOp ? session.opId : op || null, per: 'Todos', lixeira: true }).filter(function (c) {
+      return (bau ? c.tipo === 'bau' : c.tipo !== 'bau') && naData(c);
+    });
+    const qn = function (v) {
+      return String(v || '')
+        .toLowerCase()
+        .replace(/^https?:\/\//, '')
+        .replace(/^www\./, '')
+        .replace(/\/+$/, '')
+        .trim();
+    };
+    const qq = qn(q);
+    const metasL = (function () {
+      const k = (db.kv || []).find(function (x) {
+        return x.id === 'metas';
+      });
+      let v = k ? k.v : null;
+      if (!v) {
+        try {
+          v = JSON.parse(localStorage.getItem('ms7op-p-metas') || 'null');
+        } catch (e) {}
+      }
+      return Array.isArray(v) ? v : [];
+    })();
+    const txt = function (c) {
+      const cm = c.contaMae || {};
+      const mt = metasL
+        .filter(function (m) {
+          return m.coopId === c.id;
+        })
+        .map(function (m) {
+          return m.link + ' ' + m.nome;
+        })
+        .join(' ');
+      return [
+        c.cliente,
+        c.plataforma,
+        c.linkN,
+        c.rede,
+        c.id,
+        String(c.id).replace(/^C-/, ''),
+        DB.opName(c.opId),
+        DB.coopNome(c),
+        cm.link,
+        cm.usuario,
+        mt,
+      ]
+        .map(qn)
+        .join(' | ');
+    };
+    const naAba = function (c) {
+      return st === 'ativas'
+        ? c.status === 'Em andamento' || c.status === 'Ativa'
+        : st === 'finalizadas'
+          ? c.status === 'Finalizada'
+          : st === 'concluidas'
+            ? c.status === 'Concluída'
+            : c.status === 'Lixeira';
+    };
+    const vis = base.filter(function (c) {
+      if (!qq) return naAba(c);
+      if (txt(c).indexOf(qq) < 0) return false;
+      return st === 'lixeira' ? c.status === 'Lixeira' : c.status !== 'Lixeira';
+    });
+    const tk = vis.reduce(
+      function (a, c) {
+        const k = DB.calc(c);
+        a.dep += k.dep + k.red;
+        a.saq += k.saq;
+        a.ds += k.ds;
+        a.sal += k.sal || 0;
+        a.com += k.com;
+        a.lucro += k.lucro;
+        a.pend += k.pend || 0;
+        return a;
+      },
+      { dep: 0, saq: 0, ds: 0, sal: 0, com: 0, lucro: 0, pend: 0 },
+    );
+    const abaNome = qq
+      ? 'Resultado da busca'
+      : st === 'ativas'
+        ? 'Ativas'
+        : st === 'finalizadas'
+          ? 'Finalizadas'
+          : st === 'concluidas'
+            ? 'Concluídas'
+            : 'Lixeira';
+    const final = !qq && st === 'concluidas';
+    const fimV = final ? tk.lucro : tk.ds;
+    const fimL = final
+      ? fimV >= 0
+        ? 'Lucro final'
+        : 'Prejuízo final'
+      : st === 'ativas' && !qq
+        ? fimV >= 0
+          ? 'Resultado parcial'
+          : 'Prejuízo parcial'
+        : 'Depósito × Saque';
+    const count = function (fn) {
+      return base.filter(fn).length;
+    };
+    if (open && DB.coop(open))
+      return (
+        <CoopDetail
+          id={open}
+          session={session}
+          onClose={function () {
+            setOpen(null);
+          }}
+        />
+      );
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+              <input
+                type="date"
+                aria-label="De"
+                value={de0}
+                max={ate0 || undefined}
+                onChange={function (e) {
+                  setDe0(e.target.value);
+                  setDt('');
+                }}
+                style={{
+                  height: 34,
+                  padding: '0 10px',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: 10,
+                  background: 'var(--surface-card)',
+                  color: 'var(--text-primary)',
+                  fontFamily: 'inherit',
+                  fontSize: 14,
+                  fontWeight: 600,
+                }}
+              />
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>até</span>
+              <input
+                type="date"
+                aria-label="Até"
+                value={ate0}
+                min={de0 || undefined}
+                onChange={function (e) {
+                  setAte0(e.target.value);
+                  setDt('');
+                }}
+                style={{
+                  height: 34,
+                  padding: '0 10px',
+                  border: '1px solid var(--border-default)',
+                  borderRadius: 10,
+                  background: 'var(--surface-card)',
+                  color: 'var(--text-primary)',
+                  fontFamily: 'inherit',
+                  fontSize: 14,
+                  fontWeight: 600,
+                }}
+              />
+              {rng ? (
+                <span style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                  {st === 'ativas' && !qq
+                    ? 'Ativas: pela data de início'
+                    : st === 'concluidas' && !qq
+                      ? 'Pela data em que foi concluída'
+                      : st === 'finalizadas' && !qq
+                        ? 'Pela data em que foi finalizada'
+                        : 'Fechadas pela data de fechamento; ativas pela de início'}
+                </span>
+              ) : null}
+            </div>
+            <Tabs variant="chips" value={rng ? dt : 'Todos'} onChange={escolhe} items={['Diário', 'Semanal', 'Mensal', 'Todos']} />
+          </div>
+          <Button
+            size="sm"
+            variant="ghost"
+            iconLeft="refresh-cw"
+            style={{ marginLeft: 'auto' }}
+            onClick={function () {
+              toast('Dados atualizados');
+            }}
+          >
+            Atualizar
+          </Button>
+        </div>
+        {(function () {
+          const tq = vis.reduce(
+            function (a, c) {
+              const k = DB.calc(c);
+              a.dep += k.dep;
+              a.red += k.red;
+              a.bau += k.ds - (k.saq - k.dep - k.red);
+              a.depos += +c.depositantes || c.contas.length;
+              return a;
+            },
+            { dep: 0, red: 0, bau: 0, depos: 0 },
+          );
+          const Q = [
+            [
+              'Total ativas',
+              count(function (c) {
+                return c.status === 'Ativa' || c.status === 'Em andamento';
+              }),
+              'cooperações em andamento',
+              'activity',
+              '#1FA971',
+            ],
+            [
+              'Concluídas',
+              count(function (c) {
+                return c.status === 'Concluída';
+              }),
+              'cooperações fechadas',
+              'circle-check',
+              '#2F6BFF',
+            ],
+            ['Depositantes', tq.depos, abaNome.toLowerCase(), 'users', '#B8406E'],
+            ['Depósito', MS7.brl(tq.dep), null, 'arrow-down-to-line', '#3B5FC4'],
+            ['Re-depósito', MS7.brl(tq.red), null, 'circle-dollar-sign', '#3B5FC4'],
+            ['Saque', MS7.brl(tk.saq), null, 'arrow-up-from-line', '#3B5FC4'],
+            ['Baú', MS7.brl(tq.bau), null, 'package', '#C8901E'],
+            [isOp ? 'Minha comissão' : fimL, MS7.brl(isOp ? tk.com : fimV), null, 'trending-up', (isOp ? tk.com : fimV) >= 0 ? '#1FA971' : '#B8466A'],
+          ];
+          return (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(max(210px, calc((100% - 42px) / 4)),1fr))', gap: 14 }}>
+              {Q.map(function (x) {
+                return (
+                  <div
+                    key={x[0]}
+                    style={{
+                      padding: '14px 16px',
+                      borderRadius: 'var(--radius-lg)',
+                      border: '1px solid color-mix(in oklab, ' + x[4] + ' 42%, transparent)',
+                      background:
+                        'linear-gradient(135deg, color-mix(in oklab, ' +
+                        x[4] +
+                        ' 34%, var(--surface-card)) 0%, color-mix(in oklab, ' +
+                        x[4] +
+                        ' 11%, var(--surface-card)) 100%)',
+                      minWidth: 0,
+                      display: 'flex',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span
+                        style={{
+                          flex: 1,
+                          minWidth: 0,
+                          fontSize: 12,
+                          fontWeight: 700,
+                          letterSpacing: '.06em',
+                          textTransform: 'uppercase',
+                          color: 'var(--text-secondary)',
+                          whiteSpace: 'nowrap',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                        }}
+                      >
+                        {x[0]}
+                      </span>
+                      <span
+                        style={{
+                          width: 30,
+                          height: 30,
+                          flexShrink: 0,
+                          borderRadius: 8,
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          background: 'color-mix(in oklab, var(--surface-page) 62%, transparent)',
+                        }}
+                      >
+                        <DS.Icon name={x[3]} size={16} color={'color-mix(in oklab, ' + x[4] + ' 75%, #fff)'} />
+                      </span>
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 24,
+                        fontWeight: 800,
+                        marginTop: 8,
+                        fontVariantNumeric: 'tabular-nums',
+                        color: 'var(--text-primary)',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis',
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {x[1]}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })()}
+        {!isOp && final && vis.length ? (
+          <div style={{ marginTop: -12, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+            {'Dep. × Saque ' +
+              MS7.brl(tk.ds) +
+              (tk.sal ? ' + salário ' + MS7.brl(tk.sal) : '') +
+              ' − comissão ' +
+              MS7.brl(tk.com) +
+              ' = ' +
+              MS7.brl(tk.lucro)}
+          </div>
+        ) : null}
+        {!isOp && !final && !qq && st !== 'lixeira' && vis.length ? (
+          <div style={{ marginTop: -12, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+            {st === 'ativas'
+              ? 'Só depósito e saque lançados até agora. Salário, baú e comissão entram quando a cooperação for concluída.'
+              : 'Depósito × saque das finalizadas. Salário, baú e comissão entram quando você marcar como Concluída.'}
+          </div>
+        ) : null}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+          <Tabs
+            variant="chips"
+            value={st}
+            onChange={setSt}
+            items={[
+              {
+                id: 'ativas',
+                label: 'Ativas',
+                count: count(function (c) {
+                  return c.status === 'Ativa' || c.status === 'Em andamento';
+                }),
+              },
+              {
+                id: 'finalizadas',
+                label: 'Finalizadas',
+                count: count(function (c) {
+                  return c.status === 'Finalizada';
+                }),
+              },
+              {
+                id: 'concluidas',
+                label: 'Concluídas',
+                count: count(function (c) {
+                  return c.status === 'Concluída';
+                }),
+              },
+              {
+                id: 'lixeira',
+                label: 'Lixeira',
+                count: count(function (c) {
+                  return c.status === 'Lixeira';
+                }),
+              },
+            ]}
+          />
+          {!isOp && !window.ms7SemOp && !meu ? (
+            <Select
+              variant="pill"
+              value={op}
+              onChange={function (e) {
+                setOp(e.target.value);
+              }}
+              options={[{ value: '', label: 'Todos os operadores' }].concat(
+                db.operadores.map(function (o) {
+                  return { value: o.id, label: o.nome };
+                }),
+              )}
+            />
+          ) : null}
+          <div style={{ flex: '1 1 200px', maxWidth: 300, marginLeft: 'auto' }}>
+            <Input
+              icon="search"
+              placeholder="Buscar link, ID, plataforma ou operador"
+              value={q}
+              onChange={function (e) {
+                setQ(e.target.value);
+              }}
+            />
+          </div>
+          <Button
+            variant="outline"
+            iconLeft="download"
+            onClick={function () {
+              exportCSV(
+                'cooperacoes',
+                [
+                  {
+                    label: 'ID',
+                    get: function (c) {
+                      return c.id;
+                    },
+                  },
+                  {
+                    label: 'Cliente',
+                    get: function (c) {
+                      return c.cliente;
+                    },
+                  },
+                  {
+                    label: 'Operador',
+                    get: function (c) {
+                      return DB.opName(c.opId);
+                    },
+                  },
+                  {
+                    label: 'Plataforma',
+                    get: function (c) {
+                      return c.plataforma;
+                    },
+                  },
+                  {
+                    label: 'Rede',
+                    get: function (c) {
+                      return c.rede;
+                    },
+                  },
+                  {
+                    label: 'Status',
+                    get: function (c) {
+                      return c.status;
+                    },
+                  },
+                  {
+                    label: 'Início',
+                    get: function (c) {
+                      return c.inicio;
+                    },
+                  },
+                  {
+                    label: 'Contas',
+                    get: function (c) {
+                      return DB.calc(c).n;
+                    },
+                  },
+                  {
+                    label: 'Depósito',
+                    get: function (c) {
+                      const k = DB.calc(c);
+                      return k.dep + k.red;
+                    },
+                  },
+                  {
+                    label: 'Saque',
+                    get: function (c) {
+                      return DB.calc(c).saq;
+                    },
+                  },
+                  {
+                    label: 'Resultado',
+                    get: function (c) {
+                      return DB.calc(c).res;
+                    },
+                  },
+                  {
+                    label: 'Comissão',
+                    get: function (c) {
+                      return DB.calc(c).com;
+                    },
+                  },
+                  {
+                    label: 'Custo',
+                    get: function (c) {
+                      return DB.calc(c).custo;
+                    },
+                  },
+                  {
+                    label: 'Lucro líquido',
+                    get: function (c) {
+                      return DB.calc(c).lucro;
+                    },
+                  },
+                ],
+                vis,
+              );
+            }}
+          >
+            Exportar
+          </Button>
+          <Button
+            iconLeft="plus"
+            onClick={function () {
+              setWiz(true);
+            }}
+          >
+            {meu ? 'Nova cooperação minha' : bau ? 'Novo baú' : 'Nova cooperação'}
+          </Button>
+        </div>
+        {vis.length ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+            {vis.map(function (c) {
+              return (
+                <CoopCard
+                  key={c.id}
+                  c={c}
+                  canAdmin={!isOp}
+                  onOpen={function () {
+                    setOpen(c.id);
+                  }}
+                />
+              );
+            })}
+          </div>
+        ) : (
+          <DS.Card>
+            <Empty
+              icon={bau ? 'package' : 'briefcase'}
+              title={bau ? 'Nenhum baú encontrado' : 'Nenhuma cooperação encontrada'}
+              sub={bau ? 'Ajuste os filtros ou crie um novo baú.' : 'Ajuste os filtros ou crie uma nova cooperação.'}
+            />
+          </DS.Card>
+        )}
+        <CoopWizard
+          open={wiz}
+          session={session}
+          bau={bau}
+          meu={meu}
+          onClose={function () {
+            setWiz(false);
+          }}
+        />
+      </div>
+    );
+  }
+  function ListasScreen() {
+    const { Card, DataTable, Badge, Button, IconButton, Tabs, Input, Modal, Select } = DS;
+    const db = DB.useDB();
+    const [tab, setTab] = usePersist('listas-tab', 'geral');
+    const [q, setQ] = React.useState('');
+    const [st, setSt] = React.useState('Todos');
+    const [listas, setListas] = usePersist('listas', MS7.listas);
+    const [nova, setNova] = React.useState(false);
+    const [nome, setNome] = React.useState('');
+    const [tg, setTg] = React.useState(false);
+    const all = [];
+    db.coops.forEach(function (c) {
+      if (c.status === 'Lixeira') return;
+      c.contas.forEach(function (k) {
+        all.push(Object.assign({ coopId: c.id, operador: DB.opName(c.opId), plataforma: c.plataforma }, k));
+      });
+    });
+    const rows = all.filter(function (r) {
+      return (st === 'Todos' || r.status === st) && (r.usuario + r.operador + r.plataforma + r.coopId).toLowerCase().indexOf(q.toLowerCase()) >= 0;
+    });
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <Tabs
+          value={tab}
+          onChange={setTab}
+          items={[
+            { id: 'geral', label: 'Lista geral de contas' },
+            { id: 'globais', label: 'Listas globais' },
+          ]}
+          style={{ maxWidth: 460 }}
+        />
+        {tab === 'geral' ? (
+          <Card
+            title={'Lista geral de contas · ' + rows.length}
+            action={
+              <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
+                <Select
+                  variant="pill"
+                  value={st}
+                  onChange={function (e) {
+                    setSt(e.target.value);
+                  }}
+                  options={['Todos'].concat(CONTA_ST)}
+                />
+                <div style={{ width: 220 }}>
+                  <Input
+                    icon="search"
+                    placeholder="Buscar conta"
+                    value={q}
+                    onChange={function (e) {
+                      setQ(e.target.value);
+                    }}
+                  />
+                </div>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  iconLeft="download"
+                  onClick={function () {
+                    exportCSV(
+                      'contas',
+                      [
+                        {
+                          label: 'Cooperação',
+                          get: function (r) {
+                            return r.coopId;
+                          },
+                        },
+                        {
+                          label: 'Operador',
+                          get: function (r) {
+                            return r.operador;
+                          },
+                        },
+                        {
+                          label: 'Plataforma',
+                          get: function (r) {
+                            return r.plataforma;
+                          },
+                        },
+                        {
+                          label: 'Usuário',
+                          get: function (r) {
+                            return r.usuario;
+                          },
+                        },
+                        {
+                          label: 'Depósito',
+                          get: function (r) {
+                            return r.deposito;
+                          },
+                        },
+                        {
+                          label: 'Re-depósito',
+                          get: function (r) {
+                            return r.redeposito;
+                          },
+                        },
+                        {
+                          label: 'Saque',
+                          get: function (r) {
+                            return r.saque;
+                          },
+                        },
+                        { label: 'Resultado', get: DB.contaRes },
+                        {
+                          label: 'Status',
+                          get: function (r) {
+                            return r.status;
+                          },
+                        },
+                        {
+                          label: 'Criada',
+                          get: function (r) {
+                            return r.criada;
+                          },
+                        },
+                      ],
+                      rows,
+                    );
+                  }}
+                >
+                  Exportar
+                </Button>
+              </div>
+            }
+          >
+            <DataTable
+              rows={rows.slice(0, 60)}
+              onRowClick={function (r) {
+                localStorage.setItem('ms7op-open-coop', r.coopId);
+                window.ms7Go('cooperacoes');
+              }}
+              columns={[
+                { key: 'coopId', label: 'Coop.' },
+                { key: 'operador', label: 'Operador' },
+                { key: 'plataforma', label: 'Plataforma' },
+                {
+                  key: 'usuario',
+                  label: 'Usuário',
+                  render: function (r) {
+                    return <b>{r.usuario}</b>;
+                  },
+                },
+                {
+                  key: 'deposito',
+                  label: 'Depósito',
+                  align: 'right',
+                  render: function (r) {
+                    return MS7.brl(r.deposito + r.redeposito);
+                  },
+                },
+                {
+                  key: 'saque',
+                  label: 'Saque',
+                  align: 'right',
+                  render: function (r) {
+                    return MS7.brl(r.saque);
+                  },
+                },
+                {
+                  key: 'res',
+                  label: 'Resultado',
+                  align: 'right',
+                  render: function (r) {
+                    return <Money v={DB.contaRes(r)} signed />;
+                  },
+                },
+                {
+                  key: 'status',
+                  label: 'Status',
+                  align: 'center',
+                  render: function (r) {
+                    return (
+                      <Badge size="sm" tone={MS7.statusTone[r.status]}>
+                        {r.status}
+                      </Badge>
+                    );
+                  },
+                },
+                {
+                  key: 'criada',
+                  label: 'Criada',
+                  render: function (r) {
+                    return DB.fmtDate(r.criada);
+                  },
+                },
+              ]}
+            />
+            {rows.length === 0 ? (
+              <Empty icon="list" title="Nenhum resultado." />
+            ) : rows.length > 60 ? (
+              <Hint>{'Mostrando 60 de ' + rows.length + '. Use a busca ou exporte para ver todas.'}</Hint>
+            ) : null}
+          </Card>
+        ) : (
+          <Card
+            title="Listas globais"
+            action={
+              <div style={{ display: 'flex', gap: 10 }}>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  iconLeft="send"
+                  onClick={function () {
+                    setTg(true);
+                  }}
+                >
+                  Importar do Telegram
+                </Button>
+                <Button
+                  size="sm"
+                  iconLeft="plus"
+                  onClick={function () {
+                    setNova(true);
+                  }}
+                >
+                  Nova lista
+                </Button>
+              </div>
+            }
+          >
+            <Hint>Catálogos reutilizáveis de contas.</Hint>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 }}>
+              {listas.map(function (l) {
+                return (
+                  <div
+                    key={l.id}
+                    style={{
+                      border: '1px solid var(--border-subtle)',
+                      borderRadius: 14,
+                      padding: 16,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: 8,
+                    }}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <DS.Icon name="list-checks" size={18} />
+                      <b style={{ flex: 1, fontSize: 15 }}>{l.nome}</b>
+                      <IconButton
+                        icon="trash-2"
+                        size={28}
+                        iconSize={14}
+                        onClick={function () {
+                          setListas(
+                            listas.filter(function (x) {
+                              return x.id !== l.id;
+                            }),
+                          );
+                        }}
+                      />
+                    </div>
+                    <span style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)' }}>{l.descricao}</span>
+                    <div style={{ display: 'flex', gap: 6 }}>
+                      <Badge size="sm" variant="soft" tone="green">
+                        {l.contas + ' contas'}
+                      </Badge>
+                      <Badge size="sm" variant="soft" tone="gray">
+                        {l.dono}
+                      </Badge>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </Card>
+        )}
+        <Modal
+          open={nova}
+          onClose={function () {
+            setNova(false);
+          }}
+          title="Nova lista global"
+          footer={
+            <React.Fragment>
+              <Button
+                variant="secondary"
+                onClick={function () {
+                  setNova(false);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="brand"
+                onClick={function () {
+                  setListas(listas.concat([{ id: Date.now(), nome: nome || 'Nova lista', descricao: 'Sem descrição.', contas: 0, dono: 'Admin' }]));
+                  setNome('');
+                  setNova(false);
+                  toast('Lista criada');
+                }}
+              >
+                Salvar
+              </Button>
+            </React.Fragment>
+          }
+        >
+          <Input
+            label="Nome"
+            required
+            value={nome}
+            onChange={function (e) {
+              setNome(e.target.value);
+            }}
+          />
+        </Modal>
+        <Modal
+          open={tg}
+          onClose={function () {
+            setTg(false);
+          }}
+          title="Importar lista do Telegram"
+          size="lg"
+          footer={
+            <React.Fragment>
+              <Button
+                variant="secondary"
+                onClick={function () {
+                  setTg(false);
+                }}
+              >
+                Cancelar
+              </Button>
+              <Button
+                variant="brand"
+                iconLeft="upload"
+                onClick={function () {
+                  setTg(false);
+                  toast('Lista importada');
+                }}
+              >
+                Importar
+              </Button>
+            </React.Fragment>
+          }
+        >
+          <Input label="Cole a lista do Telegram" multiline rows={8} placeholder={'usuario1 | senha | 300\nusuario2 | senha | 450'} />
+        </Modal>
+      </div>
+    );
+  }
+  function AvisosScreen({ session }) {
+    const { Card, Input, Checkbox, Button, IconButton, Badge } = DS;
+    const isOp = session.role === 'operador';
+    const [list, setList] = usePersist('avisos', MS7.avisos);
+    const [t, setT] = React.useState('');
+    const [c, setC] = React.useState('');
+    const [all, setAll] = React.useState(true);
+    const [gs, setGs] = React.useState([]);
+    const ok = t && c && (all || gs.length);
+    function pub() {
+      setList(
+        [
+          {
+            id: Date.now(),
+            titulo: t,
+            conteudo: c,
+            data: DB.fmtDate(DB.iso(DB.today)) + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            publico: all ? 'Todos os usuários' : gs.join(', '),
+          },
+        ].concat(list),
+      );
+      setT('');
+      setC('');
+      setGs([]);
+      setAll(true);
+      toast('Aviso publicado');
+    }
+    const listCard = (
+      <Card title="Avisos publicados">
+        {list.length ? (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {list.map(function (a) {
+              return (
+                <div key={a.id} style={{ display: 'flex', gap: 12, padding: 14, border: '1px solid var(--border-subtle)', borderRadius: 12 }}>
+                  <span
+                    style={{
+                      width: 36,
+                      height: 36,
+                      borderRadius: 10,
+                      background: 'var(--ms7-lime-100)',
+                      color: 'var(--ms7-green-ink, #005D3B)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      flexShrink: 0,
+                    }}
+                  >
+                    <DS.Icon name="megaphone" size={18} />
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <b style={{ fontSize: 15 }}>{a.titulo}</b>
+                    <p style={{ margin: '4px 0 8px', fontSize: 13, fontWeight: 500, lineHeight: 1.45, whiteSpace: 'pre-line' }}>{a.conteudo}</p>
+                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+                      <span style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{a.data}</span>
+                      <Badge size="sm" variant="soft" tone="blue">
+                        {a.publico}
+                      </Badge>
+                    </div>
+                  </div>
+                  {!isOp ? (
+                    <IconButton
+                      icon="trash-2"
+                      size={32}
+                      iconSize={16}
+                      label="Remover aviso"
+                      onClick={function () {
+                        setList(
+                          list.filter(function (x) {
+                            return x.id !== a.id;
+                          }),
+                        );
+                      }}
+                    />
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <Empty icon="megaphone" title="Nenhum aviso publicado ainda" />
+        )}
+      </Card>
+    );
+    if (isOp) return listCard;
+    return (
+      <Grid min={340}>
+        <Card title="Publicar aviso">
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+            <Input
+              label="Título do aviso"
+              value={t}
+              onChange={function (e) {
+                setT(e.target.value);
+              }}
+            />
+            <Input
+              label="Conteúdo"
+              multiline
+              rows={6}
+              placeholder="Escreva o aviso…"
+              value={c}
+              onChange={function (e) {
+                setC(e.target.value);
+              }}
+            />
+            <div style={{ background: 'var(--ms7-gray-50)', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
+              <span style={{ fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 6 }}>
+                <DS.Icon name="users" size={14} />
+                Público-alvo
+              </span>
+              <Checkbox label="Notificar todos os usuários" checked={all} onChange={setAll} />
+              {!all
+                ? MS7.grupos.map(function (g) {
+                    return (
+                      <Checkbox
+                        key={g}
+                        label={g}
+                        checked={gs.indexOf(g) >= 0}
+                        onChange={function (v) {
+                          setGs(
+                            v
+                              ? gs.concat([g])
+                              : gs.filter(function (x) {
+                                  return x !== g;
+                                }),
+                          );
+                        }}
+                        style={{ paddingLeft: 28 }}
+                      />
+                    );
+                  })
+                : null}
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+              <Button variant="brand" iconLeft="megaphone" disabled={!ok} onClick={pub}>
+                Publicar aviso
+              </Button>
+            </div>
+          </div>
+        </Card>
+        {listCard}
+      </Grid>
+    );
+  }
+  function EnviosBau() {
+    DB.useDB();
+    const db = DB.get();
+    const [led0, setLed] = usePersist('envios-bau', []);
+    const led = Array.isArray(led0) ? led0 : [];
+    const [st, setSt] = React.useState('pend');
+    const [reg, setReg] = React.useState(null);
+    const [val, setVal] = React.useState('');
+    const [hist, setHist] = React.useState('');
+    const r2 = function (v) {
+      return Math.round(v * 100) / 100;
+    };
+    const nm = function (c) {
+      return [DB.coopNome(c), c.linkN].filter(Boolean).join(' · ');
+    };
+    const L = (db.coops || [])
+      .filter(function (c) {
+        return c.tipo === 'bau' && c.status !== 'Lixeira';
+      })
+      .sort(function (a, b) {
+        return String(a.inicio || a.id).localeCompare(String(b.inicio || b.id));
+      })
+      .map(function (c) {
+        const V = DB.contasValidas(c);
+        const dep = r2(
+          V.reduce(function (a, k) {
+            return a + (+k.deposito || 0) + (+k.redeposito || 0);
+          }, 0),
+        );
+        const com = r2(c.proprio ? 0 : DB.calc(c).com || 0);
+        return { c: c, dep: dep, com: com, total: r2(dep + com) };
+      })
+      .filter(function (x) {
+        return x.total > 0;
+      });
+    const G = {};
+    L.forEach(function (x) {
+      const k = x.c.opId || '';
+      (G[k] = G[k] || { l: [], led: [] }).l.push(x);
+    });
+    led.forEach(function (e) {
+      const k = e.opId || '';
+      (G[k] = G[k] || { l: [], led: [] }).led.push(e);
+    });
+    Object.keys(G).forEach(function (k) {
+      const g = G[k];
+      let resto = r2(
+        g.led.reduce(function (a, e) {
+          return a + (+e.v || 0);
+        }, 0),
+      );
+      g.env = resto;
+      g.dev = r2(
+        g.l.reduce(function (a, x) {
+          return a + x.total;
+        }, 0),
+      );
+      g.l.forEach(function (x) {
+        x.env = r2(Math.min(resto, x.total));
+        x.falta = r2(x.total - x.env);
+        resto = r2(resto - x.env);
+      });
+      g.cred = r2(Math.max(0, resto));
+      g.falta = r2(Math.max(0, g.dev - g.env));
+      g.led.sort(function (a, b) {
+        return b.em - a.em;
+      });
+    });
+    const ks = Object.keys(G)
+      .filter(function (k) {
+        const g = G[k];
+        return st === 'todos' || (st === 'pend' ? g.falta > 0 : g.falta <= 0);
+      })
+      .sort(function (a, b) {
+        return DB.opName(a).localeCompare(DB.opName(b), 'pt-BR');
+      });
+    const T = Object.keys(G).reduce(
+      function (a, k) {
+        a.d += G[k].dev;
+        a.e += G[k].env;
+        a.f += G[k].falta;
+        return a;
+      },
+      { d: 0, e: 0, f: 0 },
+    );
+    const n = parseFloat(String(val).replace(/\./g, '').replace(',', '.')) || 0;
+    function salvarEnvio() {
+      if (!(n > 0)) return;
+      const g = G[reg.k] || { l: [] };
+      setLed(function (cur) {
+        return (Array.isArray(cur) ? cur : []).concat([
+          {
+            id: 'eb' + Date.now(),
+            opId: reg.k,
+            v: r2(n),
+            em: Date.now(),
+            refNome: g.l
+              .filter(function (x) {
+                return x.falta > 0;
+              })
+              .map(function (x) {
+                return nm(x.c);
+              })
+              .join(', '),
+          },
+        ]);
+      });
+      setReg(null);
+      toast('Envio de ' + MS7.brl(n) + ' anotado');
+    }
+    const td = { padding: '9px 8px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' };
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <KpiRow
+          items={[
+            { icon: 'send', label: 'Total p/ envio', value: MS7.brl(r2(T.d)), tone: 'blue' },
+            { icon: 'circle-check', label: 'Já enviado', value: MS7.brl(r2(T.e)), tone: 'green' },
+            { icon: 'clock', label: 'Falta enviar', value: MS7.brl(r2(T.f)), tone: 'orange' },
+          ]}
+        />
+        <DS.Tabs
+          variant="chips"
+          value={st}
+          onChange={setSt}
+          items={[
+            { id: 'pend', label: 'Falta enviar' },
+            { id: 'ok', label: 'Enviados' },
+            { id: 'todos', label: 'Todos' },
+          ]}
+        />
+        {ks.length ? (
+          ks.map(function (k) {
+            const g = G[k];
+            const nome = k ? DB.opName(k) : 'Admin';
+            return (
+              <div
+                key={k || 'x'}
+                style={{
+                  background: 'var(--surface-card)',
+                  borderRadius: 'var(--radius-lg)',
+                  boxShadow: 'var(--shadow-card)',
+                  padding: '14px 16px',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 8,
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+                  <DS.Avatar name={nome} size={32} />
+                  <div style={{ flex: 1, minWidth: 150 }}>
+                    <b style={{ fontSize: 16 }}>{nome}</b>
+                    <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      {'Total ' + MS7.brl(g.dev) + ' · enviado ' + MS7.brl(g.env)}
+                    </div>
+                  </div>
+                  {g.falta > 0 ? (
+                    <b style={{ color: 'var(--ms7-orange)' }}>{'Falta ' + MS7.brl(g.falta)}</b>
+                  ) : (
+                    <b style={{ color: 'var(--ms7-green)' }}>Tudo enviado</b>
+                  )}
+                  {g.cred > 0 ? <span style={{ fontSize: 13, fontWeight: 700 }}>{'Crédito ' + MS7.brl(g.cred)}</span> : null}
+                  <DS.Button
+                    size="sm"
+                    variant="secondary"
+                    iconLeft="history"
+                    onClick={function () {
+                      setHist(hist === k ? '' : k);
+                    }}
+                  >
+                    {'Envios (' + g.led.length + ')'}
+                  </DS.Button>
+                  <DS.Button
+                    size="sm"
+                    variant="brand"
+                    iconLeft="banknote"
+                    onClick={function () {
+                      setVal(String(g.falta.toFixed(2)).replace('.', ','));
+                      setReg({ k: k, nome: nome, falta: g.falta });
+                    }}
+                  >
+                    Registrar envio
+                  </DS.Button>
+                </div>
+                {hist === k ? (
+                  <div style={{ padding: '8px 12px', borderRadius: 10, background: 'var(--surface-muted, var(--ms7-gray-100))' }}>
+                    {g.led.length ? (
+                      g.led.map(function (e) {
+                        return (
+                          <div key={e.id} style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 13, fontWeight: 600, minHeight: 30 }}>
+                            <span style={{ width: 110, color: 'var(--text-secondary)' }}>
+                              {new Date(e.em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                            </span>
+                            <b style={{ width: 100 }}>{MS7.brl(e.v)}</b>
+                            <span
+                              style={{
+                                flex: 1,
+                                minWidth: 0,
+                                overflow: 'hidden',
+                                textOverflow: 'ellipsis',
+                                whiteSpace: 'nowrap',
+                                color: 'var(--text-secondary)',
+                              }}
+                            >
+                              {e.refNome || ''}
+                            </span>
+                            <DS.IconButton
+                              icon="trash-2"
+                              size={26}
+                              iconSize={13}
+                              label="Apagar envio"
+                              onClick={function () {
+                                if (confirm('Apagar este envio?'))
+                                  setLed(function (cur) {
+                                    return cur.filter(function (y) {
+                                      return y.id !== e.id;
+                                    });
+                                  });
+                              }}
+                            />
+                          </div>
+                        );
+                      })
+                    ) : (
+                      <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Nenhum envio anotado.</span>
+                    )}
+                  </div>
+                ) : null}
+                {g.l.length ? (
+                  <div style={{ overflowX: 'auto' }}>
+                    <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 14 }}>
+                      <thead>
+                        <tr style={{ fontSize: 11, fontWeight: 700, textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                          <th style={{ textAlign: 'left', padding: '6px 8px' }}>Baú</th>
+                          <th style={td}>Depósito</th>
+                          <th style={td}>Comissão</th>
+                          <th style={td}>Total</th>
+                          <th style={td}>Enviado</th>
+                          <th style={td}>Falta</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {g.l.map(function (x) {
+                          return (
+                            <tr key={x.c.id} style={{ borderTop: '1px solid var(--border-subtle)' }}>
+                              <td style={{ padding: '9px 8px', fontWeight: 700 }}>
+                                {nm(x.c)}
+                                <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{x.c.status}</span>
+                              </td>
+                              <td style={td}>{MS7.brl(x.dep)}</td>
+                              <td style={td}>{MS7.brl(x.com)}</td>
+                              <td style={Object.assign({}, td, { fontWeight: 800 })}>{MS7.brl(x.total)}</td>
+                              <td style={td}>{x.env ? MS7.brl(x.env) : '—'}</td>
+                              <td style={Object.assign({}, td, { fontWeight: 800, color: x.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
+                                {x.falta > 0 ? MS7.brl(x.falta) : 'OK'}
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                ) : (
+                  <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>Sem baú no momento. Os envios continuam anotados.</span>
+                )}
+              </div>
+            );
+          })
+        ) : (
+          <div
+            style={{
+              padding: '40px 20px',
+              textAlign: 'center',
+              color: 'var(--text-secondary)',
+              fontWeight: 600,
+              background: 'var(--surface-card)',
+              borderRadius: 'var(--radius-lg)',
+            }}
+          >
+            {st === 'pend' ? 'Nada falta enviar nos baús.' : 'Nada aqui.'}
+          </div>
+        )}
+        {reg ? (
+          <DS.Modal
+            open
+            onClose={function (e) {
+              if (e && e.currentTarget && e.currentTarget.tagName === 'BUTTON') setReg(null);
+            }}
+            title="Registrar envio"
+            subtitle={reg.nome + ' · falta ' + MS7.brl(reg.falta)}
+            size="sm"
+            footer={
+              <React.Fragment>
+                <DS.Button
+                  variant="secondary"
+                  onClick={function () {
+                    setReg(null);
+                  }}
+                >
+                  Cancelar
+                </DS.Button>
+                <DS.Button variant="brand" iconLeft="check" disabled={!(n > 0)} onClick={salvarEnvio}>
+                  {'Registrar ' + MS7.brl(n)}
+                </DS.Button>
+              </React.Fragment>
+            }
+          >
+            <DS.Input
+              label="Quanto você enviou agora"
+              prefix="R$"
+              value={val}
+              onChange={function (e) {
+                setVal(e.target.value);
+              }}
+              autoFocus
+            />
+          </DS.Modal>
+        ) : null}
+      </div>
+    );
+  }
+  function BauScreen(p) {
+    const adm = !p.session || p.session.role !== 'operador';
+    const [aba, setAba] = usePersist('bau-aba', 'baus');
+    if (!adm) return <CooperacoesScreen session={p.session} bau={true} />;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <DS.Tabs
+          variant="dark"
+          value={aba}
+          onChange={setAba}
+          items={[
+            { id: 'baus', label: 'Baús' },
+            { id: 'metas', label: 'Metas' },
+            { id: 'envios', label: 'Envios e pagamentos' },
+          ]}
+          style={{ maxWidth: 560 }}
+        />
+        {aba === 'envios' ? (
+          <EnviosBau />
+        ) : aba === 'metas' ? (
+          React.createElement(window.MetasScreen, {
+            go: p.go,
+            role: p.role || (p.session && p.session.role),
+            bau: true,
+            onAbrir: function () {
+              setAba('baus');
+            },
+          })
+        ) : (
+          <CooperacoesScreen session={p.session} bau={true} />
+        )}
+      </div>
+    );
+  }
+  function MinhasScreen(p) {
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+          Cooperações que você mesmo faz, sem operador e sem comissão. O resultado delas entra no lucro total do Dashboard e do Financeiro.
+        </div>
+        <CooperacoesScreen session={p.session} meu={true} />
+      </div>
+    );
+  }
+  Object.assign(window, {
+    MinhasScreen: MinhasScreen,
+    BauScreen: BauScreen,
+    CooperacoesScreen: CooperacoesScreen,
+    ListasScreen: ListasScreen,
+    AvisosScreen: AvisosScreen,
+  });
 })();
