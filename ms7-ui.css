@@ -453,3 +453,14 @@ html[data-theme="dark"] .ms7-tip { background: #F3F5F1; color: #0B0D0C; }
   .ms7-stat { padding: 14px 16px; }
   .ms7-stat-value { font-size: 20px; }
 }
+
+/* inputs nativos soltos (data, hora, número) */
+.ms7-native, input[type="date"]:not(.ms7-input), input[type="time"]:not(.ms7-input), input[type="datetime-local"]:not(.ms7-input) { height: 40px; padding: 0 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface-card); font: 500 13.5px var(--font-sans); color: var(--text-primary); transition: border-color var(--dur-fast), box-shadow var(--dur-base); }
+.ms7-native:hover, input[type="date"]:not(.ms7-input):hover { border-color: var(--line-strong); }
+.ms7-native:focus, input[type="date"]:not(.ms7-input):focus { outline: 0; border-color: var(--ms7-green-900); box-shadow: 0 0 0 3px color-mix(in oklab, var(--ms7-green-900) 16%, transparent); }
+input[type="date"]::-webkit-calendar-picker-indicator { opacity: .55; cursor: pointer; }
+html[data-theme="dark"] input[type="date"]::-webkit-calendar-picker-indicator { filter: invert(1); }
+
+/* switch no escuro: trilho lima, bolinha escura */
+html[data-theme="dark"] .ms7-switch-track.is-on .ms7-switch-thumb { background: #0C3B26; }
+html[data-theme="dark"] .ms7-switch-track { background: #2E3531; }

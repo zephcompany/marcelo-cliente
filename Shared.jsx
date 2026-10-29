@@ -30,7 +30,7 @@
 
   function KpiRow({ items, min }) {
     return (
-      <div className="ms7-kpis ms7-stagger" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(' + (min || 190) + 'px,1fr))' }}>
+      <div className="ms7-kpis ms7-stagger" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(min(100%,' + (min || 164) + 'px),1fr))' }}>
         {items.map(function (k) {
           const lab = k.signed != null && k.signed < 0 && /Lucro/i.test(k.label) ? k.label.replace(/Lucro líquido|Lucro/i, 'Prejuízo') : k.label;
           return (

@@ -1,5 +1,53 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
+  /* CSS próprio das telas de conta (só tokens) */
+  (function () {
+    if (document.getElementById('ms7-conta-css')) return;
+    const s = document.createElement('style');
+    s.id = 'ms7-conta-css';
+    s.textContent = [
+      '.ms7c-list{display:flex;flex-direction:column}',
+      '.ms7c-row{display:flex;align-items:center;gap:14px;padding:14px 12px;margin:0 -12px;border-bottom:1px solid var(--border-subtle);border-radius:10px;transition:background var(--dur-fast)}',
+      '.ms7c-row:last-child{border-bottom:0}.ms7c-row:hover{background:var(--surface-muted)}',
+      '.ms7c-tile{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}',
+      '.ms7c-tile.is-lg{width:44px;height:44px;border-radius:12px}',
+      '.ms7c-t{font-size:14px;font-weight:600;letter-spacing:-.005em;line-height:1.3}',
+      '.ms7c-s{font-size:13px;font-weight:500;color:var(--text-secondary);line-height:1.5}',
+      '.ms7c-c{font-size:12.5px;font-weight:500;color:var(--text-secondary)}',
+      '.ms7c-mono{display:flex;align-items:center;gap:6px;min-width:0;background:var(--surface-muted);border-radius:10px;padding:4px 4px 4px 12px;font-family:var(--font-mono);font-size:12.5px;font-weight:500;color:var(--text-primary)}',
+      '.ms7c-mono>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
+      '.ms7c-act{opacity:.45;transition:opacity var(--dur-fast)}.ms7c-row:hover .ms7c-act,tr:hover .ms7c-act{opacity:1}@media (hover:none){.ms7c-act{opacity:1}}',
+      '.ms7c-prod{display:flex;flex-direction:column;gap:6px;padding:18px;transition:box-shadow var(--dur-base),transform var(--dur-base) var(--ease-standard)}',
+      '.ms7c-prod.is-on{box-shadow:0 0 0 1.5px var(--ms7-green-900)}',
+      '.ms7c-stepn{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border:1.5px solid var(--line-strong);color:var(--text-secondary);background:var(--surface-card);flex-shrink:0;transition:all var(--dur-base) var(--ease-standard)}',
+      '.ms7c-stepn.is-done{background:var(--ms7-green-900);border-color:var(--ms7-green-900);color:var(--text-inverse)}',
+      '.ms7c-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:0;padding:0;transition:transform var(--dur-base) var(--ease-spring),box-shadow var(--dur-fast)}.ms7c-swatch:hover{transform:scale(1.08)}',
+      '.ms7c-plan{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer}.ms7c-plan.is-on{box-shadow:0 0 0 1.5px var(--ms7-green-900)}',
+      '.ms7-card.is-dark{--ms7c-inv-acc:var(--ms7-lime-500);--ms7c-inv-track:color-mix(in oklab,var(--text-inverse) 14%,transparent)}',
+      'html[data-theme="dark"] .ms7-card.is-dark{--ms7c-inv-acc:var(--text-on-lime);--ms7c-inv-track:color-mix(in oklab,var(--text-inverse) 12%,transparent)}',
+      '.ms7-btn.ms7c-inv-btn{background:transparent;color:inherit;border-color:color-mix(in oklab,currentColor 28%,transparent)}',
+      '.ms7-btn.ms7c-inv-btn:hover:not(:disabled){background:color-mix(in oklab,currentColor 10%,transparent);border-color:color-mix(in oklab,currentColor 45%,transparent);box-shadow:none}',
+      '.ms7c-bar-inv{height:8px;border-radius:8px;background:var(--ms7c-inv-track);overflow:hidden}.ms7c-bar-inv>i{display:block;height:100%;border-radius:8px;background:var(--ms7c-inv-acc);transform-origin:left;animation:ms7-grow-x 900ms var(--ease-out) both}',
+      '.ms7c-sw{display:flex;align-items:center;padding:10px 12px;border:1px solid var(--border-subtle);border-radius:10px;transition:border-color var(--dur-fast)}.ms7c-sw:hover{border-color:var(--line-strong)}.ms7c-sw .ms7-switch{width:100%}',
+      '.ms7c-tabs{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}',
+      '.ms7c-tabwrap{max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.ms7c-tabwrap::-webkit-scrollbar{display:none}.ms7c-tabwrap>.ms7-tabs{min-width:max-content}',
+      '.ms7c-step{display:flex;gap:14px;align-items:flex-start;padding:16px 0}.ms7c-step-r{display:flex;align-items:center;gap:8px;flex-shrink:0;min-height:28px}',
+      '@media (max-width:760px){.ms7c-row{flex-wrap:wrap;gap:12px}.ms7c-row>.ms7c-grow{flex:1 1 100%}.ms7c-tabs>*{flex:1 1 100%}.ms7c-tabs .ms7-btn{width:100%}.ms7c-srv{grid-template-columns:1fr!important;padding-left:0!important}.ms7c-srv .ms7-btn{width:100%}.ms7c-step{flex-wrap:wrap}.ms7c-step-r{flex:1 1 100%;padding-left:42px;flex-wrap:wrap}}',
+    ].join('');
+    document.head.appendChild(s);
+  })();
+  /* sem viúva: cola as três últimas palavras de uma frase fixa (espaço → nbsp) */
+  const NBSP = String.fromCharCode(160);
+  function nb(s) {
+    return String(s).replace(/ (\S+) (\S+)$/, NBSP + '$1' + NBSP + '$2');
+  }
+  function Sub(p) {
+    return (
+      <span className="ms7-balance" style={{ display: 'block' }}>
+        {nb(p.children)}
+      </span>
+    );
+  }
   function AlunosScreen() {
     const { Card, Tabs, BarChart, DataTable, Switch, IconButton, Button, Modal, Input, Avatar } = DS;
     const [tab, setTab] = React.useState('visao');
@@ -30,18 +78,18 @@
       toast('Aluno salvo');
     }
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <div className="ms7c-tabs">
           <Tabs
             value={tab}
             onChange={setTab}
             items={[
-              { id: 'visao', label: 'Visão geral' },
-              { id: 'gestao', label: 'Gestão de alunos' },
+              { id: 'visao', label: 'Visão geral', icon: 'layout-dashboard' },
+              { id: 'gestao', label: 'Gestão de alunos', icon: 'users' },
             ]}
-            style={{ width: 360 }}
+            style={{ width: 380, maxWidth: '100%' }}
           />
-          <Button iconLeft="user-plus" onClick={openNew}>
+          <Button variant="brand" iconLeft="user-plus" onClick={openNew}>
             Novo aluno
           </Button>
         </div>
@@ -79,93 +127,145 @@
               ]}
             />
             <Grid min={320}>
-              <Card title="Top 10 alunos por resultado">
-                <BarChart
-                  height={240}
-                  data={rank.slice(0, 10).map(function (r) {
-                    return { label: String(r.nome || '').split(' ')[0], values: [Math.round(r.resultado / 100) / 10] };
-                  })}
-                  series={[{ name: 'Resultado (mil R$)', color: 'var(--chart-1)' }]}
-                />
+              <Card title="Top 10 alunos por resultado" subtitle={nb('Resultado acumulado, em mil reais')} reveal>
+                {rank.length ? (
+                  <BarChart
+                    height={240}
+                    data={rank.slice(0, 10).map(function (r) {
+                      return { label: String(r.nome || '').split(' ')[0], values: [Math.round(r.resultado / 100) / 10] };
+                    })}
+                    series={[{ name: 'Resultado (mil R$)', color: 'var(--chart-1)' }]}
+                  />
+                ) : (
+                  <Empty art="Chart" title="Sem resultados ainda" sub={<Sub>Quando os alunos fecharem ciclos, o top 10 aparece aqui.</Sub>} />
+                )}
               </Card>
-              <Card title="Ranking resumido">
-                <RankList rows={rank} valueKey="resultado" />
+              <Card title="Ranking resumido" subtitle={nb('Do maior para o menor resultado')} reveal>
+                {rank.length ? (
+                  <RankList rows={rank} valueKey="resultado" />
+                ) : (
+                  <Empty
+                    art="People"
+                    compact
+                    title="Nenhum aluno no ranking"
+                    sub={<Sub>Cadastre o primeiro aluno para começar a acompanhar os resultados.</Sub>}
+                  />
+                )}
               </Card>
             </Grid>
           </React.Fragment>
         ) : (
-          <Card>
-            <DataTable
-              rows={rows}
-              columns={[
-                {
-                  key: 'nome',
-                  label: 'Nome',
-                  render: function (r) {
-                    return (
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <Avatar name={r.nome} size={32} />
-                        <b>{r.nome}</b>
-                      </div>
-                    );
+          <Card title="Gestão de alunos" subtitle={rows.length + (rows.length === 1 ? ' aluno cadastrado' : ' alunos cadastrados')} reveal>
+            {rows.length ? (
+              <DataTable
+                style={{ margin: '0 -14px -10px' }}
+                rows={rows}
+                columns={[
+                  {
+                    key: 'nome',
+                    label: 'Nome',
+                    render: function (r) {
+                      return (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <Avatar name={r.nome} size={32} />
+                          <span className="ms7c-t">{r.nome}</span>
+                        </div>
+                      );
+                    },
                   },
-                },
-                { key: 'email', label: 'Email' },
-                {
-                  key: 'ativo',
-                  label: 'Ativo',
-                  align: 'center',
-                  render: function (r) {
-                    return (
-                      <Switch
-                        checked={r.ativo}
-                        onChange={function (v) {
-                          setRows(
-                            rows.map(function (x) {
-                              return x.id === r.id ? Object.assign({}, x, { ativo: v }) : x;
-                            }),
-                          );
-                        }}
-                      />
-                    );
+                  {
+                    key: 'email',
+                    label: 'Email',
+                    render: function (r) {
+                      return <span style={{ color: 'var(--text-secondary)' }}>{r.email}</span>;
+                    },
                   },
-                },
-                { key: 'contas', label: 'Contas', align: 'center' },
-                { key: 'criado', label: 'Criado em' },
-                {
-                  key: 'a',
-                  label: '',
-                  align: 'right',
-                  render: function (r) {
-                    return (
-                      <div style={{ display: 'inline-flex', gap: 2 }}>
-                        <IconButton
-                          icon="pencil"
-                          size={30}
-                          iconSize={16}
-                          onClick={function () {
-                            setForm({ nome: r.nome, email: r.email });
-                            setEdit(r.id);
-                          }}
-                        />
-                        <IconButton
-                          icon="trash-2"
-                          size={30}
-                          iconSize={16}
-                          onClick={function () {
+                  {
+                    key: 'ativo',
+                    label: 'Ativo',
+                    align: 'center',
+                    render: function (r) {
+                      return (
+                        <Switch
+                          checked={r.ativo}
+                          onChange={function (v) {
                             setRows(
-                              rows.filter(function (x) {
-                                return x.id !== r.id;
+                              rows.map(function (x) {
+                                return x.id === r.id ? Object.assign({}, x, { ativo: v }) : x;
                               }),
                             );
                           }}
                         />
-                      </div>
-                    );
+                      );
+                    },
                   },
-                },
-              ]}
-            />
+                  {
+                    key: 'contas',
+                    label: 'Contas',
+                    align: 'center',
+                    render: function (r) {
+                      return <span className="ms7-num">{r.contas}</span>;
+                    },
+                  },
+                  {
+                    key: 'criado',
+                    label: 'Criado em',
+                    render: function (r) {
+                      return (
+                        <span className="ms7-num" style={{ color: 'var(--text-secondary)' }}>
+                          {r.criado}
+                        </span>
+                      );
+                    },
+                  },
+                  {
+                    key: 'a',
+                    label: '',
+                    align: 'right',
+                    render: function (r) {
+                      return (
+                        <div className="ms7c-act" style={{ display: 'inline-flex', gap: 2 }}>
+                          <IconButton
+                            icon="pencil"
+                            size={32}
+                            iconSize={16}
+                            label="Editar"
+                            onClick={function () {
+                              setForm({ nome: r.nome, email: r.email });
+                              setEdit(r.id);
+                            }}
+                          />
+                          <IconButton
+                            icon="trash-2"
+                            size={32}
+                            iconSize={16}
+                            label="Excluir"
+                            onClick={function () {
+                              setRows(
+                                rows.filter(function (x) {
+                                  return x.id !== r.id;
+                                }),
+                              );
+                            }}
+                          />
+                        </div>
+                      );
+                    },
+                  },
+                ]}
+              />
+            ) : (
+              <Empty
+                art="People"
+                title="Nenhum aluno cadastrado"
+                sub={<Sub>Cadastre seus alunos para acompanhar contas, resultado e ranking num lugar só.</Sub>}
+                action={
+                  <Button variant="brand" size="sm" iconLeft="user-plus" onClick={openNew}>
+                    Novo aluno
+                  </Button>
+                }
+              />
+            )}
           </Card>
         )}
         <Modal
@@ -177,14 +277,14 @@
           footer={
             <React.Fragment>
               <Button
-                variant="secondary"
+                variant="outline"
                 onClick={function () {
                   setEdit(null);
                 }}
               >
                 Cancelar
               </Button>
-              <Button variant="brand" onClick={save}>
+              <Button variant="brand" iconLeft="check" onClick={save}>
                 Salvar
               </Button>
             </React.Fragment>
@@ -194,20 +294,22 @@
             <Input
               label="Nome"
               required
+              icon="user"
               value={form.nome}
               onChange={function (e) {
                 setForm(Object.assign({}, form, { nome: e.target.value }));
               }}
             />
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 }}>
               <Input
                 label="Email (login)"
+                icon="mail"
                 value={form.email}
                 onChange={function (e) {
                   setForm(Object.assign({}, form, { email: e.target.value }));
                 }}
               />
-              <Input label="Senha" required type="password" />
+              <Input label="Senha" required type="password" icon="lock" />
             </div>
           </div>
         </Modal>
@@ -290,74 +392,94 @@
         return n;
       });
     };
+    const totalQtd = itens.reduce(function (a, it) {
+      return a + it.qtd;
+    }, 0);
     return (
       <React.Fragment>
-        <Card title="Comprar">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+        <Card title="Comprar" subtitle={nb('Escolha a quantidade de cada produto e pague por PIX')} reveal>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {!prod ? (
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Carregando produtos…</div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
+                {[0, 1, 2].map(function (i) {
+                  return <div key={i} className="ms7-skeleton" style={{ height: 150, borderRadius: 'var(--radius-lg)' }} />;
+                })}
+              </div>
             ) : prod.length ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
                 {prod.map(function (p) {
                   const n = q[p.id] || 0;
                   return (
-                    <div
-                      key={p.id}
-                      style={{
-                        border: n ? '2px solid var(--ms7-green)' : '1px solid var(--border-subtle)',
-                        borderRadius: 14,
-                        padding: 16,
-                        display: 'flex',
-                        flexDirection: 'column',
-                        gap: 8,
-                      }}
-                    >
-                      <b style={{ fontSize: 16 }}>{p.nome}</b>
-                      <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{p.desc}</span>
-                      <span style={{ fontSize: 22, fontWeight: 800 }}>{MS7.brl(p.preco)}</span>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 'auto' }}>
+                    <div key={p.id} className={'ms7-card ms7-hover-card ms7c-prod' + (n ? ' is-on' : '')}>
+                      <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 10 }}>
+                        <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em', lineHeight: 1.25 }}>{p.nome}</span>
+                        {n ? (
+                          <Badge size="sm" tone="green" variant="soft">
+                            {n + (n === 1 ? ' item' : ' itens')}
+                          </Badge>
+                        ) : null}
+                      </div>
+                      <span className="ms7c-c" style={{ lineHeight: 1.45 }}>
+                        {p.desc}
+                      </span>
+                      <span className="ms7-num" style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.03em', marginTop: 4 }}>
+                        {MS7.brl(p.preco)}
+                      </span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 'auto', paddingTop: 8 }}>
                         <DS.IconButton
                           icon="minus"
                           variant="outline"
-                          size={34}
-                          iconSize={16}
+                          size={28}
+                          iconSize={14}
                           label="Menos"
                           disabled={!n}
+                          style={{ opacity: n ? 1 : 0.45 }}
                           onClick={function () {
                             step(p.id, -1);
                           }}
                         />
-                        <b style={{ minWidth: 28, textAlign: 'center', fontSize: 16 }}>{n}</b>
+                        <span className="ms7-num" style={{ minWidth: 28, textAlign: 'center', fontSize: 15, fontWeight: 600 }}>
+                          {n}
+                        </span>
                         <DS.IconButton
                           icon="plus"
                           variant="outline"
-                          size={34}
-                          iconSize={16}
+                          size={28}
+                          iconSize={14}
                           label="Mais"
                           onClick={function () {
                             step(p.id, 1);
                           }}
                         />
-                        {n ? <span style={{ marginLeft: 'auto', fontSize: 13, fontWeight: 700 }}>{MS7.brl(p.preco * n)}</span> : null}
+                        {n ? (
+                          <span className="ms7-num" style={{ marginLeft: 'auto', fontSize: 13.5, fontWeight: 600, color: 'var(--ms7-green)' }}>
+                            {MS7.brl(p.preco * n)}
+                          </span>
+                        ) : null}
                       </div>
                     </div>
                   );
                 })}
               </div>
             ) : (
-              <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>Nenhum produto à venda agora.</div>
+              <Empty
+                art="Globe"
+                compact
+                title="Nenhum produto à venda agora"
+                sub={<Sub>Quando houver proxies disponíveis para compra, elas aparecem aqui.</Sub>}
+              />
             )}
             <div
               style={{
                 display: 'flex',
-                gap: 12,
+                gap: 14,
                 alignItems: 'flex-end',
                 flexWrap: 'wrap',
                 borderTop: '1px solid var(--border-subtle)',
-                paddingTop: 16,
+                paddingTop: 18,
               }}
             >
-              <div style={{ flex: '1 1 200px', maxWidth: 260 }}>
+              <div style={{ flex: '1 1 200px', maxWidth: 280 }}>
                 <Input
                   label="Cupom"
                   icon="ticket"
@@ -370,12 +492,11 @@
                 />
               </div>
               <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: 2, minWidth: 160 }}>
-                {C.desconto ? (
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                    {'Subtotal ' + MS7.brl(C.total) + ' · desconto −' + MS7.brl(C.desconto)}
-                  </span>
-                ) : null}
-                <b style={{ fontSize: 24 }}>{MS7.brl(C.valor)}</b>
+                <span className="ms7-eyebrow">{totalQtd ? 'Total · ' + totalQtd + (totalQtd === 1 ? ' item' : ' itens') : 'Total'}</span>
+                {C.desconto ? <span className="ms7c-c ms7-num">{'Subtotal ' + MS7.brl(C.total) + ' · desconto −' + MS7.brl(C.desconto)}</span> : null}
+                <span className="ms7-num" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1 }}>
+                  {MS7.brl(C.valor)}
+                </span>
               </div>
               <Button
                 variant="brand"
@@ -391,37 +512,35 @@
           </div>
         </Card>
         {on && peds.length ? (
-          <Card title="Meus pedidos">
-            <div style={{ display: 'flex', flexDirection: 'column' }}>
+          <Card title="Meus pedidos" subtitle={nb('Compras feitas por PIX e o status da entrega')} reveal>
+            <div className="ms7c-list">
               {peds.map(function (p) {
+                const ok = p.status === 'approved';
+                const tone = ok ? (p.entregue ? 'green' : 'blue') : 'yellow';
+                const col = ok ? (p.entregue ? 'var(--ms7-green)' : 'var(--ms7-blue)') : 'var(--ms7-yellow)';
                 return (
-                  <div
-                    key={p.id}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 12,
-                      padding: '10px 0',
-                      borderTop: '1px solid var(--border-subtle)',
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    <div style={{ flex: '1 1 220px', minWidth: 0 }}>
-                      <b style={{ fontSize: 14 }}>
+                  <div key={p.id} className="ms7c-row">
+                    <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, ' + col + ' 12%, var(--surface-card))', color: col }}>
+                      <DS.Icon name={ok ? (p.entregue ? 'package-check' : 'truck') : 'clock'} size={17} strokeWidth={2} />
+                    </span>
+                    <div className="ms7c-grow" style={{ flex: '1 1 220px', minWidth: 0 }}>
+                      <div className="ms7c-t">
                         {(p.itens || [])
                           .map(function (x) {
                             return x.qtd + 'x ' + x.nome;
                           })
                           .join(', ')}
-                      </b>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                      </div>
+                      <div className="ms7c-c" style={{ marginTop: 2 }}>
                         {new Date(p.criado).toLocaleString('pt-BR') + (p.cupom ? ' · cupom ' + p.cupom : '')}
                       </div>
                     </div>
-                    <Badge size="sm" variant="soft" tone={p.status === 'approved' ? (p.entregue ? 'green' : 'blue') : 'yellow'}>
-                      {p.status === 'approved' ? (p.entregue ? 'Entregue' : 'Pago · em entrega') : 'Aguardando pagamento'}
+                    <Badge size="sm" variant="soft" tone={tone}>
+                      {ok ? (p.entregue ? 'Entregue' : 'Pago · em entrega') : 'Aguardando pagamento'}
                     </Badge>
-                    <b>{MS7.brl(p.valor)}</b>
+                    <span className="ms7-num" style={{ fontSize: 14, fontWeight: 600 }}>
+                      {MS7.brl(p.valor)}
+                    </span>
                   </div>
                 );
               })}
@@ -498,99 +617,73 @@
             },
           ]}
         />
-        <Card title="Minhas proxies">
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            {list.map(function (p) {
-              const conn = p.host + ':' + p.port + ':' + p.login;
-              return (
-                <div
-                  key={p.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 16,
-                    padding: 14,
-                    border: '1px solid var(--border-subtle)',
-                    borderRadius: 12,
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: 10,
-                      background: 'var(--ms7-gray-100)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <DS.Icon name="globe" size={20} />
-                  </span>
-                  <div style={{ flex: '1 1 200px', minWidth: 0 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                      <b style={{ fontSize: 15 }}>{p.label}</b>
-                      <Badge size="sm" tone={p.status === 'Ativa' ? 'green' : MS7.statusTone[p.status]}>
-                        {p.status}
-                      </Badge>
+        <Card title="Minhas proxies" subtitle={nb('Endereço de conexão, tráfego usado e vencimento')} reveal>
+          {list.length ? (
+            <div className="ms7c-list">
+              {list.map(function (p) {
+                const conn = p.host + ':' + p.port + ':' + p.login;
+                const tone = p.status === 'Ativa' ? 'green' : MS7.statusTone[p.status];
+                const col = p.status === 'Ativa' ? 'var(--ms7-green)' : p.status === 'Expirando' ? 'var(--ms7-yellow)' : 'var(--ms7-error)';
+                return (
+                  <div key={p.id} className="ms7c-row" style={{ gap: 16 }}>
+                    <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, ' + col + ' 12%, var(--surface-card))', color: col }}>
+                      <DS.Icon name="globe" size={17} strokeWidth={2} />
+                    </span>
+                    <div style={{ flex: '1 1 180px', minWidth: 0 }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
+                        <span className="ms7c-t">{p.label}</span>
+                        <Badge size="sm" variant="soft" tone={tone}>
+                          {p.status}
+                        </Badge>
+                      </div>
+                      <div className="ms7c-c" style={{ marginTop: 2 }}>
+                        {'Expira em ' + p.expira}
+                      </div>
                     </div>
-                    <div style={{ fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{'Expira em ' + p.expira}</div>
-                  </div>
-                  <div
-                    style={{
-                      flex: '1 1 260px',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: 6,
-                      background: 'var(--ms7-gray-50)',
-                      borderRadius: 8,
-                      padding: '6px 6px 6px 12px',
-                      fontFamily: 'ui-monospace,monospace',
-                      fontSize: 12,
-                    }}
-                  >
-                    <span style={{ flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{conn}</span>
-                    <IconButton
-                      icon="copy"
-                      size={28}
-                      iconSize={14}
-                      label="Copiar conexão"
-                      onClick={function () {
-                        toast('Conexão copiada');
-                      }}
-                    />
-                  </div>
-                  <div style={{ width: 130 }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, fontWeight: 700 }}>
-                      <span>Tráfego</span>
-                      <span>{p.uso + '%'}</span>
-                    </div>
-                    <div style={{ height: 6, borderRadius: 3, background: 'var(--ms7-gray-100)', marginTop: 4 }}>
-                      <div
-                        style={{
-                          width: p.uso + '%',
-                          height: '100%',
-                          borderRadius: 3,
-                          background: p.uso > 85 ? 'var(--ms7-orange)' : 'var(--ms7-green)',
+                    <div className="ms7c-mono ms7c-grow" style={{ flex: '1 1 260px' }}>
+                      <span>{conn}</span>
+                      <IconButton
+                        icon="copy"
+                        size={28}
+                        iconSize={14}
+                        label="Copiar conexão"
+                        onClick={function () {
+                          toast('Conexão copiada');
                         }}
-                      ></div>
+                      />
                     </div>
+                    <div style={{ width: 140, flexShrink: 0 }}>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
+                        <span className="ms7-eyebrow">Tráfego</span>
+                        <span className="ms7-num" style={{ fontSize: 12.5, fontWeight: 600, color: p.uso > 85 ? 'var(--ms7-orange)' : 'var(--text-primary)' }}>
+                          {p.uso + '%'}
+                        </span>
+                      </div>
+                      <div className="ms7-bar">
+                        <i style={{ width: p.uso + '%', background: p.uso > 85 ? 'var(--ms7-orange)' : 'var(--ms7-green)' }} />
+                      </div>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant={p.status === 'Ativa' ? 'outline' : 'brand'}
+                      iconLeft="refresh-cw"
+                      onClick={function () {
+                        renew(p.id);
+                      }}
+                    >
+                      Renovar
+                    </Button>
                   </div>
-                  <Button
-                    size="sm"
-                    variant={p.status === 'Ativa' ? 'outline' : 'brand'}
-                    iconLeft="refresh-cw"
-                    onClick={function () {
-                      renew(p.id);
-                    }}
-                  >
-                    Renovar
-                  </Button>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          ) : (
+            <Empty
+              art="Globe"
+              title="Nenhuma proxy ainda"
+              sub={<Sub>Compre uma proxy abaixo e ela aparece aqui com o endereço de conexão pronto para copiar.</Sub>}
+            />
+          )}
         </Card>
         <LojaCompra />
       </div>
@@ -647,52 +740,32 @@
               if (!venc) ren.setDate(ren.getDate() + 18);
               const dias = Math.max(0, Math.round((ren - new Date().setHours(0, 0, 0, 0)) / 864e5));
               const urg = dias <= 5;
+              const col = urg ? 'var(--ms7-orange)' : 'var(--ms7-green-900)';
               return (
-                <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 14,
-                    flexWrap: 'wrap',
-                    padding: '16px 18px',
-                    borderRadius: 16,
-                    background: urg ? 'var(--soft-warn-bg, #FFF1E6)' : 'var(--ms7-lime-100, #E9F7D9)',
-                    color: urg ? 'var(--soft-warn-fg, #8A3B00)' : 'var(--ms7-green-ink, #0C3B26)',
-                  }}
-                >
-                  <span
-                    style={{
-                      width: 42,
-                      height: 42,
-                      borderRadius: 12,
-                      background: urg ? '#FF7F08' : '#005D3B',
-                      color: '#fff',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      flexShrink: 0,
-                    }}
-                  >
-                    <DS.Icon name="calendar-clock" size={20} />
-                  </span>
-                  <div style={{ flex: '1 1 220px' }}>
-                    <b style={{ fontSize: 18 }}>
-                      {dias === 0 ? 'Sua assinatura vence hoje' : 'Faltam ' + dias + (dias === 1 ? ' dia' : ' dias') + ' para renovar'}
-                    </b>
-                    <div style={{ fontSize: 13, fontWeight: 600, opacity: 0.85 }}>
-                      {'Plano ' + P.nome + ' · renova em ' + ren.toLocaleDateString('pt-BR') + ' · ' + MS7.brl(P.preco)}
+                <Card padding="16px 20px" style={urg ? { boxShadow: '0 0 0 1px color-mix(in oklab, var(--ms7-orange) 45%, var(--line))' } : null}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 14, flexWrap: 'wrap' }}>
+                    <span className="ms7c-tile is-lg" style={{ background: 'color-mix(in oklab, ' + col + ' 12%, var(--surface-card))', color: col }}>
+                      <DS.Icon name="calendar-clock" size={20} strokeWidth={2} />
+                    </span>
+                    <div style={{ flex: '1 1 220px', minWidth: 0 }}>
+                      <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em', lineHeight: 1.3 }}>
+                        {dias === 0 ? 'Sua assinatura vence hoje' : 'Faltam ' + dias + (dias === 1 ? ' dia' : ' dias') + ' para renovar'}
+                      </div>
+                      <div className="ms7c-c" style={{ marginTop: 2 }}>
+                        {nb('Plano ' + P.nome + ' · renova em ' + ren.toLocaleDateString('pt-BR') + ' · ' + MS7.brl(P.preco))}
+                      </div>
                     </div>
+                    <Button
+                      variant="brand"
+                      iconLeft="qr-code"
+                      onClick={function () {
+                        setPg(true);
+                      }}
+                    >
+                      {'Renovar · ' + MS7.brl(P.preco)}
+                    </Button>
                   </div>
-                  <Button
-                    variant="brand"
-                    iconLeft="qr-code"
-                    onClick={function () {
-                      setPg(true);
-                    }}
-                  >
-                    {'Renovar · ' + MS7.brl(P.preco)}
-                  </Button>
-                </div>
+                </Card>
               );
             })()}
             <KpiRow
@@ -712,13 +785,31 @@
                 { icon: 'receipt-text', label: 'Cobrança projetada', value: MS7.brl(P.preco), tone: 'orange' },
               ]}
             />
-            <Card
-              dark
-              title="Plano atual"
-              action={
+            <Card dark reveal padding={28}>
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px 32px', flexWrap: 'wrap' }}>
+                <div style={{ flex: '1 1 220px', minWidth: 0 }}>
+                  <span className="ms7-eyebrow" style={{ color: 'inherit', opacity: 0.65 }}>
+                    Plano atual
+                  </span>
+                  <div style={{ fontSize: 32, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: 8, color: 'var(--ms7c-inv-acc)' }}>
+                    {P.nome}
+                  </div>
+                  <div style={{ fontSize: 13.5, fontWeight: 500, marginTop: 6, opacity: 0.8 }}>{P.seats + ' seats de operador · renovação mensal'}</div>
+                </div>
+                <div style={{ flex: '1 1 260px', minWidth: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, opacity: 0.8 }}>{'Uso de seats — ' + P.nome}</span>
+                    <span className="ms7-num" style={{ fontSize: 14, fontWeight: 600 }}>
+                      {used + '/' + P.seats}
+                    </span>
+                  </div>
+                  <div className="ms7c-bar-inv">
+                    <i style={{ width: Math.min(100, (used / P.seats) * 100) + '%' }} />
+                  </div>
+                </div>
                 <Button
-                  variant="lime"
-                  size="sm"
+                  variant="outline"
+                  className="ms7c-inv-btn"
                   iconLeft="arrow-up-down"
                   onClick={function () {
                     setChg(true);
@@ -726,56 +817,26 @@
                 >
                   Mudar de plano
                 </Button>
-              }
-            >
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: 24, flexWrap: 'wrap' }}>
-                <div>
-                  <div style={{ fontSize: 40, fontWeight: 800, color: 'var(--ms7-lime-500)', lineHeight: 1 }}>{P.nome}</div>
-                  <div style={{ fontSize: 14, fontWeight: 500, marginTop: 6 }}>{P.seats + ' seats de operador · renovação mensal'}</div>
-                </div>
-                <div style={{ flex: '1 1 260px' }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 13, fontWeight: 600, marginBottom: 6 }}>
-                    <span>{'Uso de seats — ' + P.nome}</span>
-                    <span>{used + '/' + P.seats}</span>
-                  </div>
-                  <div style={{ height: 10, borderRadius: 5, background: 'rgba(255,255,255,.15)' }}>
-                    <div
-                      style={{
-                        width: Math.min(100, (used / P.seats) * 100) + '%',
-                        height: '100%',
-                        borderRadius: 5,
-                        background: 'var(--ms7-lime-500)',
-                      }}
-                    ></div>
-                  </div>
-                </div>
               </div>
             </Card>
-            <Card title="Pague seu plano via PIX">
-              <div style={{ display: 'flex', gap: 20, alignItems: 'center', flexWrap: 'wrap' }}>
+            <Card title="Pague seu plano via PIX" subtitle={nb('Copia e cola ou QR Code, com confirmação automática')} reveal>
+              <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
                 <span
-                  style={{
-                    width: 56,
-                    height: 56,
-                    borderRadius: 14,
-                    background: 'var(--ms7-green-900, #005D3B)',
-                    color: '#fff',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    flexShrink: 0,
-                  }}
+                  className="ms7c-tile is-lg"
+                  style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}
                 >
-                  <DS.Icon name="qr-code" size={28} />
+                  <DS.Icon name="qr-code" size={22} strokeWidth={2} />
                 </span>
-                <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4, minWidth: 220 }}>
-                  <b style={{ fontSize: 16 }}>{'Plano ' + P.nome + ' · ' + MS7.brl(P.preco) + ' por 30 dias'}</b>
-                  <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
-                    Gere o PIX, pague com o copia e cola ou o QR Code. A confirmação é automática e os 30 dias somam no vencimento.
+                <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
+                  <span className="ms7c-t" style={{ fontSize: 15 }}>
+                    {'Plano ' + P.nome + ' · ' + MS7.brl(P.preco) + ' por 30 dias'}
+                  </span>
+                  <span className="ms7c-s ms7-balance" style={{ display: 'block', maxWidth: 560 }}>
+                    {nb('Gere o PIX, pague com o copia e cola ou o QR Code. A' + NBSP + 'confirmação é automática e os 30 dias somam no vencimento.')}
                   </span>
                 </div>
                 <Button
-                  variant="brand"
+                  variant="outline"
                   iconLeft="qr-code"
                   onClick={function () {
                     setPg(true);
@@ -836,8 +897,10 @@
             />
             <Card
               title="Assinaturas"
+              subtitle={tenants.length + (tenants.length === 1 ? ' tenant' : ' tenants')}
+              reveal
               action={
-                <div style={{ display: 'flex', gap: 10 }}>
+                <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                   <DS.Select
                     variant="pill"
                     value={q}
@@ -848,6 +911,7 @@
                   />
                   <Button
                     size="sm"
+                    variant="brand"
                     iconLeft="plus"
                     onClick={function () {
                       toast('Tenant criado');
@@ -858,46 +922,72 @@
                 </div>
               }
             >
-              <DataTable
-                rows={tenants}
-                columns={[
-                  {
-                    key: 'tenant',
-                    label: 'Tenant',
-                    render: function (r) {
-                      return (
-                        <div>
-                          <b>{r.tenant}</b>
-                          <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{r.owner}</div>
-                        </div>
-                      );
+              {tenants.length ? (
+                <DataTable
+                  style={{ margin: '0 -14px -10px' }}
+                  rows={tenants}
+                  columns={[
+                    {
+                      key: 'tenant',
+                      label: 'Tenant',
+                      render: function (r) {
+                        return (
+                          <div>
+                            <div className="ms7c-t">{r.tenant}</div>
+                            <div className="ms7c-c">{r.owner}</div>
+                          </div>
+                        );
+                      },
                     },
-                  },
-                  {
-                    key: 'status',
-                    label: 'Status',
-                    render: function (r) {
-                      return (
-                        <Badge size="sm" tone={MS7.statusTone[r.status]}>
-                          {r.status}
-                        </Badge>
-                      );
+                    {
+                      key: 'status',
+                      label: 'Status',
+                      render: function (r) {
+                        return (
+                          <Badge size="sm" variant="soft" tone={MS7.statusTone[r.status]}>
+                            {r.status}
+                          </Badge>
+                        );
+                      },
                     },
-                  },
-                  { key: 'plano', label: 'Plano' },
-                  { key: 'uso', label: 'Uso', align: 'right' },
-                  { key: 'cobranca', label: 'Cobrança', align: 'right' },
-                  { key: 'proximo', label: 'Próx. cobrança', align: 'right' },
-                  {
-                    key: 'a',
-                    label: '',
-                    align: 'right',
-                    render: function (r) {
-                      return <DS.IconButton icon="ellipsis" size={30} iconSize={16} />;
+                    { key: 'plano', label: 'Plano' },
+                    {
+                      key: 'uso',
+                      label: 'Uso',
+                      align: 'right',
+                      render: function (r) {
+                        return <span className="ms7-num">{r.uso}</span>;
+                      },
                     },
-                  },
-                ]}
-              />
+                    {
+                      key: 'cobranca',
+                      label: 'Cobrança',
+                      align: 'right',
+                      render: function (r) {
+                        return <span className="ms7-num">{r.cobranca}</span>;
+                      },
+                    },
+                    {
+                      key: 'proximo',
+                      label: 'Próx. cobrança',
+                      align: 'right',
+                      render: function (r) {
+                        return <span className="ms7-num">{r.proximo}</span>;
+                      },
+                    },
+                    {
+                      key: 'a',
+                      label: '',
+                      align: 'right',
+                      render: function (r) {
+                        return <DS.IconButton className="ms7c-act" icon="ellipsis" size={32} iconSize={16} label="Mais ações" />;
+                      },
+                    },
+                  ]}
+                />
+              ) : (
+                <Empty art="Search" compact title="Nenhuma assinatura com esse status" sub={<Sub>Troque o filtro para ver as outras assinaturas.</Sub>} />
+              )}
             </Card>
           </React.Fragment>
         )}
@@ -908,37 +998,47 @@
           }}
           title="Mudar de plano"
         >
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <div className="ms7-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {MS7.planos.map(function (p) {
               const on = p.id === plan;
               return (
                 <div
                   key={p.id}
+                  className={'ms7-card ms7-hover-card ms7c-plan' + (on ? ' is-on' : '')}
                   onClick={function () {
                     setPlan(p.id);
                     setChg(false);
                     toast('Plano alterado para ' + p.nome);
                   }}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: 12,
-                    padding: 14,
-                    borderRadius: 12,
-                    cursor: 'pointer',
-                    border: on ? '2px solid var(--ms7-green-900)' : '1px solid var(--border-default)',
-                  }}
                 >
-                  <div style={{ flex: 1 }}>
-                    <b style={{ fontSize: 16 }}>{p.nome}</b>
-                    <div style={{ fontSize: 13, color: 'var(--text-secondary)', fontWeight: 500 }}>{p.seats + ' seats'}</div>
+                  <span
+                    className="ms7c-tile"
+                    style={{
+                      background: on ? 'var(--ms7-lime-500)' : 'var(--surface-muted)',
+                      color: on ? 'var(--text-on-lime)' : 'var(--text-secondary)',
+                    }}
+                  >
+                    <DS.Icon name={on ? 'check' : 'layers'} size={16} strokeWidth={2.2} />
+                  </span>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                      <span style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.01em' }}>{p.nome}</span>
+                      {on ? (
+                        <Badge size="sm" variant="soft" tone="green">
+                          Atual
+                        </Badge>
+                      ) : null}
+                    </div>
+                    <div className="ms7c-c" style={{ marginTop: 2 }}>
+                      {p.seats + ' seats'}
+                    </div>
                   </div>
-                  <b>{MS7.brl(p.preco) + '/mês'}</b>
-                  {on ? (
-                    <Badge size="sm" tone="green">
-                      Atual
-                    </Badge>
-                  ) : null}
+                  <div style={{ textAlign: 'right' }}>
+                    <span className="ms7-num" style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1 }}>
+                      {MS7.brl(p.preco)}
+                    </span>
+                    <div className="ms7c-c">por mês</div>
+                  </div>
                 </div>
               );
             })}
@@ -995,47 +1095,26 @@
       default: ['yellow', 'Não ativadas'],
       unsupported: ['gray', 'Não suportado'],
     }[perm];
-    function step(n, title, body, right) {
+    function step(n, title, body, right, done) {
       return (
-        <div
-          style={{
-            display: 'flex',
-            gap: 14,
-            alignItems: 'flex-start',
-            padding: '14px 0',
-            borderTop: n > 1 ? '1px solid var(--border-subtle)' : 'none',
-          }}
-        >
-          <span
-            style={{
-              width: 28,
-              height: 28,
-              borderRadius: 8,
-              background: 'var(--ms7-lime-500)',
-              color: 'var(--ms7-green-ink, #005D3B)',
-              fontWeight: 800,
-              fontSize: 13,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              flexShrink: 0,
-            }}
-          >
-            {n}
-          </span>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <b style={{ fontSize: 15 }}>{title}</b>
-            <div style={{ fontSize: 13, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 3, lineHeight: 1.45 }}>{body}</div>
+        <div className="ms7c-step" style={{ borderTop: n > 1 ? '1px solid var(--border-subtle)' : 'none' }}>
+          <span className={'ms7c-stepn' + (done ? ' is-done' : '')}>{done ? <DS.Icon name="check" size={13} strokeWidth={3} /> : n}</span>
+          <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+            <div className="ms7c-t">{title}</div>
+            <div className="ms7c-s" style={{ marginTop: 3 }}>
+              {typeof body === 'string' ? nb(body) : body}
+            </div>
           </div>
-          {right}
+          <div className="ms7c-step-r">{right}</div>
         </div>
       );
     }
     return (
-      <Card title="Instalar como app e receber notificações">
+      <Card title="Instalar como app e receber notificações" subtitle={nb('Quatro passos, uma vez só por aparelho')} reveal>
         <Hint>
-          Instale o painel no celular ou no computador. Ele abre como um app e mostra as notificações do sistema: início de meta, conta bloqueada e
-          ciclo fechado com lucro ou prejuízo.
+          {nb(
+            'Instale o painel no celular ou no computador. Ele abre como um app e mostra as notificações do sistema: início de meta, conta bloqueada e ciclo fechado com lucro ou prejuízo.',
+          )}
         </Hint>
         {step(
           1,
@@ -1046,7 +1125,7 @@
               ? 'No iPhone: abra no Safari, toque em Compartilhar e depois em "Adicionar à Tela de Início". Depois abra pelo ícone MS7.'
               : 'No Chrome/Edge: clique no botão ao lado ou no ícone de instalar na barra de endereço. No Android: menu ⋮ → "Instalar app".',
           standalone ? (
-            <Badge tone="green" size="sm">
+            <Badge tone="green" variant="soft" size="sm">
               Instalado
             </Badge>
           ) : (
@@ -1064,6 +1143,7 @@
               Instalar
             </Button>
           ),
+          !!standalone,
         )}
         {step(
           2,
@@ -1071,8 +1151,8 @@
           perm === 'denied'
             ? 'As notificações foram bloqueadas. Libere nas configurações do site (ícone de cadeado na barra de endereço).'
             : 'O celular vai pedir permissão. Toque em "Permitir".',
-          <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-            <Badge tone={permBadge[0]} size="sm">
+          <React.Fragment>
+            <Badge tone={permBadge[0]} variant="soft" size="sm">
               {permBadge[1]}
             </Badge>
             {perm === 'default' ? (
@@ -1089,17 +1169,19 @@
                 Ativar
               </Button>
             ) : null}
-          </div>,
+          </React.Fragment>,
+          perm === 'granted',
         )}
         {step(
           3,
           'Conectar ao servidor',
           'Endereço onde o novo dashboard está publicado (https). Todos os celulares conectados recebem o que os operadores fazem, mesmo com o app fechado.',
-          <Badge tone={remote ? 'green' : 'gray'} size="sm">
+          <Badge tone={remote ? 'green' : 'gray'} variant="soft" size="sm">
             {remote ? 'Conectado' : 'Desconectado'}
           </Badge>,
+          !!remote,
         )}
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, alignItems: 'end', padding: '0 0 14px 42px' }}>
+        <div className="ms7c-srv" style={{ display: 'grid', gridTemplateColumns: 'minmax(0,1fr) auto', gap: 12, alignItems: 'end', padding: '0 0 16px 42px' }}>
           <DS.Input
             label="Servidor"
             icon="server"
@@ -1116,9 +1198,7 @@
         {step(
           4,
           'Testar',
-          remote
-            ? 'Envia uma notificação de ciclo fechado para todos os celulares conectados.'
-            : 'Envia uma notificação de ciclo fechado para este aparelho.',
+          remote ? 'Envia uma notificação de ciclo fechado para todos os celulares conectados.' : 'Envia uma notificação de ciclo fechado para este aparelho.',
           <Button
             size="sm"
             variant="outline"
@@ -1134,19 +1214,37 @@
             Enviar teste
           </Button>,
         )}
-        <div style={{ marginTop: 6, paddingTop: 14, borderTop: '1px solid var(--border-subtle)' }}>
+        <div
+          style={{
+            marginTop: 4,
+            padding: '16px 0 0',
+            borderTop: '1px solid var(--border-subtle)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 14,
+            flexWrap: 'wrap',
+          }}
+        >
+          <span
+            className="ms7c-tile"
+            style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}
+          >
+            <DS.Icon name="monitor-smartphone" size={17} strokeWidth={2} />
+          </span>
+          <div style={{ flex: '1 1 220px', minWidth: 0 }}>
+            <div className="ms7c-t">Mostrar notificações neste aparelho</div>
+            <div className="ms7c-c" style={{ marginTop: 2 }}>
+              {nb('Sem servidor conectado, só este aparelho mostra as notificações. O servidor fica em ui_kits/operacoes/server (veja o README).')}
+            </div>
+          </div>
           <Switch
             checked={dev}
             onChange={function (v) {
               setDev(v);
               setPref('__device', v);
             }}
-            label="Mostrar notificações neste aparelho"
           />
         </div>
-        <p style={{ margin: '14px 0 0', fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
-          Sem servidor conectado, só este aparelho mostra as notificações. O servidor fica em ui_kits/operacoes/server (veja o README).
-        </p>
       </Card>
     );
   }
@@ -1176,11 +1274,17 @@
           setBusy(false);
         });
     }
+    const dbIcon = (
+      <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}>
+        <DS.Icon name="database" size={17} strokeWidth={2} />
+      </span>
+    );
     return (
       <Card
         title="Banco de dados central"
+        icon={dbIcon}
         action={
-          <Badge tone={B[0]} size="sm">
+          <Badge tone={B[0]} variant="soft" size="sm">
             {B[1]}
           </Badge>
         }
@@ -1193,9 +1297,7 @@
                 ' em ' +
                 S.base() +
                 '. ' +
-                (session.role === 'operador'
-                  ? 'Você vê e edita só as suas cooperações.'
-                  : 'Tudo o que os operadores preenchem aparece aqui na hora.')}
+                (session.role === 'operador' ? 'Você vê e edita só as suas cooperações.' : 'Tudo o que os operadores preenchem aparece aqui na hora.')}
             </Hint>
             <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
               <Button
@@ -1221,8 +1323,9 @@
                 </Button>
               ) : null}
               <Button
-                variant="secondary"
+                variant="ghost"
                 iconLeft="log-out"
+                style={{ marginLeft: 'auto' }}
                 onClick={function () {
                   S.logout();
                 }}
@@ -1232,7 +1335,9 @@
             </div>
           </React.Fragment>
         ) : (
-          <Hint>Você está no modo demonstração. Para usar o banco central, saia e entre com email e senha na tela de login.</Hint>
+          <p className="ms7-balance" style={{ margin: 0, fontSize: 13.5, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.5, maxWidth: 760 }}>
+            {nb('Você está no modo demonstração. Para usar o banco central, saia e entre com email e senha na tela de login.')}
+          </p>
         )}
       </Card>
     );
@@ -1260,7 +1365,11 @@
     if (!session.real)
       return (
         <Card title="Acessos">
-          <Hint>Entre com email e senha num servidor para criar logins dos operadores. No modo demonstração os acessos não são reais.</Hint>
+          <Empty
+            art="Keys"
+            title="Modo demonstração"
+            sub={<Sub>Entre com email e senha num servidor para criar logins dos operadores. No modo demonstração os acessos não são reais.</Sub>}
+          />
         </Card>
       );
     const ops = db.operadores;
@@ -1328,9 +1437,11 @@
           setBusy(false);
         });
     }
+    const ROLE_COLOR = { 'shield-check': 'var(--ms7-green-900)', user: 'var(--ms7-blue)', briefcase: 'var(--ms7-purple)' };
     return (
       <Card
         title="Acessos"
+        subtitle={list ? list.length + (list.length === 1 ? ' acesso' : ' acessos') : undefined}
         action={
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             {!isCliS ? (
@@ -1341,6 +1452,7 @@
             {isCliS ? null : (
               <Button
                 size="sm"
+                variant="brand"
                 iconLeft="user-plus"
                 onClick={function () {
                   setEdit({ email: '', name: '', role: 'cliente', opId: '', password: '', ativo: true });
@@ -1353,21 +1465,18 @@
         }
       >
         <Hint>
-          Cada pessoa entra com o próprio email e senha. Operadores agora são criados só em Gestão → Operadores (nome, email e senha num lugar só);
-          aqui você vê e bloqueia os acessos.
+          {nb(
+            'Cada pessoa entra com o próprio email e senha. Operadores agora são criados só em Gestão → Operadores (nome, email e senha num lugar só); aqui você vê e bloqueia os acessos.',
+          )}
         </Hint>
         {isCliS && window.VagasCard ? (
           <div style={{ marginBottom: 16 }}>
             <VagasCard />
           </div>
         ) : null}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: 12, marginBottom: 18 }}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 12, marginBottom: 22 }}>
           {[
-            [
-              'shield-check',
-              'Admin / Super Admin',
-              'Vê e altera tudo: todas as cooperações, operadores, custos, pagamentos, configurações e acessos.',
-            ],
+            ['shield-check', 'Admin / Super Admin', 'Vê e altera tudo: todas as cooperações, operadores, custos, pagamentos, configurações e acessos.'],
             [
               'user',
               'Operador',
@@ -1379,7 +1488,7 @@
                 ? []
                 : [
                     [
-                      'store',
+                      'briefcase',
                       'Cliente',
                       'Comprou o painel. Tem um painel próprio com dados separados dos seus: dashboard, cooperações, análises, financeiro, listas, avisos e o cadastro de operadores, plataformas e chaves PIX. Não vê ponto, alunos, assinatura nem proxies.',
                     ],
@@ -1389,23 +1498,43 @@
               return !isCliS || r[1] === 'Operador';
             })
             .map(function (r) {
+              const col = ROLE_COLOR[r[0]] || 'var(--ms7-green-900)';
               return (
-                <div key={r[1]} style={{ display: 'flex', gap: 10, padding: 14, borderRadius: 12, background: 'var(--ms7-gray-50)' }}>
-                  <DS.Icon name={r[0]} size={18} />
+                <div
+                  key={r[1]}
+                  style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 16, borderRadius: 12, background: 'var(--surface-muted)' }}
+                >
+                  <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, ' + col + ' 12%, var(--surface-card))', color: col }}>
+                    <DS.Icon name={r[0]} size={17} strokeWidth={2} />
+                  </span>
                   <div>
-                    <b style={{ fontSize: 14 }}>{r[1]}</b>
-                    <div style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.45, marginTop: 2 }}>{r[2]}</div>
+                    <div className="ms7c-t">{r[1]}</div>
+                    <div className="ms7c-s" style={{ marginTop: 3 }}>
+                      {nb(r[2])}
+                    </div>
                   </div>
                 </div>
               );
             })}
         </div>
         {err ? (
-          <Hint>{err}</Hint>
+          <Empty art="Keys" compact title="Não deu para carregar os acessos" sub={err} />
         ) : !list ? (
-          <Hint>Carregando…</Hint>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+            {[0, 1, 2].map(function (i) {
+              return <div key={i} className="ms7-skeleton" style={{ height: 48 }} />;
+            })}
+          </div>
+        ) : !list.length ? (
+          <Empty
+            art="Keys"
+            compact
+            title="Nenhum acesso criado"
+            sub={<Sub>Crie o primeiro acesso para que cada pessoa entre com o próprio email e senha.</Sub>}
+          />
         ) : (
           <DataTable
+            style={{ margin: '0 -14px -10px' }}
             rows={list}
             columns={[
               {
@@ -1413,19 +1542,22 @@
                 label: 'Nome',
                 render: function (r) {
                   return (
-                    <div>
-                      <b>{r.name}</b>
-                      <div style={{ fontSize: 12, color: 'var(--text-secondary)' }}>{r.email}</div>
-                      {!isCliS && r.tenant && r.tenant !== 'main' && r.role !== 'cliente' ? (
-                        <div style={{ fontSize: 11, fontWeight: 700, color: 'var(--ms7-purple)' }}>
-                          {'Painel de ' +
-                            ((
-                              list.find(function (x) {
-                                return x.id === r.tenant;
-                              }) || {}
-                            ).name || 'cliente')}
-                        </div>
-                      ) : null}
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                      <DS.Avatar name={r.name} size={32} />
+                      <div style={{ minWidth: 0 }}>
+                        <div className="ms7c-t">{r.name}</div>
+                        <div className="ms7c-c">{r.email}</div>
+                        {!isCliS && r.tenant && r.tenant !== 'main' && r.role !== 'cliente' ? (
+                          <div style={{ fontSize: 11.5, fontWeight: 600, color: 'var(--ms7-purple)', marginTop: 2 }}>
+                            {'Painel de ' +
+                              ((
+                                list.find(function (x) {
+                                  return x.id === r.tenant;
+                                }) || {}
+                              ).name || 'cliente')}
+                          </div>
+                        ) : null}
+                      </div>
                     </div>
                   );
                 },
@@ -1460,13 +1592,13 @@
                     : 0;
                   return (
                     <div>
-                      <b style={{ color: o ? 'inherit' : 'var(--ms7-error)' }}>{o ? o.nome : 'Operador não encontrado'}</b>
-                      <div style={{ fontSize: 12, fontWeight: 600, color: o && n ? 'var(--text-secondary)' : 'var(--ms7-error)' }}>
+                      <div className="ms7c-t" style={{ color: o ? 'inherit' : 'var(--ms7-error)' }}>
+                        {o ? o.nome : 'Operador não encontrado'}
+                      </div>
+                      <div style={{ fontSize: 12.5, fontWeight: 500, color: o && n ? 'var(--text-secondary)' : 'var(--ms7-error)' }}>
                         {!o
                           ? 'Clique no lápis e escolha o operador de novo'
-                          : n +
-                            (n === 1 ? ' cooperação ligada' : ' cooperações ligadas') +
-                            (homon > 1 ? ' · há ' + homon + ' operadores com esse nome' : '')}
+                          : n + (n === 1 ? ' cooperação ligada' : ' cooperações ligadas') + (homon > 1 ? ' · há ' + homon + ' operadores com esse nome' : '')}
                       </div>
                     </div>
                   );
@@ -1490,11 +1622,12 @@
                 align: 'right',
                 render: function (r) {
                   return (
-                    <div style={{ display: 'inline-flex', gap: 2 }}>
+                    <div className="ms7c-act" style={{ display: 'inline-flex', gap: 2 }}>
                       <IconButton
                         icon="pencil"
-                        size={30}
+                        size={32}
                         iconSize={16}
+                        label="Editar"
                         onClick={function () {
                           setEdit(Object.assign({}, r, { password: '' }));
                         }}
@@ -1502,8 +1635,9 @@
                       {r.email !== (S.user() || {}).email ? (
                         <IconButton
                           icon="trash-2"
-                          size={30}
+                          size={32}
                           iconSize={16}
+                          label="Remover"
                           onClick={function () {
                             del(r);
                           }}
@@ -1525,14 +1659,14 @@
           footer={
             <React.Fragment>
               <Button
-                variant="secondary"
+                variant="outline"
                 onClick={function () {
                   setEdit(null);
                 }}
               >
                 Cancelar
               </Button>
-              <Button variant="brand" disabled={busy} onClick={save}>
+              <Button variant="brand" iconLeft="check" disabled={busy} onClick={save}>
                 Salvar
               </Button>
             </React.Fragment>
@@ -1540,9 +1674,10 @@
         >
           {edit ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(200px,1fr))', gap: 14 }}>
                 <Input
                   label="Nome"
+                  icon="user"
                   value={edit.name}
                   onChange={function (e) {
                     setEdit(Object.assign({}, edit, { name: e.target.value }));
@@ -1551,6 +1686,7 @@
                 <Input
                   label="Email (login)"
                   required
+                  icon="mail"
                   value={edit.email}
                   onChange={function (e) {
                     setEdit(Object.assign({}, edit, { email: e.target.value }));
@@ -1614,6 +1750,8 @@
           title="Acessos de teste criados"
           footer={
             <Button
+              variant="brand"
+              iconLeft="check"
               onClick={function () {
                 setTe(null);
               }}
@@ -1626,51 +1764,70 @@
             <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
               <Hint>Anote as senhas: elas só aparecem agora. Criar de novo gera senhas novas.</Hint>
               {[
-                ['Cliente (comprou o painel)', te.cliente],
-                ['Operador desse cliente', te.operador],
+                ['Cliente (comprou o painel)', te.cliente, 'briefcase', 'var(--ms7-purple)'],
+                ['Operador desse cliente', te.operador, 'user', 'var(--ms7-blue)'],
               ].map(function (x) {
                 return (
                   <div
                     key={x[0]}
                     style={{
-                      padding: 14,
+                      padding: 16,
                       borderRadius: 12,
-                      border: '1px solid var(--border-default)',
+                      boxShadow: 'var(--shadow-card)',
                       display: 'flex',
                       flexDirection: 'column',
-                      gap: 6,
+                      gap: 8,
                     }}
                   >
-                    <b style={{ fontSize: 14 }}>{x[0]}</b>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 2 }}>
+                      <span
+                        className="ms7c-tile"
+                        style={{
+                          width: 30,
+                          height: 30,
+                          borderRadius: 9,
+                          background: 'color-mix(in oklab, ' + x[3] + ' 12%, var(--surface-card))',
+                          color: x[3],
+                        }}
+                      >
+                        <DS.Icon name={x[2]} size={15} strokeWidth={2} />
+                      </span>
+                      <span className="ms7c-t">{x[0]}</span>
+                    </div>
                     {[
                       ['Email', x[1].email],
                       ['Senha', x[1].password],
                     ].map(function (f) {
                       return (
-                        <div key={f[0]} style={{ display: 'flex', alignItems: 'center', gap: 8, fontSize: 13 }}>
-                          <span style={{ width: 48, fontWeight: 600, color: 'var(--text-secondary)' }}>{f[0]}</span>
-                          <span style={{ flex: 1, fontFamily: 'ui-monospace,monospace', fontWeight: 600 }}>{f[1]}</span>
-                          <IconButton
-                            icon="copy"
-                            size={28}
-                            iconSize={14}
-                            label={'Copiar ' + f[0].toLowerCase()}
-                            onClick={function () {
-                              try {
-                                navigator.clipboard.writeText(f[1]);
-                              } catch (e) {}
-                              toast(f[0] + ' copiado');
-                            }}
-                          />
+                        <div key={f[0]} style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+                          <span className="ms7-eyebrow" style={{ width: 48 }}>
+                            {f[0]}
+                          </span>
+                          <div className="ms7c-mono" style={{ flex: 1 }}>
+                            <span>{f[1]}</span>
+                            <IconButton
+                              icon="copy"
+                              size={28}
+                              iconSize={14}
+                              label={'Copiar ' + f[0].toLowerCase()}
+                              onClick={function () {
+                                try {
+                                  navigator.clipboard.writeText(f[1]);
+                                } catch (e) {}
+                                toast(f[0] + ' copiado');
+                              }}
+                            />
+                          </div>
                         </div>
                       );
                     })}
                   </div>
                 );
               })}
-              <p style={{ margin: 0, fontSize: 13, fontWeight: 500, lineHeight: 1.5 }}>
-                O painel do cliente já vem com 1 operador, 3 plataformas (A e B no "Grupo Teste", C sem grupo), 1 rede e 6 chaves PIX. Os dados dele
-                ficam separados dos seus.
+              <p style={{ margin: 0, fontSize: 13, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+                {nb(
+                  'O painel do cliente já vem com 1 operador, 3 plataformas (A e B no "Grupo Teste", C sem grupo), 1 rede e 6 chaves PIX. Os dados dele ficam separados dos seus.',
+                )}
               </p>
             </div>
           ) : null}
@@ -1684,11 +1841,12 @@
     const [n, setN] = React.useState('');
     if (!session || !session.real) return null;
     return (
-      <Card title="Alterar senha">
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14, alignItems: 'end' }}>
+      <Card title="Alterar senha" subtitle={nb('Use pelo menos 8 caracteres')}>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14, alignItems: 'start' }}>
           <Input
             label="Senha atual"
             type="password"
+            icon="lock"
             value={c}
             onChange={function (e) {
               setC(e.target.value);
@@ -1697,6 +1855,7 @@
           <Input
             label="Nova senha"
             type="password"
+            icon="lock-keyhole"
             value={n}
             onChange={function (e) {
               setN(e.target.value);
@@ -1704,7 +1863,9 @@
             hint="Mínimo de 8 caracteres"
           />
           <Button
-            variant="brand"
+            variant="outline"
+            iconLeft="key-round"
+            style={{ marginTop: 25 }}
             disabled={!c || n.length < 8}
             onClick={function () {
               DB.Sync.api('/api/auth/password', { method: 'POST', body: JSON.stringify({ current: c, next: n }) })
@@ -1733,12 +1894,20 @@
     return (
       <Card title="Dados de exemplo">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <p style={{ margin: 0, flex: '1 1 280px', fontSize: 14, fontWeight: 500, lineHeight: 1.5 }}>
-            {'O painel ainda tem os dados de exemplo que vêm com o sistema (' +
-              c.coops +
-              ' cooperações e ' +
-              c.ops +
-              ' operadores de exemplo). Apague para ficar só com os seus. O que você criou não é apagado.'}
+          <span
+            className="ms7c-tile is-lg"
+            style={{ background: 'color-mix(in oklab, var(--ms7-orange) 12%, var(--surface-card))', color: 'var(--ms7-orange)' }}
+          >
+            <DS.Icon name="flask-conical" size={20} strokeWidth={2} />
+          </span>
+          <p className="ms7c-s" style={{ margin: 0, flex: '1 1 280px', maxWidth: 640 }}>
+            {nb(
+              'O painel ainda tem os dados de exemplo que vêm com o sistema (' +
+                c.coops +
+                ' cooperações e ' +
+                c.ops +
+                ' operadores de exemplo). Apague para ficar só com os seus. O que você criou não é apagado.',
+            )}
           </p>
           <Button
             variant="danger"
@@ -1788,59 +1957,88 @@
       ? tab
       : TABV[0].id;
     const cores = ['#005D3B', '#242424', '#2D77C1', '#9B31C8', '#FF7F08'];
+    const TAB_ICON = { marca: 'palette', acessos: 'key-round', app: 'bell', telegram: 'send', conta: 'user' };
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 20, maxWidth: 1000 }}>
-        <Tabs value={tabV} onChange={setTab} items={TABV} style={{ maxWidth: isOp ? 340 : 680 }} />
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 24, maxWidth: 1000 }}>
+        <div className="ms7c-tabwrap">
+          <Tabs
+            value={tabV}
+            onChange={setTab}
+            items={TABV.map(function (t) {
+              return { id: t.id, label: t.label, icon: TAB_ICON[t.id] };
+            })}
+            style={{ maxWidth: isOp ? 380 : 760 }}
+          />
+        </div>
         {tabV === 'acessos' ? <AcessosCard session={session} /> : null}
         {tabV === 'marca' ? (
-          <Card title="Identidade do painel">
-            <Hint>Cores, nome e logo usados em todas as áreas do sistema.</Hint>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 16 }}>
-              <Input label="Nome do painel" defaultValue="MS7 Dashboards" />
-
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
-                <span style={{ fontSize: 13, fontWeight: 600 }}>Cor principal</span>
-                <div style={{ display: 'flex', gap: 8 }}>
+          <Card title="Identidade do painel" subtitle={nb('Cores, nome e logo usados em todas as áreas do sistema')}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: '18px 24px', alignItems: 'start' }}>
+              <Input label="Nome do painel" icon="type" defaultValue="MS7 Dashboards" />
+              <div className="ms7-field">
+                <span className="ms7-label">Cor principal</span>
+                <div style={{ display: 'flex', gap: 10, alignItems: 'center', minHeight: 42 }}>
                   {cores.map(function (c) {
+                    const on = cor === c;
                     return (
-                      <span
+                      <button
+                        type="button"
                         key={c}
+                        className="ms7c-swatch"
+                        aria-label={'Cor ' + c}
+                        aria-pressed={on}
                         onClick={function () {
                           setCor(c);
                         }}
                         style={{
-                          width: 34,
-                          height: 34,
-                          borderRadius: 10,
                           background: c,
-                          cursor: 'pointer',
-                          outline: cor === c ? '2px solid var(--ms7-black)' : 'none',
-                          outlineOffset: 2,
+                          boxShadow: on
+                            ? '0 0 0 2px var(--surface-card), 0 0 0 4px ' + c
+                            : '0 0 0 1px color-mix(in oklab, var(--text-primary) 10%, transparent)',
                         }}
-                      ></span>
+                      />
                     );
                   })}
                 </div>
               </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 18 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 16,
+                marginTop: 22,
+                paddingTop: 20,
+                borderTop: '1px solid var(--border-subtle)',
+                flexWrap: 'wrap',
+              }}
+            >
               <div
                 style={{
-                  width: 72,
-                  height: 72,
+                  width: 64,
+                  height: 64,
                   borderRadius: 14,
                   background: cor,
                   color: '#fff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  fontWeight: 800,
-                  fontSize: 22,
+                  fontWeight: 600,
+                  fontSize: 20,
+                  letterSpacing: '-0.02em',
+                  flexShrink: 0,
+                  transition: 'background var(--dur-base)',
                 }}
               >
                 MS7
               </div>
-              <Button size="sm" variant="secondary" iconLeft="upload">
+              <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+                <div className="ms7c-t">Logo</div>
+                <div className="ms7c-c" style={{ marginTop: 2 }}>
+                  Prévia com a cor principal escolhida
+                </div>
+              </div>
+              <Button variant="outline" iconLeft="upload">
                 Enviar logo
               </Button>
             </div>
@@ -1853,25 +2051,36 @@
           </React.Fragment>
         ) : null}
         {tabV === 'telegram' ? (
-          <Card title="Telegram">
-            <Hint>Receba no Telegram as contas importadas e os demais avisos do painel.</Hint>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-              <Input label="Token do bot" type="password" defaultValue="7382910:AAH-exemplo" />
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: '14px 32px' }}>
-                {Object.keys(NTYPES).map(function (t) {
-                  return (
-                    <Switch
-                      key={t}
-                      defaultChecked={getPrefs()[t]}
-                      onChange={function (v) {
-                        setPref(t, v);
-                      }}
-                      label={NTYPES[t].label}
-                    />
-                  );
-                })}
+          <Card
+            title="Telegram"
+            subtitle={nb('Receba no Telegram as contas importadas e os demais avisos do painel')}
+            icon={
+              <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, var(--ms7-blue) 12%, var(--surface-card))', color: 'var(--ms7-blue)' }}>
+                <DS.Icon name="send" size={17} strokeWidth={2} />
+              </span>
+            }
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+              <Input label="Token do bot" type="password" icon="bot" defaultValue="7382910:AAH-exemplo" />
+              <div className="ms7-field">
+                <span className="ms7-label">O que enviar</span>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,260px),1fr))', gap: 10 }}>
+                  {Object.keys(NTYPES).map(function (t) {
+                    return (
+                      <div key={t} className="ms7c-sw">
+                        <Switch
+                          defaultChecked={getPrefs()[t]}
+                          onChange={function (v) {
+                            setPref(t, v);
+                          }}
+                          label={NTYPES[t].label}
+                        />
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-              <div style={{ display: 'flex', gap: 10 }}>
+              <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                 <Button
                   variant="brand"
                   iconLeft="link"
@@ -1897,26 +2106,44 @@
         {tabV === 'conta' ? <ExemploCard role={role} /> : null}
         {tabV === 'conta' ? <SenhaCard session={session} /> : null}
         {tabV === 'conta' ? (
-          <Card title="Minha conta">
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: 16 }}>
-              <Input label="Nome" defaultValue="Marcelo" />
-              <Input label="E-mail" defaultValue="marcelo@ms7.com" />
-              <Input label="Senha atual" type="password" />
-              <Input label="Nova senha" type="password" hint="Mínimo de 8 caracteres" />
+          <Card title="Minha conta" subtitle={nb('Nome, email e aparência do painel')}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,320px),1fr))', gap: '16px 20px', alignItems: 'start' }}>
+              <Input label="Nome" icon="user" defaultValue="Marcelo" />
+              <Input label="E-mail" icon="mail" defaultValue="marcelo@ms7.com" />
+              <Input label="Senha atual" type="password" icon="lock" />
+              <Input label="Nova senha" type="password" icon="lock-keyhole" hint="Mínimo de 8 caracteres" />
             </div>
-            <div style={{ marginTop: 18 }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: 14,
+                marginTop: 22,
+                paddingTop: 20,
+                borderTop: '1px solid var(--border-subtle)',
+                flexWrap: 'wrap',
+              }}
+            >
+              <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, var(--ms7-purple) 12%, var(--surface-card))', color: 'var(--ms7-purple)' }}>
+                <DS.Icon name="moon" size={17} strokeWidth={2} />
+              </span>
+              <div style={{ flex: '1 1 200px', minWidth: 0 }}>
+                <div className="ms7c-t">Modo escuro</div>
+                <div className="ms7c-c" style={{ marginTop: 2 }}>
+                  Vale para este aparelho
+                </div>
+              </div>
               <Switch
                 checked={window.ms7Theme === 'dark'}
                 onChange={function (v) {
                   window.ms7SetTheme(v ? 'dark' : 'light');
                 }}
-                label="Modo escuro"
               />
             </div>
           </Card>
         ) : null}
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
-          <Button variant="secondary">Cancelar</Button>
+        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 10, flexWrap: 'wrap' }}>
+          <Button variant="outline">Cancelar</Button>
           <Button
             variant="brand"
             iconLeft="check"

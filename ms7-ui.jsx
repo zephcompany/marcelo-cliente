@@ -484,34 +484,22 @@
     const [foc, setFoc] = React.useState(false);
     const [show, setShow] = React.useState(false);
     const isPw = type === 'password';
-    const common = Object.assign(
-      {
-        placeholder: placeholder,
-        value: value,
-        defaultValue: defaultValue,
-        disabled: disabled,
-        onChange: onChange,
-        className: 'ms7-input',
-        onFocus: function (e) {
-          setFoc(true);
-          if (rest.onFocus) rest.onFocus(e);
-        },
-        onBlur: function (e) {
-          setFoc(false);
-          if (rest.onBlur) rest.onBlur(e);
-        },
+    const common = Object.assign({}, rest, {
+      placeholder: placeholder,
+      value: value,
+      defaultValue: defaultValue,
+      disabled: disabled,
+      onChange: onChange,
+      className: 'ms7-input',
+      onFocus: function (e) {
+        setFoc(true);
+        if (rest.onFocus) rest.onFocus(e);
       },
-      rest,
-      { onFocus: undefined, onBlur: undefined },
-    );
-    common.onFocus = function (e) {
-      setFoc(true);
-      if (rest.onFocus) rest.onFocus(e);
-    };
-    common.onBlur = function (e) {
-      setFoc(false);
-      if (rest.onBlur) rest.onBlur(e);
-    };
+      onBlur: function (e) {
+        setFoc(false);
+        if (rest.onBlur) rest.onBlur(e);
+      },
+    });
     return h(
       FieldShell,
       { label: label, required: required, hint: hint, error: error, className: className },
