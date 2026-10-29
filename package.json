@@ -1,0 +1,15 @@
+{
+  "name": "ms7-painel-novo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "node server/server.cjs"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "web-push": "^3.6.7"
+  }
+}

@@ -1,0 +1,11 @@
+[data-theme="dark"]{
+--ms7-black:#0C0E0C;--ms7-white:#F3F5F2;--ms7-gray-500:#9AA19A;--ms7-gray-300:#3A403A;--ms7-gray-100:#262A26;--ms7-gray-50:#1B1E1B;
+--ms7-lime-100:#DCF5A6;--ms7-green-100:#1F3A2D;
+--text-primary:#EEF1ED;--text-secondary:#9AA19A;--text-brand:#C9F775;
+--surface-page:#111311;--surface-card:#181B18;--surface-muted:#1F231F;--surface-sidebar:#0C0E0C;--surface-inverse:#0C0E0C;
+--border-default:#2F342F;--border-subtle:#252925;--border-focus:#C9F775;
+--chart-2:#3DBE7E;
+--btn-primary-bg:#C9F775;--btn-primary-fg:#0C3B26;--btn-primary-hover:#B6EC5E;
+--shadow-card:0 0 0 1px rgba(255,255,255,0.05);--shadow-raised:0 0 0 1px rgba(255,255,255,0.06),0 8px 24px rgba(0,0,0,0.4);--shadow-pop:0 0 0 1px rgba(255,255,255,0.08),0 16px 40px rgba(0,0,0,0.55);
+color-scheme:dark;
+}

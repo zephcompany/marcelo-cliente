@@ -1,0 +1,14 @@
+:root{
+--ms7-green-900:#005D3B;--ms7-green-800:#0A6E4A;--ms7-green-100:#E3EFE9;--ms7-green-50:#EFF6F2;
+--ms7-lime-500:#C9F775;--ms7-lime-600:#B6EC5E;--ms7-lime-100:#F1FDDC;
+--ms7-black:#242424;--ms7-white:#FEFFFF;--ms7-gray-500:#8F8F8F;--ms7-gray-300:#E0E0E0;--ms7-gray-100:#F2F2F2;--ms7-gray-50:#FAFAFA;
+--ms7-error:#F43927;--ms7-success:#1EDF00;
+--ms7-yellow:#F2C924;--ms7-orange:#FF7F08;--ms7-punch-pink:#FF575F;--ms7-magenta:#D70085;--ms7-purple:#9B31C8;--ms7-violet:#5917FF;--ms7-turquoise:#17E8FF;--ms7-blue:#2D77C1;--ms7-electric-green:#48E101;--ms7-green:#159912;
+--color-primary:var(--ms7-green-900);--color-secondary:var(--ms7-lime-500);
+--text-primary:var(--ms7-black);--text-secondary:var(--ms7-gray-500);--text-inverse:var(--ms7-white);--text-brand:var(--ms7-green-900);--text-on-lime:var(--ms7-green-900);
+--surface-page:var(--ms7-gray-50);--surface-card:#FFFFFF;--surface-muted:var(--ms7-gray-100);--surface-sidebar:var(--ms7-black);--surface-inverse:var(--ms7-black);
+--border-default:var(--ms7-gray-300);--border-subtle:#EDEDED;--border-focus:var(--ms7-green-900);
+--state-error:var(--ms7-error);--state-success:var(--ms7-success);--state-warning:var(--ms7-yellow);--state-info:var(--ms7-blue);
+--chart-1:var(--ms7-lime-500);--chart-2:var(--ms7-green-900);--chart-3:var(--ms7-blue);--chart-4:var(--ms7-yellow);--chart-5:var(--ms7-orange);--chart-6:var(--ms7-green);
+--stat-blue:var(--ms7-blue);--stat-yellow:var(--ms7-yellow);--stat-green:var(--ms7-green);--stat-orange:var(--ms7-orange);
+}

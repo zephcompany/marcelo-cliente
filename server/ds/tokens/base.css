@@ -1,0 +1,3 @@
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--font-sans);font-size:var(--text-body);color:var(--text-primary);background:var(--surface-page);-webkit-font-smoothing:antialiased}
+a{color:var(--text-brand);text-decoration:none}a:hover{color:var(--ms7-green-800);text-decoration:underline}
