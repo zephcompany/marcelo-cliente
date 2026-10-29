@@ -6,6 +6,12 @@ Redesign da camada visual do painel **MS Control** (repo de produção: `PAINEL-
 - Stack intacta: React 18 (UMD) + Babel standalone no navegador, Lucide, `_ds_bundle.js`, `store.js`, `server/server.cjs`. Sem build, sem dependência nova.
 - Nada de lógica foi alterado: `store.js`, `data.js`, `sw.js`, `manifest.webmanifest`, ícones e a pasta `server/` são cópias idênticas às do painel.
 
+## Ver funcionando (sem instalar nada)
+
+- **Prévia navegável (GitHub Pages):** https://zephcompany.github.io/marcelo-cliente/demo.html — entra direto no painel com dados de exemplo (perfil admin). Para ver a tela de login: https://zephcompany.github.io/marcelo-cliente/demo.html?login=1 (qualquer e-mail/senha entra). Nada é enviado a servidor nenhum; os dados ficam só no navegador.
+- **Styleguide (componentes):** https://zephcompany.github.io/marcelo-cliente/styleguide.html
+- **Figma (36 telas desktop + componentes + protótipo clicável):** https://www.figma.com/design/E5NtpoQqfSKD3Bl8cNR6yR/MARCELO-CLIENTE-SASS
+
 ## Estrutura
 
 ```
@@ -19,6 +25,8 @@ Screens*.jsx          ← telas, com a mesma lógica e o visual novo
 store.js, data.js, sw.js, manifest.webmanifest, logo.svg, ms-icon.svg, icon-*.png   ← iguais ao painel
 server/               ← igual ao painel (server.cjs, ds/)
 GUIA-VISUAL.md        ← regras do visual (para manter o padrão em telas futuras)
+styleguide.html       ← folha de componentes (só para conferência/Figma; não faz parte do painel)
+demo.html, tools/     ← prévia estática para o GitHub Pages (gerada por tools/make-demo.js; não copiar para produção)
 ```
 
 ## Como integrar no repo de produção

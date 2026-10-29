@@ -1,0 +1,106 @@
+<!DOCTYPE html><html lang="pt-BR" data-theme="light" data-acc="branco"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MS Control · Styleguide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="server/ds/styles.css"><!-- styleguide: folha de componentes para conferência/Figma, não faz parte do painel --><link rel="stylesheet" href="ms7-ui.css?v=1">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="server/ds/_ds_bundle.js"></script>
+<script src="data.js"></script><script src="store.js"></script>
+<style>
+body{padding:48px;background:var(--surface-page)}
+.sg{max-width:1320px;margin:0 auto;display:flex;flex-direction:column;gap:56px}
+.sg h2{font-size:22px;font-weight:600;letter-spacing:-.02em;margin:0 0 4px}
+.sg .grp{display:flex;flex-wrap:wrap;gap:16px;align-items:flex-start}
+.comp{display:inline-flex;flex-direction:column;gap:8px;padding:0}
+.comp>.ci{display:block}
+.comp>.lab{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
+.sw{width:120px;padding:12px;border-radius:12px;background:var(--surface-card);box-shadow:var(--shadow-card);display:flex;flex-direction:column;gap:8px}
+.sw i{display:block;height:48px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.ms7-search-btn{height:38px;display:inline-flex;align-items:center;gap:8px;padding:0 10px 0 12px;border-radius:11px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer}
+.ms7-search-btn kbd{font-family:inherit;font-size:11px;font-weight:600;padding:2px 6px;border-radius:6px;background:var(--surface-muted);color:var(--text-secondary);border:1px solid var(--line)}
+.sg-plan{color:var(--ms7-lime-500)}html[data-theme="dark"] .sg-plan{color:var(--text-on-lime,#0C3B26)}
+.sw b{font-size:12px;font-weight:600}.sw span{font-size:11px;color:var(--text-secondary);font-family:var(--font-mono)}
+</style></head><body><div id="root"></div>
+<script type="text/babel" src="ms7-ui.jsx?v=1"></script>
+<script type="text/babel" src="RailNav.jsx"></script>
+<script type="text/babel" src="Shared.jsx"></script>
+<script type="text/babel">
+(function(){
+const DS = window.MS7DesignSystem_5d5172;
+const C = ({name, children, style}) => <div className="comp" data-name={name}><span className="lab">{name}</span><div className="ci" data-name={name} style={style}>{children}</div></div>;
+const COLORS = [['Página','--surface-page'],['Card','--surface-card'],['Muted','--surface-muted'],['Linha','--line'],['Texto','--text-primary'],['Secundário','--text-secondary'],['Verde 900','--ms7-green-900'],['Verde','--ms7-green'],['Lima','--ms7-lime-500'],['Lima 100','--ms7-lime-100'],['Erro','--ms7-error'],['Laranja','--ms7-orange'],['Amarelo','--ms7-yellow'],['Azul','--ms7-blue'],['Roxo','--ms7-purple'],['Turquesa','--ms7-turquoise']];
+function Sheet(){
+  const [tabA,setTabA]=React.useState('a');const [tabB,setTabB]=React.useState('Ativas');const [tabC,setTabC]=React.useState('x');
+  const [sw,setSw]=React.useState(true);const [ck,setCk]=React.useState(true);
+  return <div className="sg">
+    <section><h2>Cores</h2><div className="grp" id="g-colors">{COLORS.map(c=><div className="comp" data-name={'Cor/'+c[0]} key={c[0]}><div className="ci sw" data-name={'Cor/'+c[0]}><i style={{background:'var('+c[1]+')'}}/><b>{c[0]}</b><span>{c[1]}</span></div></div>)}</div></section>
+    <section><h2>Tipografia</h2><div className="grp" id="g-type" style={{flexDirection:'column',gap:20}}>
+      <C name="Texto/Título de página"><div style={{fontSize:28,fontWeight:600,letterSpacing:'-.03em',lineHeight:1.1}}>Olá, <em className="ms7-serif" style={{color:'var(--ms7-green-900)',fontSize:'1.12em'}}>Rafael</em></div></C>
+      <C name="Texto/Título de seção"><div style={{fontSize:16,fontWeight:600,letterSpacing:'-.015em'}}>Resultados do período</div></C>
+      <C name="Texto/Número grande"><div className="ms7-stat-value" style={{fontSize:34}}>+R$ 2.446,35</div></C>
+      <C name="Texto/Eyebrow"><div className="ms7-eyebrow">Resultado por dia</div></C>
+      <C name="Texto/Corpo"><div style={{fontSize:14,fontWeight:500,maxWidth:520}}>Cooperações, chaves PIX, metas, ponto e comissões dos operadores — tudo atualizado ao vivo para a equipe.</div></C>
+      <C name="Texto/Secundário"><div style={{fontSize:13.5,fontWeight:500,color:'var(--text-secondary)'}}>Só depósito e saque lançados até agora. Salário, baú e comissão entram quando a cooperação for concluída.</div></C>
+    </div></section>
+    <section><h2>Botões</h2><div className="grp" id="g-btn">
+      {['primary','brand','lime','secondary','outline','ghost','danger'].map(v=><C key={v} name={'Botão/'+v+'/md'}><DS.Button variant={v} iconLeft={v==='danger'?'trash-2':'plus'}>{v==='primary'?'Ação principal':v==='brand'?'Nova cooperação':v==='lime'?'Destaque':v==='secondary'?'Secundário':v==='outline'?'Exportar':v==='ghost'?'Atualizar':'Excluir'}</DS.Button></C>)}
+      <C name="Botão/brand/lg"><DS.Button variant="brand" size="lg" iconRight="arrow-right">Entrar no painel</DS.Button></C>
+      <C name="Botão/outline/sm"><DS.Button variant="outline" size="sm" iconLeft="download">Exportar</DS.Button></C>
+      <C name="Botão/primary/disabled"><DS.Button variant="primary" disabled iconRight="arrow-right">Próxima etapa</DS.Button></C>
+      <C name="Botão ícone/ghost"><DS.IconButton icon="bell" badge={3} label="Notificações"/></C>
+      <C name="Botão ícone/outline"><DS.IconButton icon="chevron-left" variant="outline"/></C>
+      <C name="Botão ícone/dark"><DS.IconButton icon="search" variant="dark"/></C>
+    </div></section>
+    <section><h2>Badges e contadores</h2><div className="grp" id="g-badge">
+      {[['green','Ativa'],['turquoise','Em andamento'],['blue','Concluída'],['yellow','Finalizada'],['orange','À sacar'],['error','Bloqueado'],['purple','Cortesia'],['gray','Aguardando'],['lime','Líder']].map(b=><C key={b[0]} name={'Badge/'+b[0]}><DS.Badge tone={b[0]}>{b[1]}</DS.Badge></C>)}
+      {[['green','Pode entrar'],['error','Urgente'],['blue','Lucas Martins'],['gray','Gestão']].map(b=><C key={'s'+b[0]} name={'Badge/soft/'+b[0]}><DS.Badge tone={b[0]} variant="soft" size="sm">{b[1]}</DS.Badge></C>)}
+      <C name="Contador/verde"><DS.CountDot>12</DS.CountDot></C><C name="Contador/lima"><DS.CountDot tone="lime">5</DS.CountDot></C><C name="Contador/muted"><DS.CountDot tone="muted">0</DS.CountDot></C>
+    </div></section>
+    <section><h2>Formulário</h2><div className="grp" id="g-form" style={{alignItems:'flex-end'}}>
+      <C name="Input/padrão" style={{width:280}}><DS.Input label="Email" icon="mail" placeholder="seuemail@gmail.com"/></C>
+      <C name="Input/preenchido" style={{width:280}}><DS.Input label="Plataforma" required value="Azul 777" onChange={()=>{}} hint="Primeira vez: escolha a rede."/></C>
+      <C name="Input/erro" style={{width:280}}><DS.Input label="Senha" type="password" icon="lock" value="123" onChange={()=>{}} error="A senha precisa ter pelo menos 8 caracteres"/></C>
+      <C name="Input/desativado" style={{width:280}}><DS.Input label="ID" value="237615384" disabled onChange={()=>{}}/></C>
+      <C name="Select/padrão" style={{width:280}}><DS.Select label="Operador" options={['Lucas Martins','Bruna Costa']} value="Lucas Martins" onChange={()=>{}}/></C>
+      <C name="Select/pílula"><DS.Select variant="pill" options={['Todos os operadores','Lucas Martins']} value="Todos os operadores" onChange={()=>{}}/></C>
+      <C name="Checkbox/ligado"><DS.Checkbox checked={ck} onChange={setCk} label="Mostrar senha"/></C>
+      <C name="Checkbox/desligado"><DS.Checkbox checked={false} onChange={()=>{}} label="Notificar todos"/></C>
+      <C name="Switch/ligado"><DS.Switch checked={sw} onChange={setSw} label="Ativo"/></C>
+      <C name="Switch/desligado"><DS.Switch checked={false} onChange={()=>{}} label="Inativo"/></C>
+      <C name="Input/busca" style={{width:320}}><DS.Input icon="search" placeholder="Buscar link, ID, plataforma ou operador"/></C>
+    </div></section>
+    <section><h2>Abas</h2><div className="grp" id="g-tabs">
+      <C name="Abas/segmentada"><DS.Tabs value={tabA} onChange={setTabA} items={[{id:'a',label:'Pagamentos'},{id:'b',label:'Custos'}]} style={{minWidth:320}}/></C>
+      <C name="Abas/chips"><DS.Tabs variant="chips" value={tabB} onChange={setTabB} items={[{id:'Ativas',label:'Ativas',count:5},{id:'Finalizadas',label:'Finalizadas',count:0},{id:'Concluídas',label:'Concluídas',count:9},{id:'Lixeira',label:'Lixeira',count:0}]}/></C>
+      <C name="Abas/linha"><DS.Tabs variant="line" value={tabC} onChange={setTabC} items={[{id:'x',label:'Visão geral'},{id:'y',label:'Gestão de alunos'}]}/></C>
+      <C name="Abas/período"><DS.Tabs variant="chips" value="30 dias" onChange={()=>{}} items={['Hoje','7 dias','30 dias','Todos']}/></C>
+    </div></section>
+    <section><h2>Cards</h2><div className="grp" id="g-cards">
+      <C name="Card/KPI compacto" style={{width:260}}><DS.StatCard variant="compact" icon="download" label="Depósito" value="R$ 22.077,00" tone="blue" animate={false}/></C>
+      <C name="Card/KPI resultado" style={{width:260}}><DS.StatCard variant="compact" icon="trending-down" label="Prejuízo parcial" value="-R$ 10.360,00" tone="error" valueColor="var(--ms7-error)" animate={false}/></C>
+      <C name="Card/KPI com tendência" style={{width:260}}><DS.StatCard variant="compact" icon="users" label="Operadores ativos" value="11 / 12" tone="green" trend="+2" animate={false}/></C>
+      <C name="Card/seção" style={{width:420}}><DS.Card title="Resultados" subtitle="Depósitos e saques no período" action={<DS.Button size="sm" variant="ghost" iconRight="arrow-right">Ver cooperações</DS.Button>}><div style={{display:'flex',flexDirection:'column',gap:10}}><div style={{display:'flex',justifyContent:'space-between',fontSize:13.5}}><span style={{color:'var(--text-secondary)'}}>Depósitos e saques</span><b className="ms7-num" style={{fontWeight:600,color:'var(--ms7-green)'}}>+R$ 6.003,00</b></div><div className="ms7-bar"><i style={{width:'70%'}}/></div><div style={{display:'flex',justifyContent:'space-between',fontSize:13.5}}><span style={{color:'var(--text-secondary)'}}>Comissão dos operadores</span><b className="ms7-num" style={{fontWeight:600,color:'var(--ms7-error)'}}>-R$ 3.556,65</b></div><div className="ms7-bar"><i style={{width:'40%',background:'var(--ms7-error)'}}/></div></div></DS.Card></C>
+      <C name="Card/escuro" style={{width:420}}><DS.Card dark style={{'--ms7c-inv-acc':'var(--ms7-lime-500)'}}><div className="ms7-eyebrow" style={{color:'color-mix(in oklab, var(--text-inverse) 62%, transparent)'}}>Plano atual</div><div className="sg-plan" style={{fontSize:32,fontWeight:600,letterSpacing:'-.03em',margin:'6px 0 2px'}}>Pro</div><div style={{fontSize:13,color:'color-mix(in oklab, var(--text-inverse) 72%, transparent)'}}>10 seats de operador · renovação mensal</div></DS.Card></C>
+      <C name="Card/fato"><div style={{display:'flex',gap:10}}>{[['Operador','Lucas Martins'],['Comissão','R$ 175,00'],['ID','237615384']].map(f=><div key={f[0]} style={{background:'var(--surface-muted)',borderRadius:10,padding:'10px 14px',minWidth:150}}><div className="ms7-eyebrow">{f[0]}</div><div style={{fontSize:14,fontWeight:600,marginTop:4}}>{f[1]}</div></div>)}</div></C>
+    </div></section>
+    <section><h2>Navegação</h2><div className="grp" id="g-nav">
+      <C name="Menu/item ativo"><div className="ms7-rail is-open" style={{width:220,padding:0}}><div className="ms7-rail-list" style={{margin:0,padding:0,overflow:'visible'}}><span className="ms7-rail-ind" style={{top:0,opacity:1,left:0,right:0}}/><button className="ms7-rail-item is-on"><span className="ico"><DS.Icon name="layout-dashboard" size={19} strokeWidth={2.1}/></span><span className="lbl">Dashboard</span></button></div></div></C>
+      <C name="Menu/item"><div className="ms7-rail is-open" style={{width:220,padding:0}}><div className="ms7-rail-list" style={{margin:0,padding:0,overflow:'visible'}}><button className="ms7-rail-item"><span className="ico"><DS.Icon name="briefcase" size={19}/></span><span className="lbl">Cooperações</span><span className="bdg">5</span></button></div></div></C>
+      <C name="Cabeçalho/busca"><button className="ms7-search-btn"><DS.Icon name="search" size={16} strokeWidth={2}/><span>Buscar</span><kbd>⌘K</kbd></button></C>
+      <C name="Avatar/com iniciais"><DS.Avatar name="Rafael Souza" size={38}/></C>
+      <C name="Avatar/online"><DS.Avatar name="Bruna Costa" size={38} online/></C>
+      <C name="Stepper"><div style={{width:420}}><DS.Stepper steps={3} current={2}/></div></C>
+    </div></section>
+    <section><h2>Feedback</h2><div className="grp" id="g-feedback">
+      <C name="Vazio/Tarefas" style={{width:420,background:'var(--surface-card)',borderRadius:16,boxShadow:'var(--shadow-card)'}}><Empty art="Tasks" title="Nenhuma tarefa para hoje" sub="Crie uma tarefa acima ou marque uma como diária." compact/></C>
+      <C name="Vazio/Chaves PIX" style={{width:420,background:'var(--surface-card)',borderRadius:16,boxShadow:'var(--shadow-card)'}}><Empty art="Keys" title="Nenhum grupo escolhido" sub="Escolha os lotes para o operador trabalhar só com eles." compact action={<DS.Button variant="brand" size="sm" iconLeft="key-round">Escolher grupos</DS.Button>}/></C>
+      <C name="Toast"><div className="ms7-toast" style={{position:'static',transform:'none',animation:'none'}}><span style={{width:22,height:22,borderRadius:7,background:'var(--ms7-lime-500)',display:'flex',alignItems:'center',justifyContent:'center'}}><DS.Icon name="check" size={13} color="#0C3B26" strokeWidth={3}/></span>Dados atualizados</div></C>
+      <C name="Notificação push"><div className="ms7-push" style={{position:'static',animation:'none'}}><div className="ms7-push-top"><span style={{width:20,height:20,borderRadius:6,background:'#2AABEE',display:'flex',alignItems:'center',justifyContent:'center'}}><DS.Icon name="send" size={11} color="#fff" strokeWidth={2.2}/></span><span style={{flex:1}}>Telegram · MS7 Bot</span><span style={{textTransform:'none',letterSpacing:0}}>agora</span></div><div style={{display:'flex',gap:12}}><span style={{width:36,height:36,borderRadius:11,background:'var(--ms7-blue)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><DS.Icon name="repeat" size={18} color="#fff" strokeWidth={2}/></span><div><div style={{fontSize:14,fontWeight:600,marginBottom:3}}>Ciclo fechado — Equipe Aurora (C-1047)</div><div style={{fontSize:13,lineHeight:1.5,color:'#C9CFC9'}}>Depósito: R$ 12.480,00 · Saque: R$ 15.920,00{'\n'}Resultado: LUCRO de R$ 3.440,00</div></div></div></div></C>
+      <C name="Tabela/linhas" style={{width:720,background:'var(--surface-card)',borderRadius:16,boxShadow:'var(--shadow-card)',padding:8}}><DS.DataTable columns={[{key:'n',label:'Operador',render:r=><span style={{display:'flex',alignItems:'center',gap:10}}><DS.Avatar name={r.n} size={30}/><span><div style={{fontWeight:600}}>{r.n}</div><div style={{fontSize:12,color:'var(--text-secondary)'}}>{r.c} concluídas</div></span></span>},{key:'q',label:'Contas',align:'right'},{key:'b',label:'Bloqueadas',align:'center',render:r=><DS.Badge tone="error" size="sm">{r.b}</DS.Badge>},{key:'l',label:'Lucro',align:'right',render:r=><span className="ms7-num" style={{fontWeight:600,color:'var(--ms7-green)'}}>{r.l}</span>}]} rows={[{id:1,n:'Bruna Costa',c:2,q:25,b:'1 · 4%',l:'R$ 998,00'},{id:2,n:'Renata Silva',c:2,q:18,b:'1 · 5,6%',l:'R$ 981,00'}]}/></C>
+    </div></section>
+  </div>;
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<Sheet/>);
+})();
+</script></body></html>

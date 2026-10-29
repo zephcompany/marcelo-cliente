@@ -1,0 +1,79 @@
+<!-- @dsCard group="MS7 Dashboard" viewport="1440x900" name="MS7 Operações" subtitle="Full operations dashboard — 14 functions from the Marcelo-Proxy repo, Admin + Super Admin" -->
+<!DOCTYPE html><html lang="pt-BR" translate="no"><head><meta name="google" content="notranslate"><meta charset="utf-8"><script>
+/* PRÉVIA (GitHub Pages): sem servidor. Entra no painel com dados de exemplo; ?login=1 mostra a tela de login. */
+(function(){try{
+  var demo={role:'admin',name:'Marcelo',opId:''};
+  if(!/[?&]login=1/.test(location.search)&&!localStorage.getItem('ms7op-session')){localStorage.setItem('ms7op-session',JSON.stringify(demo));}
+  localStorage.removeItem('ms7-token');
+  var of=window.fetch;
+  window.fetch=function(u,o){var s=String(u);
+    if(/\/api\/auth\/(login|signup)/.test(s)){localStorage.setItem('ms7op-session',JSON.stringify(demo));setTimeout(function(){location.href=location.pathname;},350);return new Promise(function(){});}
+    if(/\/api\//.test(s)){return Promise.resolve(new Response('{}',{status:404,headers:{'Content-Type':'application/json'}}));}
+    return of.apply(this,arguments);};
+  if(navigator.serviceWorker){navigator.serviceWorker.register=function(){return Promise.reject(new Error('prévia'));};}
+}catch(e){}})();
+</script><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>Prévia · MS Control</title><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet"><link rel="manifest" href="manifest.webmanifest?v=3"><meta name="theme-color" content="#0B0D0C"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="MS Control"><link rel="icon" type="image/svg+xml" href="ms-icon.svg?v=3"><link rel="icon" type="image/png" sizes="192x192" href="icon-192.png?v=3"><link rel="apple-touch-icon" href="icon-192.png?v=3">
+<script>
+(function(){var errs=[];window.__ms7errs=errs;
+window.addEventListener('error',function(e){var t=e.target;if(t&&(t.src||t.href))errs.push('Não carregou: '+(t.src||t.href));else errs.push((e.message||'Erro')+(e.filename?' ('+e.filename.split('/').pop()+':'+e.lineno+')':''));},true);
+window.addEventListener('unhandledrejection',function(e){errs.push('Erro: '+(e.reason&&e.reason.message||e.reason));});
+function rendered(){var r=document.getElementById('root');return r&&r.children.length>0;}
+var t0=Date.now();var iv=setInterval(function(){var b=document.getElementById('ms7boot');if(b&&b.lastElementChild){var s=Math.round((Date.now()-t0)/1000);b.lastElementChild.textContent=s<8?'Carregando painel…':'Carregando painel… '+s+'s (conexão lenta)';}if(rendered()){clearInterval(iv);if(b){b.style.opacity='0';setTimeout(function(){b.remove();},260);}var x=document.getElementById('ms7err');if(x)x.remove();}},300);
+setTimeout(function(){if(rendered())return;var b=document.getElementById('ms7boot');if(b)b.remove();
+ var miss=[];if(!window.React)miss.push('React (internet / unpkg.com bloqueado)');if(!window.Babel)miss.push('Babel (internet / unpkg.com bloqueado)');if(!window.lucide)miss.push('Ícones lucide');if(!window.MS7DesignSystem_5d5172)miss.push('_ds_bundle.js (baixe o projeto completo)');if(!window.DB)miss.push('store.js');
+ var d=document.createElement('div');d.id='ms7err';d.style.cssText='max-width:640px;margin:60px auto;padding:28px;font:15px/1.5 -apple-system,sans-serif;color:#242424;background:#fff;border-radius:16px;box-shadow:0 4px 24px rgba(0,0,0,.08)';
+ d.innerHTML='<h2 style="margin:0 0 8px">O painel não abriu</h2><p style="margin:0 0 14px;color:#666">Mande um print desta tela para o Claude.</p><pre style="white-space:pre-wrap;background:#f4f4f4;padding:14px;border-radius:10px;font-size:12px;margin:0 0 16px">'+(miss.concat(errs).join('\n')||'Nenhum erro capturado.').replace(/</g,'&lt;')+'\n\nEndereço: '+location.href+'</pre><button id="ms7fix" style="height:40px;padding:0 18px;border:0;border-radius:20px;background:#0A5A3C;color:#fff;font-weight:700;cursor:pointer">Limpar cache e recarregar</button>';
+ document.body.appendChild(d);document.getElementById('ms7fix').onclick=function(){var p=[];if(navigator.serviceWorker)p.push(navigator.serviceWorker.getRegistrations().then(function(l){return Promise.all(l.map(function(x){return x.unregister();}));}));if(window.caches)p.push(caches.keys().then(function(k){return Promise.all(k.map(function(x){return caches.delete(x);}));}));Promise.all(p).then(function(){location.reload();});};
+},30000);})();
+</script>
+<link rel="stylesheet" href="server/ds/styles.css">
+<link rel="stylesheet" href="ms7-ui.css?v=1">
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.min.js"></script>
+<script src="server/ds/_ds_bundle.js"></script>
+<script src="data.js"></script>
+<script src="store.js"></script>
+<script>try{var th=localStorage.getItem('ms7op-theme')||'light';document.documentElement.setAttribute('data-theme',th);document.documentElement.setAttribute('data-acc','branco');}catch(e){}</script>
+</head><body><div id="ms7boot" style="position:fixed;inset:0;z-index:5;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;font:500 14px 'Instrument Sans',-apple-system,Segoe UI,sans-serif;color:#6B746F;background:var(--surface-page,#F5F6F3);transition:opacity .25s"><div style="width:40px;height:40px;border-radius:12px;background:#0A5A3C;display:flex;align-items:center;justify-content:center;animation:ms7boot-pop .6s cubic-bezier(.22,1,.36,1) both"><span style="width:14px;height:14px;border-radius:50%;border:2.5px solid rgba(201,247,117,.35);border-top-color:#C9F775;animation:ms7spin .8s linear infinite"></span></div><div>Carregando painel…</div></div><style>@keyframes ms7spin{to{transform:rotate(360deg)}}@keyframes ms7boot-pop{from{opacity:0;transform:scale(.8)}to{opacity:1;transform:none}}</style><div id="root"></div>
+<script type="text/babel" src="ms7-ui.jsx?v=1"></script>
+<script type="text/babel" src="Shared.jsx"></script>
+<script type="text/babel" src="ScreensDashboard.jsx"></script>
+<script type="text/babel" src="ScreensAnalises.jsx"></script>
+<script type="text/babel" src="ScreensCoop.jsx"></script>
+<script type="text/babel" src="ScreensConta.jsx"></script>
+<script type="text/babel" src="ScreensPix.jsx"></script>
+<script type="text/babel" src="ScreensConferencia.jsx"></script>
+<script type="text/babel" src="ScreensGestao.jsx"></script>
+<script type="text/babel" src="ScreensPonto.jsx"></script>
+<script type="text/babel" src="ScreensTarefas.jsx"></script>
+<script type="text/babel" src="ScreensMetas.jsx"></script>
+<script type="text/babel" src="ScreensVagas.jsx"></script>
+<script type="text/babel" src="RailNav.jsx"></script>
+<script type="text/babel" src="OperacoesApp.jsx"></script>
+<script>
+(function(){
+window.ms7Push={reg:null,installEvt:null,
+  supported:'Notification' in window,
+  permission:function(){return 'Notification' in window?Notification.permission:'unsupported';},
+  standalone:function(){return matchMedia('(display-mode: standalone)').matches||navigator.standalone===true;},
+  ask:function(){if(!('Notification' in window))return Promise.resolve('unsupported');return Notification.requestPermission();},
+  show:function(title,body,tag){if(!('Notification' in window)||Notification.permission!=='granted')return;var o={body:body,icon:'icon-192.png',badge:'icon-192.png',tag:tag};
+    if(this.reg&&this.reg.showNotification)this.reg.showNotification(title,o);else try{new Notification(title,o);}catch(e){}},
+  server:function(){return localStorage.getItem('ms7-push-server')||(location.protocol.indexOf('http')===0?location.origin:'');},
+  apiKey:function(){return '';},
+  hdr:function(){return {'Content-Type':'application/json','Authorization':'Bearer '+(localStorage.getItem('ms7-token')||'')};},
+  b64:function(s){var p='='.repeat((4-s.length%4)%4);var b=atob((s+p).replace(/-/g,'+').replace(/_/g,'/'));var a=new Uint8Array(b.length);for(var i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;},
+  subscribe:function(role){var self=this,base=this.server();if(!this.reg||!this.reg.pushManager)return Promise.reject(new Error('Navegador sem suporte a push'));
+    return fetch(base+'/api/push/public-key').then(function(r){if(!r.ok)throw new Error('Servidor não respondeu');return r.json();}).then(function(k){return self.reg.pushManager.getSubscription().then(function(s){return s||self.reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:self.b64(k.publicKey)});});})
+    .then(function(sub){return fetch(base+'/api/push/subscribe',{method:'POST',headers:self.hdr(),body:JSON.stringify({subscription:sub,device:navigator.userAgent.slice(0,80)})}).then(function(r){if(!r.ok)throw new Error('Inscrição recusada ('+r.status+')');localStorage.setItem('ms7-push-on','1');return r.json();});});},
+  isRemote:function(){return localStorage.getItem('ms7-push-on')==='1';},
+  remote:function(title,body,tag){if(!localStorage.getItem('ms7-token')||!this.server())return false;fetch(this.server()+'/api/push/notify',{method:'POST',headers:this.hdr(),body:JSON.stringify({title:title,body:body,tag:tag,url:'./index.html'})}).catch(function(){});return true;},
+  install:function(){var e=this.installEvt;if(!e)return Promise.resolve(false);e.prompt();return e.userChoice.then(function(c){return c.outcome==='accepted';});}};
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js').then(function(r){ms7Push.reg=r;}).catch(function(){});}
+window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();ms7Push.installEvt=e;window.dispatchEvent(new Event('ms7-installable'));});
+})();
+</script>
+<script>(function(){var cur=null;function chk(){fetch('/api/version',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){if(!j)return;if(cur===null){cur=j.v;return;}if(j.v!==cur){var b=document.createElement('div');b.textContent='Nova versão do painel — atualizando…';b.style.cssText='position:fixed;top:16px;left:50%;transform:translateX(-50%);z-index:99999;background:#0A5A3C;color:#fff;padding:10px 18px;border-radius:12px;font:600 14px "Instrument Sans",sans-serif;box-shadow:0 16px 40px -16px rgba(0,0,0,.5)';document.body.appendChild(b);setTimeout(function(){location.reload();},1500);}}).catch(function(){});}if(location.protocol.indexOf('http')===0){chk();setInterval(chk,10000);}})();</script>
+</body></html>
