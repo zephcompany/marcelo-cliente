@@ -210,7 +210,7 @@ a { color: var(--text-brand); }
 
 /* ---------- keyframes ---------- */
 @keyframes ms7-fade { from { opacity: 0 } to { opacity: 1 } }
-@keyframes ms7-up { from { opacity: 0; transform: translateY(14px); filter: blur(3px) } to { opacity: 1; transform: none; filter: blur(0) } }
+@keyframes ms7-up { from { opacity: 0; transform: translateY(14px); filter: blur(3px) } to { opacity: 1; transform: none; filter: none } }
 @keyframes ms7-up-sm { from { opacity: 0; transform: translateY(6px) } to { opacity: 1; transform: none } }
 @keyframes ms7-pop { from { opacity: 0; transform: translateY(10px) scale(.975) } to { opacity: 1; transform: none } }
 @keyframes ms7-scale-in { from { opacity: 0; transform: scale(.94) } to { opacity: 1; transform: none } }
@@ -229,7 +229,9 @@ a { color: var(--text-brand); }
 @keyframes ms7-check { to { stroke-dashoffset: 0 } }
 
 /* ---------- transição de página ---------- */
-.ms7-page > *, .ms7-page > *:only-child > * { animation: ms7-up 560ms var(--ease-out) both; }
+.ms7-page > *, .ms7-page > *:only-child > * { animation: ms7-up 560ms var(--ease-out) backwards; }
+/* modais (position:fixed) dentro de elementos animados: nada de transform/filter no ancestral */
+.ms7-page > *:has(.ms7-modal-bg), .ms7-page > *:only-child > *:has(.ms7-modal-bg), .ms7-card:has(.ms7-modal-bg), .ms7-hover-card:has(.ms7-modal-bg), [data-reveal]:has(.ms7-modal-bg), .ms7-stagger > *:has(.ms7-modal-bg) { animation: none !important; transform: none !important; filter: none !important; will-change: auto !important; transition: none !important; }
 .ms7-page > *:only-child { animation: none; }
 .ms7-page > *:nth-child(2), .ms7-page > *:only-child > *:nth-child(2) { animation-delay: 50ms }
 .ms7-page > *:nth-child(3), .ms7-page > *:only-child > *:nth-child(3) { animation-delay: 100ms }
@@ -240,7 +242,7 @@ a { color: var(--text-brand); }
 
 /* ---------- reveal no scroll ---------- */
 [data-reveal] { opacity: 0; transform: translateY(16px); filter: blur(2px); transition: opacity 640ms var(--ease-out), transform 640ms var(--ease-out), filter 640ms var(--ease-out); will-change: opacity, transform; }
-[data-reveal].is-in { opacity: 1; transform: none; filter: blur(0); }
+[data-reveal].is-in { opacity: 1; transform: none; filter: none; will-change: auto; }
 [data-reveal="left"] { transform: translateX(-18px) }
 [data-reveal="right"] { transform: translateX(18px) }
 [data-reveal="scale"] { transform: scale(.96) }
@@ -402,7 +404,7 @@ html[data-theme="dark"] .ms7-avatar-inner { background: #1B2A1F; color: #C9F775;
 
 .ms7-stepper-bar { position: relative; height: 3px; border-radius: 3px; background: var(--surface-muted); overflow: hidden; }
 .ms7-stepper-fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 3px; background: var(--ms7-green-900); transition: width 480ms var(--ease-standard); }
-.ms7-step { width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 1.5px solid var(--line-strong); color: var(--text-secondary); background: var(--surface-card); transition: all var(--dur-base) var(--ease-standard); }
+.ms7-step { position: relative; z-index: 1; width: 28px; height: 28px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; border: 1.5px solid var(--line-strong); color: var(--text-secondary); background: var(--surface-card); transition: all var(--dur-base) var(--ease-standard); }
 .ms7-step.is-act { border-color: var(--ms7-green-900); color: var(--ms7-green-900); box-shadow: 0 0 0 4px color-mix(in oklab, var(--ms7-green-900) 12%, transparent); }
 .ms7-step.is-done { background: var(--ms7-green-900); border-color: var(--ms7-green-900); color: var(--text-inverse); }
 
