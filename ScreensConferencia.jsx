@@ -249,7 +249,7 @@
         </div>
         {aba === 'pend' ? (
           <React.Fragment>
-            <div className="ms7-kpis ms7-stagger" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))' }}>
+            <div className="ms7-kpis ms7-stagger" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(224px,1fr))' }}>
               {kpi('Total a conferir', brl(tot), undefined, 'banknote', 'green')}
               {kpi('Saques', pend.length, undefined, 'arrow-down-to-line', 'blue')}
               {kpi('Grupos com valor', lista.length, undefined, 'landmark', 'yellow')}
@@ -359,7 +359,7 @@
           </React.Fragment>
         ) : (
           <React.Fragment>
-            <div className="ms7-kpis ms7-stagger" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(200px,1fr))' }}>
+            <div className="ms7-kpis ms7-stagger" style={{ gridTemplateColumns: 'repeat(auto-fill,minmax(224px,1fr))' }}>
               {kpi('Conferências', H.length, undefined, 'list-checks', 'blue')}
               {kpi(
                 'Total conferido',

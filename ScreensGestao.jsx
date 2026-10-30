@@ -1188,7 +1188,7 @@
           <span className="ms7g-tile" style={{ width: 38, height: 38, borderRadius: 11 }}>
             <DS.Icon name="store" size={18} />
           </span>
-          <div style={{ flex: '1 1 260px', minWidth: 0, fontSize: 13.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
+          <div className="ms7-balance" style={{ flex: '1 1 260px', minWidth: 0, fontSize: 13.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
             Produtos e cupons que aparecem em Proxies → Comprar. O pagamento é PIX do Mercado Pago (copia e cola). A entrega automática no site
             Marcelo Proxies será ligada&nbsp;depois.
           </div>
