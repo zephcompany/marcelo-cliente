@@ -574,15 +574,15 @@ html[data-theme="dark"] .ms7-empty-title { color: var(--text-primary); }
    --mx/--my são gravados pelo ms7-ui.jsx (pointermove, delegado)
    ============================================================ */
 .ms7-card { --mx: 50%; --my: 50%; --spot: 0; isolation: isolate; }
-.ms7-hover-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1; opacity: var(--spot); transition: opacity 420ms var(--ease-out);
+.ms7-hover-card::before, .ms7-spot::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1; opacity: var(--spot); transition: opacity 420ms var(--ease-out);
   background: radial-gradient(380px circle at var(--mx) var(--my), rgba(201, 247, 117, 0.06), rgba(74, 222, 128, 0.02) 40%, transparent 65%); }
-.ms7-hover-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2; padding: 1px; opacity: var(--spot); transition: opacity 420ms var(--ease-out);
+.ms7-hover-card::after, .ms7-spot::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2; padding: 1px; opacity: var(--spot); transition: opacity 420ms var(--ease-out);
   background: radial-gradient(320px circle at var(--mx) var(--my), rgba(234, 255, 155, 0.6), rgba(201, 247, 117, 0.25) 35%, rgba(201, 247, 117, 0.04) 70%, transparent 80%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
 .ms7-card { position: relative; }
-.ms7-hover-card:hover { --spot: 1; }
-html:not([data-theme="dark"]) .ms7-hover-card::before { background: radial-gradient(420px circle at var(--mx) var(--my), rgba(10, 90, 60, 0.08), transparent 65%); }
-html:not([data-theme="dark"]) .ms7-hover-card::after { background: radial-gradient(360px circle at var(--mx) var(--my), rgba(10, 90, 60, 0.7), rgba(10, 90, 60, 0.15) 45%, transparent 80%); }
+.ms7-hover-card:hover, .ms7-spot:hover { --spot: 1; }
+html:not([data-theme="dark"]) .ms7-hover-card::before, html:not([data-theme="dark"]) .ms7-spot::before { background: radial-gradient(420px circle at var(--mx) var(--my), rgba(10, 90, 60, 0.08), transparent 65%); }
+html:not([data-theme="dark"]) .ms7-hover-card::after, html:not([data-theme="dark"]) .ms7-spot::after { background: radial-gradient(360px circle at var(--mx) var(--my), rgba(10, 90, 60, 0.7), rgba(10, 90, 60, 0.15) 45%, transparent 80%); }
 /* cards com modal dentro: sem camada e sem contexto de empilhamento próprio */
 .ms7-card:has(.ms7-modal-bg)::before, .ms7-card:has(.ms7-modal-bg)::after { display: none; }
 .ms7-card:has(.ms7-modal-bg), .ms7-glow:has(.ms7-modal-bg) { isolation: auto !important; }

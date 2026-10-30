@@ -319,7 +319,7 @@
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'stretch' }}>
-          <section className="ms7-card" style={{ flex: '2 1 520px', minWidth: 0, padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
+          <section className="ms7-card ms7-spot" style={{ flex: '2 1 520px', minWidth: 0, padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
               <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: 1.25, letterSpacing: '-0.015em' }}>Lucro líquido</h3>
               <span style={{ flex: 1 }}></span>
@@ -421,7 +421,7 @@
           </section>
           <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
             <DS.Card
-              title={ttl('🎯', 'Metas')}
+              className="ms7-spot" title={ttl('🎯', 'Metas')}
               padding={20}
               action={
                 <DS.Button
@@ -458,7 +458,7 @@
                 })}
               </div>
             </DS.Card>
-            <DS.Card title={ttl('📈', 'Resultados')} padding={20}>
+            <DS.Card className="ms7-spot" title={ttl('📈', 'Resultados')} padding={20}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {comp.map(function (x) {
                   return (
@@ -487,7 +487,7 @@
         </div>
         <Grid min={340}>
           <DS.Card
-            title={ttl('⚡', 'Sua próxima ação')}
+            className="ms7-spot" title={ttl('⚡', 'Sua próxima ação')}
             action={
               acoes.length ? (
                 <DS.Badge tone="gray" variant="soft">
@@ -529,7 +529,7 @@
               <Empty art="Tasks" compact title="Nada pendente agora" sub="Cooperações finalizadas, tarefas do dia e contas bloqueadas aparecem aqui." />
             )}
           </DS.Card>
-          <DS.Card title={ttl('🧾', 'Últimas remessas')}>
+          <DS.Card className="ms7-spot" title={ttl('🧾', 'Últimas remessas')}>
             {rem.length ? (
               <div className="ms7d-list">
                 {rem.map(function (n) {
