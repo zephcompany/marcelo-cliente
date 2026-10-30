@@ -140,7 +140,7 @@
     '.ms7-login-theme:hover{transform:rotate(-12deg) scale(1.05)}',
     '.ms7-login-form .ms7-login-theme{right:auto;left:18px}',
     /* black glass (tema escuro) */
-    'html[data-theme="dark"] .ms7-head{background:color-mix(in oklab,var(--surface-page) 72%,transparent);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3)}',
+    'html[data-theme="dark"] .ms7-head{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none}',
     'html[data-theme="dark"] .ms7-search-btn{background:var(--glass);box-shadow:var(--glass-edge);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}',
     'html[data-theme="dark"] .ms7-search-btn kbd{background:rgba(255,255,255,.08);border-color:var(--line)}',
     'html[data-theme="dark"] .ms7-user-cam{background:var(--glass-solid)}',
