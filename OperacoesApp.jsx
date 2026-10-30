@@ -1167,7 +1167,7 @@
       localStorage.setItem('ms7op-menu', v ? 'fechado' : 'aberto');
     };
     const [navMode, setNavModeS] = React.useState(function () {
-      return localStorage.getItem('ms7op-nav') || 'topo';
+      return localStorage.getItem('ms7op-nav') || 'lado';
     });
     const setNavMode = function (v) {
       setNavModeS(v);
