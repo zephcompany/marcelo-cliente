@@ -5,13 +5,13 @@
     '.ms7g-acts{display:inline-flex;gap:2px;opacity:0;transition:opacity var(--dur-fast)}',
     '.ms7-table tr:hover .ms7g-acts,.ms7g-acts:focus-within{opacity:1}',
     '@media (hover:none){.ms7g-acts{opacity:1}}',
-    '.ms7g-tile{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900)}',
+    '.ms7g-tile{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in oklab,var(--ms7-green-900) 16%,transparent);color:var(--ms7-green-900)}',
     '.ms7g-name{font-size:14px;font-weight:600;letter-spacing:-.005em;line-height:1.25}',
     '.ms7g-sub{font-size:12.5px;font-weight:500;color:var(--text-secondary);line-height:1.35}',
     '.ms7g-chip{display:inline-flex;align-items:center;gap:8px;height:34px;padding:0 6px 0 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;font-size:13px;font-weight:600;letter-spacing:-.005em;transition:border-color var(--dur-fast),background var(--dur-fast),color var(--dur-fast)}',
     '.ms7g-chip:hover{border-color:var(--line-strong);background:var(--surface-muted)}',
     '.ms7g-chip.is-sel{cursor:pointer;padding-right:12px}',
-    '.ms7g-chip.is-on{border-color:var(--ms7-green-900);background:color-mix(in oklab,var(--ms7-green-900) 9%,var(--surface-card));color:var(--ms7-green-900)}',
+    '.ms7g-chip.is-on{border-color:var(--ms7-green-900);background:color-mix(in oklab,var(--ms7-green-900) 12%,transparent);color:var(--ms7-green-900)}',
     '.ms7g-chip-ico{color:var(--text-secondary);display:inline-flex}.ms7g-chip.is-on .ms7g-chip-ico{color:inherit}',
     '.ms7g-chip-x{width:20px;height:20px;border-radius:50%;border:0;padding:0;background:transparent;color:var(--text-secondary);display:inline-flex;align-items:center;justify-content:center;cursor:pointer;opacity:0;transition:opacity var(--dur-fast),background var(--dur-fast),color var(--dur-fast)}',
     '.ms7g-chip:hover .ms7g-chip-x,.ms7g-chip-x:focus-visible{opacity:1}',
@@ -31,18 +31,44 @@
     '.ms7g-line{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid var(--border-subtle);flex-wrap:wrap}',
     '.ms7g-line:first-child{border-top:0;padding-top:0}',
     '.ms7g-pos{width:28px;height:28px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;background:var(--surface-muted);color:var(--text-primary);font-variant-numeric:tabular-nums}',
-    '.ms7g-pos.is-1{background:var(--ms7-lime-500);color:#0C3B26}.ms7g-pos.is-rest{background:transparent;color:var(--text-secondary)}',
+    '.ms7g-pos.is-1{background:var(--ms7-lime-500);color:var(--text-on-lime)}.ms7g-pos.is-rest{background:transparent;color:var(--text-secondary)}',
     '.ms7g-tpl{position:relative;display:flex;align-items:center;gap:12px;padding:10px 12px;border-radius:10px;cursor:pointer;transition:background var(--dur-fast)}',
     '.ms7g-tpl:hover,.ms7g-tpl.is-on{background:var(--surface-muted)}',
     '.ms7g-tpl.is-on::before{content:"";position:absolute;left:0;top:10px;bottom:10px;width:3px;border-radius:3px;background:var(--ms7-green-900)}',
     '.ms7g-tpl .ms7g-tile{background:var(--surface-card);color:var(--text-secondary);box-shadow:0 0 0 1px var(--line)}',
-    '.ms7g-tpl.is-on .ms7g-tile{background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900);box-shadow:none}',
+    '.ms7g-tpl.is-on .ms7g-tile{background:color-mix(in oklab,var(--ms7-green-900) 16%,transparent);color:var(--ms7-green-900);box-shadow:none}',
+    /* pódio do ranking: três tiles de vidro, posição em pílula (sem numeral gigante) */
+    '.ms7g-podio{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-bottom:18px}',
+    '.ms7g-podio-it{display:flex;flex-direction:column;gap:12px;padding:16px;border-radius:12px;background:var(--surface-muted);box-shadow:0 0 0 1px var(--line);min-width:0}',
+    '.ms7g-podio-it.is-1{box-shadow:0 0 0 1px color-mix(in oklab,var(--ms7-lime-500) 55%,var(--line))}',
+    '.ms7g-podio-top{display:flex;align-items:center;gap:10px;min-width:0}',
+    '.ms7g-podio-val{font-size:20px;font-weight:600;letter-spacing:-.03em;line-height:1.1;color:var(--ms7-green)}',
+    '.ms7g-podio-val.is-neg{color:var(--ms7-error)}',
+    '@media (max-width:760px){.ms7g-podio{grid-template-columns:minmax(0,1fr)}}',
+    /* vidro no preto */
+    'html[data-theme="dark"] .ms7g-chip{background:var(--glass);box-shadow:var(--glass-edge)}',
+    'html[data-theme="dark"] .ms7g-chip:hover{background:var(--glass-2)}',
+    'html[data-theme="dark"] .ms7g-chip.is-on{background:color-mix(in oklab,var(--ms7-lime-500) 14%,transparent);box-shadow:none}',
+    'html[data-theme="dark"] .ms7g-cell,html[data-theme="dark"] input.ms7g-cell[type="date"]{background:var(--glass);box-shadow:var(--glass-edge)}',
+    'html[data-theme="dark"] .ms7g-cell:focus{border-color:var(--ms7-lime-500);box-shadow:var(--glass-edge),0 0 0 3px rgba(201,247,117,.18)}',
+    'html[data-theme="dark"] .ms7g-tpl:hover,html[data-theme="dark"] .ms7g-tpl.is-on{background:var(--glass-2)}',
+    'html[data-theme="dark"] .ms7g-tpl .ms7g-tile{background:var(--glass)}',
+    'html[data-theme="dark"] .ms7g-podio-it{background:var(--glass);box-shadow:var(--glass-edge),0 0 0 1px var(--line)}',
+    'html[data-theme="dark"] .ms7g-podio-it.is-1{box-shadow:var(--glass-edge),0 0 0 1px color-mix(in oklab,var(--ms7-lime-500) 45%,var(--line))}',
   ].join('');
   if (!document.getElementById('ms7-gestao-css')) {
     const st = document.createElement('style');
     st.id = 'ms7-gestao-css';
     st.textContent = CSS;
     document.head.appendChild(st);
+  }
+  /* emoji de título de card (1 por card, sempre antes do texto) */
+  function Emo({ e }) {
+    return (
+      <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+        {e}
+      </span>
+    );
   }
   function OperadoresTab() {
     const { Card, DataTable, Switch, IconButton, Button, Modal, Input, Avatar, Badge } = DS;
@@ -187,7 +213,12 @@
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {vagasTop}
         <Card
-          title="Operadores"
+          title={
+            <React.Fragment>
+              <Emo e="👥" />
+              Operadores
+            </React.Fragment>
+          }
           action={
             <div style={{ display: 'flex', gap: 10, alignItems: 'center', flexWrap: 'wrap' }}>
               {isCliG ? null : (
@@ -750,7 +781,15 @@
     return (
       <React.Fragment>
         <Grid min={300}>
-          <Card title="Redes" action={Tools('redes')}>
+          <Card
+            title={
+              <React.Fragment>
+                <Emo e="🌐" />
+                Redes
+              </React.Fragment>
+            }
+            action={Tools('redes')}
+          >
             <Hint>Redes que aparecem na Nova cooperação. A plataforma não fica salva: você digita o nome dela em cada&nbsp;cooperação.</Hint>
             <div style={{ display: 'flex', gap: 10, marginBottom: 16, flexWrap: 'wrap', alignItems: 'flex-start' }}>
               <div style={{ flex: '1 1 240px', minWidth: 0 }}>
@@ -781,7 +820,24 @@
                 })}
               </div>
             ) : (
-              <Empty art="Globe" compact title="Nenhuma rede cadastrada" sub="Digite o nome acima e clique em Adicionar, ou importe uma lista." />
+              <Empty
+                art="Globe"
+                compact
+                title="Nenhuma rede cadastrada"
+                sub="Digite o nome acima e clique em Adicionar, ou importe uma lista inteira de uma&nbsp;vez."
+                action={
+                  <Button
+                    variant="outline"
+                    iconLeft="upload"
+                    onClick={function () {
+                      setTxt('');
+                      setImp('redes');
+                    }}
+                  >
+                    Importar lista
+                  </Button>
+                }
+              />
             )}
           </Card>
         </Grid>
@@ -1141,7 +1197,12 @@
           </Button>
         </div>
         <Card
-          title="Produtos"
+          title={
+            <React.Fragment>
+              <Emo e="🛒" />
+              Produtos
+            </React.Fragment>
+          }
           subtitle={L.produtos.length + (L.produtos.length === 1 ? ' produto' : ' produtos')}
           action={
             <Button
@@ -1219,12 +1280,34 @@
               );
             })}
             {!L.produtos.length ? (
-              <Empty art="Wallet" compact title="Nenhum produto" sub="Clique em + Produto para colocar o primeiro item na loja." />
+              <Empty
+                art="Wallet"
+                emoji="🛒"
+                compact
+                title="Nenhum produto"
+                sub="Coloque o primeiro item na loja: nome, descrição e&nbsp;preço."
+                action={
+                  <Button
+                    variant="outline"
+                    iconLeft="plus"
+                    onClick={function () {
+                      add('produtos', { id: 'pr' + Date.now(), nome: '', desc: '', preco: '', ativo: true });
+                    }}
+                  >
+                    Produto
+                  </Button>
+                }
+              />
             ) : null}
           </div>
         </Card>
         <Card
-          title="Cupons"
+          title={
+            <React.Fragment>
+              <Emo e="🎟️" />
+              Cupons
+            </React.Fragment>
+          }
           subtitle={L.cupons.length ? L.cupons.length + (L.cupons.length === 1 ? ' cupom' : ' cupons') : 'Descontos em % para a loja'}
           action={
             <Button
@@ -1316,12 +1399,38 @@
               );
             })}
             {!L.cupons.length ? (
-              <Empty art="Wallet" compact title="Nenhum cupom" sub="Clique em + Cupom para criar um código de desconto." />
+              <Empty
+                art="Wallet"
+                emoji="🎟️"
+                compact
+                title="Nenhum cupom"
+                sub="Crie um código de desconto em % para usar na&nbsp;loja."
+                action={
+                  <Button
+                    variant="outline"
+                    iconLeft="plus"
+                    onClick={function () {
+                      add('cupons', { codigo: '', pct: '10', validade: '', limite: 0, usos: 0, ativo: true });
+                    }}
+                  >
+                    Cupom
+                  </Button>
+                }
+              />
             ) : null}
           </div>
         </Card>
         {on ? (
-          <Card title="Pedidos pagos" subtitle={pagos.length + (pagos.length === 1 ? ' pedido pago' : ' pedidos pagos')} reveal>
+          <Card
+            title={
+              <React.Fragment>
+                <Emo e="🧾" />
+                Pedidos pagos
+              </React.Fragment>
+            }
+            subtitle={pagos.length + (pagos.length === 1 ? ' pedido pago' : ' pedidos pagos')}
+            reveal
+          >
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {pagos.length ? (
                 pagos.map(function (p) {
@@ -1366,7 +1475,7 @@
                   );
                 })
               ) : (
-                <Empty art="Wallet" compact title="Nenhum pedido pago ainda" sub="Os pedidos pagos via PIX na loja aparecem aqui para você marcar a entrega." />
+                <Empty art="Wallet" emoji="🧾" compact title="Nenhum pedido pago ainda" sub="Os pedidos pagos via PIX na loja aparecem aqui para você marcar a&nbsp;entrega." />
               )}
             </div>
           </Card>
@@ -1392,15 +1501,16 @@
       .map(function (r, i) {
         return Object.assign({ pos: i + 1 }, r);
       });
+    const top = rows.slice(0, 3);
     return (
       <Card
-        title="Ranking"
-        subtitle={'Por resultado · ' + (t === 'op' ? 'operadores' : 'alunos')}
-        icon={
-          <span className="ms7g-tile">
-            <DS.Icon name="trophy" size={15} />
-          </span>
+        title={
+          <React.Fragment>
+            <Emo e="🏆" />
+            Ranking
+          </React.Fragment>
         }
+        subtitle={'Por resultado · ' + (t === 'op' ? 'operadores' : 'alunos')}
         action={
           <Tabs
             variant="chips"
@@ -1413,6 +1523,32 @@
           />
         }
       >
+        {top.length ? (
+          <div className="ms7g-podio ms7-stagger" key={t}>
+            {top.map(function (r) {
+              return (
+                <div key={r.nome} className={'ms7g-podio-it' + (r.pos === 1 ? ' is-1' : '')}>
+                  <div className="ms7g-podio-top">
+                    <span className={'ms7g-pos' + (r.pos === 1 ? ' is-1' : '')}>{String(r.pos).padStart(2, '0')}</span>
+                    <DS.Avatar name={r.nome} size={32} />
+                    <div style={{ minWidth: 0, flex: 1 }}>
+                      <div className="ms7g-name" style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {r.nome}
+                      </div>
+                      <div className="ms7g-sub">{r.x}</div>
+                    </div>
+                    {r.pos === 1 ? (
+                      <Badge size="sm" tone="lime">
+                        Líder
+                      </Badge>
+                    ) : null}
+                  </div>
+                  <span className={'ms7g-podio-val ms7-num' + (r.v < 0 ? ' is-neg' : '')}>{MS7.brl(r.v)}</span>
+                </div>
+              );
+            })}
+          </div>
+        ) : null}
         <DataTable
           rows={rows}
           rowKey="nome"
@@ -1488,7 +1624,16 @@
     const ICONS = { 1: 'user-plus', 2: 'flag', 3: 'key-round', 4: 'credit-card' };
     return (
       <Grid min={300}>
-        <Card title="Modelos" subtitle="Ligue, desligue e escolha qual editar" padding={16}>
+        <Card
+          title={
+            <React.Fragment>
+              <Emo e="🔔" />
+              Modelos
+            </React.Fragment>
+          }
+          subtitle="Ligue, desligue e escolha qual editar"
+          padding={16}
+        >
           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             {tpl.map(function (t) {
               const on = t.id === sel;

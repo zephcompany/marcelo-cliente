@@ -1,5 +1,5 @@
-<!DOCTYPE html><html lang="pt-BR" data-theme="light" data-acc="branco"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MS Control · Styleguide</title>
-<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<!DOCTYPE html><html lang="pt-BR" data-theme="dark" data-acc="branco"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MS Control · Styleguide</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link href="https://fonts.googleapis.com/css2?family=Geist:wght@300..800&family=Geist+Mono:wght@400..600&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="server/ds/styles.css"><!-- styleguide: folha de componentes para conferência/Figma, não faz parte do painel --><link rel="stylesheet" href="ms7-ui.css?v=1">
 <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
 <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
@@ -16,7 +16,7 @@ body{padding:48px;background:var(--surface-page)}
 .comp>.ci{display:block}
 .comp>.lab{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--text-secondary)}
 .sw{width:120px;padding:12px;border-radius:12px;background:var(--surface-card);box-shadow:var(--shadow-card);display:flex;flex-direction:column;gap:8px}
-.sw i{display:block;height:48px;border-radius:8px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.06)}
+.sw i{display:block;height:48px;border-radius:8px;box-shadow:inset 0 0 0 1px var(--line)}
 .ms7-search-btn{height:38px;display:inline-flex;align-items:center;gap:8px;padding:0 10px 0 12px;border-radius:11px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer}
 .ms7-search-btn kbd{font-family:inherit;font-size:11px;font-weight:600;padding:2px 6px;border-radius:6px;background:var(--surface-muted);color:var(--text-secondary);border:1px solid var(--line)}
 .sg-plan{color:var(--ms7-lime-500)}html[data-theme="dark"] .sg-plan{color:var(--text-on-lime,#0C3B26)}
@@ -36,7 +36,7 @@ function Sheet(){
   return <div className="sg">
     <section><h2>Cores</h2><div className="grp" id="g-colors">{COLORS.map(c=><div className="comp" data-name={'Cor/'+c[0]} key={c[0]}><div className="ci sw" data-name={'Cor/'+c[0]}><i style={{background:'var('+c[1]+')'}}/><b>{c[0]}</b><span>{c[1]}</span></div></div>)}</div></section>
     <section><h2>Tipografia</h2><div className="grp" id="g-type" style={{flexDirection:'column',gap:20}}>
-      <C name="Texto/Título de página"><div style={{fontSize:28,fontWeight:600,letterSpacing:'-.03em',lineHeight:1.1}}>Olá, <em className="ms7-serif" style={{color:'var(--ms7-green-900)',fontSize:'1.12em'}}>Rafael</em></div></C>
+      <C name="Texto/Título de página"><div style={{fontSize:28,fontWeight:600,letterSpacing:'-.03em',lineHeight:1.1}}>Olá, <b style={{color:'var(--text-brand)',fontWeight:600}}>Rafael</b> <span className="ms7-emo" style={{fontSize:'.9em',marginLeft:4}}>👋</span></div></C>
       <C name="Texto/Título de seção"><div style={{fontSize:16,fontWeight:600,letterSpacing:'-.015em'}}>Resultados do período</div></C>
       <C name="Texto/Número grande"><div className="ms7-stat-value" style={{fontSize:34}}>+R$ 2.446,35</div></C>
       <C name="Texto/Eyebrow"><div className="ms7-eyebrow">Resultado por dia</div></C>
@@ -92,10 +92,20 @@ function Sheet(){
       <C name="Avatar/online"><DS.Avatar name="Bruna Costa" size={38} online/></C>
       <C name="Stepper"><div style={{width:420}}><DS.Stepper steps={3} current={2}/></div></C>
     </div></section>
+    <section><h2>Efeitos</h2><div className="grp" id="g-fx">
+      <C name="Efeito/Card em destaque (borda animada + luz no cursor)" style={{width:420}}><div className="ms7-card ms7-glow" style={{padding:24}}><div className="ms7-eyebrow">Resultado do dia</div><div className="ms7-grad-text ms7-num" style={{fontSize:34,fontWeight:600,letterSpacing:'-.03em',margin:'8px 0 4px'}}>+R$ 2.446,35</div><div style={{fontSize:13.5,color:'var(--text-secondary)'}}>9 cooperações concluídas · ROI 69%</div></div></C>
+      <C name="Efeito/Texto degradê"><div className="ms7-grad-text" style={{fontSize:28,fontWeight:600,letterSpacing:'-.03em'}}>Lucro líquido</div></C>
+      <C name="Efeito/Tile degradê"><span className="ms7-grad-tile" style={{width:40,height:40,borderRadius:12,display:'flex',alignItems:'center',justifyContent:'center'}}><DS.Icon name="zap" size={18} strokeWidth={2.2}/></span></C>
+      <C name="Efeito/Linha de luz" style={{width:320}}><div className="ms7-grad-line"/></C>
+      <C name="Efeito/Cursor"><div style={{position:'relative',width:120,height:60}}><div style={{position:'absolute',left:40,top:20,width:34,height:34,borderRadius:'50%',border:'1.5px solid rgba(255,255,255,.85)'}}/><div style={{position:'absolute',left:53,top:33,width:8,height:8,borderRadius:'50%',background:'var(--ms7-lime-500)',boxShadow:'0 0 14px rgba(201,247,117,.9)'}}/></div></C>
+    </div></section>
+    <section><h2>Emojis</h2><div className="grp" id="g-emoji">
+      {[['Cooperações','🤝'],['Metas','🎯'],['Tarefas','✅'],['Chaves PIX','🔑'],['Ponto','⏱️'],['Comissão','💸'],['Ranking','🏆'],['Operadores','👥'],['Análises','📊'],['Avisos','📣'],['Loja','🛒'],['Proxies','🌐'],['Assinatura','💳'],['Alunos','🎓'],['Baú','📦'],['Notificações','🔔'],['Saudação','👋'],['Toast','✨']].map(e=><C key={e[0]} name={'Emoji/'+e[0]}><div style={{display:'inline-flex',alignItems:'center',gap:10,height:40,padding:'0 14px 0 10px',borderRadius:12,background:'var(--surface-card)',boxShadow:'var(--shadow-card)'}}><span className="ms7-emo" style={{fontSize:18}}>{e[1]}</span><span style={{fontSize:13.5,fontWeight:600}}>{e[0]}</span></div></C>)}
+    </div></section>
     <section><h2>Feedback</h2><div className="grp" id="g-feedback">
       <C name="Vazio/Tarefas" style={{width:420,background:'var(--surface-card)',borderRadius:16,boxShadow:'var(--shadow-card)'}}><Empty art="Tasks" title="Nenhuma tarefa para hoje" sub="Crie uma tarefa acima ou marque uma como diária." compact/></C>
       <C name="Vazio/Chaves PIX" style={{width:420,background:'var(--surface-card)',borderRadius:16,boxShadow:'var(--shadow-card)'}}><Empty art="Keys" title="Nenhum grupo escolhido" sub="Escolha os lotes para o operador trabalhar só com eles." compact action={<DS.Button variant="brand" size="sm" iconLeft="key-round">Escolher grupos</DS.Button>}/></C>
-      <C name="Toast"><div className="ms7-toast" style={{position:'static',transform:'none',animation:'none'}}><span style={{width:22,height:22,borderRadius:7,background:'var(--ms7-lime-500)',display:'flex',alignItems:'center',justifyContent:'center'}}><DS.Icon name="check" size={13} color="#0C3B26" strokeWidth={3}/></span>Dados atualizados</div></C>
+      <C name="Toast"><div className="ms7-toast" style={{position:'static',transform:'none',animation:'none'}}><span style={{width:22,height:22,borderRadius:7,background:'var(--ms7-lime-500)',display:'flex',alignItems:'center',justifyContent:'center'}}><DS.Icon name="check" size={13} color="#0B2416" strokeWidth={3}/></span>Dados atualizados <span className="ms7-emo">✨</span></div></C>
       <C name="Notificação push"><div className="ms7-push" style={{position:'static',animation:'none'}}><div className="ms7-push-top"><span style={{width:20,height:20,borderRadius:6,background:'#2AABEE',display:'flex',alignItems:'center',justifyContent:'center'}}><DS.Icon name="send" size={11} color="#fff" strokeWidth={2.2}/></span><span style={{flex:1}}>Telegram · MS7 Bot</span><span style={{textTransform:'none',letterSpacing:0}}>agora</span></div><div style={{display:'flex',gap:12}}><span style={{width:36,height:36,borderRadius:11,background:'var(--ms7-blue)',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0}}><DS.Icon name="repeat" size={18} color="#fff" strokeWidth={2}/></span><div><div style={{fontSize:14,fontWeight:600,marginBottom:3}}>Ciclo fechado — Equipe Aurora (C-1047)</div><div style={{fontSize:13,lineHeight:1.5,color:'#C9CFC9'}}>Depósito: R$ 12.480,00 · Saque: R$ 15.920,00{'\n'}Resultado: LUCRO de R$ 3.440,00</div></div></div></div></C>
       <C name="Tabela/linhas" style={{width:720,background:'var(--surface-card)',borderRadius:16,boxShadow:'var(--shadow-card)',padding:8}}><DS.DataTable columns={[{key:'n',label:'Operador',render:r=><span style={{display:'flex',alignItems:'center',gap:10}}><DS.Avatar name={r.n} size={30}/><span><div style={{fontWeight:600}}>{r.n}</div><div style={{fontSize:12,color:'var(--text-secondary)'}}>{r.c} concluídas</div></span></span>},{key:'q',label:'Contas',align:'right'},{key:'b',label:'Bloqueadas',align:'center',render:r=><DS.Badge tone="error" size="sm">{r.b}</DS.Badge>},{key:'l',label:'Lucro',align:'right',render:r=><span className="ms7-num" style={{fontWeight:600,color:'var(--ms7-green)'}}>{r.l}</span>}]} rows={[{id:1,n:'Bruna Costa',c:2,q:25,b:'1 · 4%',l:'R$ 998,00'},{id:2,n:'Renata Silva',c:2,q:18,b:'1 · 5,6%',l:'R$ 981,00'}]}/></C>
     </div></section>

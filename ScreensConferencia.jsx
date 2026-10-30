@@ -1,5 +1,24 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
+  /* ---------- CSS só desta tela (tokens) ---------- */
+  const CSS = [
+    '.ms7cf-tile{width:40px;height:40px;border-radius:12px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green-900) 16%,transparent);color:var(--ms7-green-900)}',
+    '.ms7cf-grp{display:flex;align-items:center;gap:14px;padding:16px 20px;flex-wrap:wrap;transition:background var(--dur-fast)}',
+    '.ms7cf-grp+.ms7cf-grp,.ms7cf-det+.ms7cf-grp{border-top:1px solid var(--border-subtle)}',
+    '.ms7cf-grp:hover{background:var(--surface-muted)}',
+    '.ms7cf-det{border-top:1px solid var(--border-subtle);padding:2px 8px 6px;background:var(--surface-muted)}',
+    '.ms7cf-dif{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px}',
+    '.ms7cf-dif .ico{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center}',
+    'html[data-theme="dark"] .ms7cf-grp:hover{background:var(--glass)}',
+    'html[data-theme="dark"] .ms7cf-det{background:rgba(0,0,0,.22)}',
+    '@media (max-width:640px){.ms7cf-grp{padding:14px 16px}}',
+  ].join('');
+  if (!document.getElementById('ms7-conferencia-css')) {
+    const st = document.createElement('style');
+    st.id = 'ms7-conferencia-css';
+    st.textContent = CSS;
+    document.head.appendChild(st);
+  }
   const brl = function (v) {
     return MS7.brl(v || 0);
   };
@@ -87,17 +106,13 @@
             autoFocus
           />
           <div
+            className="ms7cf-dif"
             style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: 12,
-              padding: '12px 14px',
-              borderRadius: 12,
-              background: 'color-mix(in oklab, ' + (dif === 0 ? okC : badC) + ' 10%, var(--surface-card))',
+              background: 'color-mix(in oklab, ' + (dif === 0 ? okC : badC) + ' 10%, transparent)',
               boxShadow: 'inset 0 0 0 1px color-mix(in oklab, ' + (dif === 0 ? okC : badC) + ' 22%, transparent)',
             }}
           >
-            <span className="ms7d-tile" style={{ width: 30, height: 30, borderRadius: 9, background: 'var(--surface-card)', color: dif === 0 ? okC : badC }}>
+            <span className="ico" style={{ background: 'color-mix(in oklab, ' + (dif === 0 ? okC : badC) + ' 16%, transparent)', color: dif === 0 ? okC : badC }}>
               <DS.Icon name={dif === 0 ? 'circle-check' : 'triangle-alert'} size={16} strokeWidth={2} />
             </span>
             <span style={{ fontSize: 14, fontWeight: 600, color: dif === 0 ? okC : badC }}>
@@ -251,8 +266,8 @@
                   });
                   return (
                     <React.Fragment key={grp.g.id}>
-                      <div className="ms7d-grp">
-                        <span className="ms7d-tile" style={{ width: 40, height: 40, borderRadius: 12, background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}>
+                      <div className="ms7cf-grp">
+                        <span className="ms7cf-tile">
                           <DS.Icon name="landmark" size={18} strokeWidth={1.9} />
                         </span>
                         <div style={{ flex: '1 1 220px', minWidth: 0 }}>
@@ -297,7 +312,7 @@
                         </div>
                       </div>
                       {on ? (
-                        <div className="ms7d-grp-det">
+                        <div className="ms7cf-det">
                           <div className="ms7-table-wrap">
                             <table className="ms7-table">
                               <thead>
@@ -338,7 +353,7 @@
               </section>
             ) : (
               <section className="ms7-card" style={{ padding: 12 }}>
-                <Empty art="Wallet" title="Nada para conferir" sub="Quando o operador coloca uma chave e marca a conta como Sacado, o valor aparece aqui no grupo da chave." />
+                <Empty art="Wallet" emoji="🧾" title="Nada para conferir" sub="Quando o operador coloca uma chave e marca a conta como Sacado, o valor aparece aqui no grupo da&nbsp;chave." />
               </section>
             )}
           </React.Fragment>
@@ -428,7 +443,7 @@
                   </table>
                 </div>
               ) : (
-                <Empty art="Tasks" title="Nenhuma conferência ainda" sub="Cada conferência confirmada fica registrada aqui, com o valor esperado e o que caiu na conta." />
+                <Empty art="Tasks" title="Nenhuma conferência ainda" sub="Cada conferência confirmada fica registrada aqui, com o valor esperado e o que caiu na&nbsp;conta." />
               )}
             </section>
           </React.Fragment>

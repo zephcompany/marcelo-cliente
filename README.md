@@ -1,8 +1,8 @@
 # MS Control · front novo (Zeph Company)
 
-Redesign da camada visual do painel **MS Control** (repo de produção: `PAINEL-ADMIN-MARCELO-NOVO`, no Railway). Mesma arquitetura, mesmas funções, mesma API — só o visual mudou: tipografia, componentes, espaçamento, transições, animações, estados vazios ilustrados, login novo, menu novo, modo escuro revisado.
+Redesign da camada visual do painel **MS Control** (repo de produção: `PAINEL-ADMIN-MARCELO-NOVO`, no Railway). Mesma arquitetura, mesmas funções, mesma API — só o visual mudou. Direção **Black Glass**: painel preto, cards de vidro fosco, acento lima, fonte Geist, ícones lucide + emojis pontuais, assets animados mostrando cada função antes de usar, login e menu novos.
 
-- Base: snapshot dos arquivos **ao vivo** do painel em 29/10/2026 (14h30). Tudo que existia continua existindo.
+- Base: snapshot dos arquivos **ao vivo** do painel em 29/10/2026 (14h30) + as atualizações de lógica que o Marcelo publicou até 29/10 à noite (`ScreensCoop`, `ScreensMetas`, `ScreensTarefas`, `store.js`) reaplicadas por cima do visual novo. Tudo que existia continua existindo.
 - Stack intacta: React 18 (UMD) + Babel standalone no navegador, Lucide, `_ds_bundle.js`, `store.js`, `server/server.cjs`. Sem build, sem dependência nova.
 - Nada de lógica foi alterado: `store.js`, `data.js`, `sw.js`, `manifest.webmanifest`, ícones e a pasta `server/` são cópias idênticas às do painel.
 
@@ -50,11 +50,12 @@ DATA_DIR=./server/data ADMIN_EMAIL=admin@ms7.com ADMIN_PASSWORD=12345678 node se
 
 ## O que mudou no visual (resumo)
 
-- Fonte Instrument Sans (+ Instrument Serif itálico em poucos destaques), pesos 400–600, números tabulares.
-- Cards com anel fino em vez de sombra, raio 16, mais respiro; cor só como detalhe (tile de ícone, ponto, badge tingida).
-- Menu lateral com indicador deslizante, tooltips, badges; barra inferior no celular.
+- Tema preto por padrão (`#070808`) com dois campos de luz fixos; cards, menu, cabeçalho, modais, busca e notificações em vidro fosco (translúcido + blur + fio de luz). O tema claro continua como alternativa (botão do sol).
+- Fonte Geist (Google Fonts) e Geist Mono para IDs/chaves; pesos 400–600; nada de serif.
+- Acento lima só onde importa: ação principal, aba ativa, item ativo do menu, foco. Dinheiro positivo verde, negativo vermelho.
+- Emojis pontuais (saudação, título de card, estados vazios, toasts) — ícones de ação continuam lucide.
+- Menu lateral com indicador deslizante, tooltips, badges, recolhível; barra inferior no celular.
 - Cabeçalho fixo com blur, subtítulo por página, busca estilo command palette (Ctrl+K), status de sincronização no avatar.
 - Login dividido com prévia animada do produto (KPIs contando, gráfico, ciclo fechado, meta).
-- Transição de página, entrada em cascata, reveal no scroll, números que contam, gráficos que crescem, hover sutil nos cards.
-- Estados vazios com ilustrações animadas que mostram o que a função faz.
-- Modo escuro refeito só com tokens.
+- Transição de página, entrada em cascata, reveal no scroll, números que contam, gráficos que crescem, hover sutil nos cards (sem glow).
+- Estados vazios com assets animados que mostram o que a função faz antes de usar.

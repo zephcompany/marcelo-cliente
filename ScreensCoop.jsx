@@ -16,6 +16,15 @@
       '.ms7c-kpi-head{display:flex;align-items:center;justify-content:space-between;gap:8px;min-width:0}',
       '.ms7c-kpi-head .ms7-eyebrow{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}',
       '.ms7c-tile{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:inline-flex;align-items:center;justify-content:center}',
+      '.ms7c-tile.is-soft{background:color-mix(in oklab,var(--text-secondary) 16%,transparent);color:var(--text-secondary)}',
+      '.ms7c-tile.is-brand{background:color-mix(in oklab,var(--ms7-green-900) 16%,transparent);color:var(--ms7-green-900)}',
+      /* qualquer coisa flutuante (popover) ou grudada (sticky) fica sólida no escuro */
+      '.ms7c-pop{position:absolute;right:0;top:40px;z-index:20;width:210px;padding:12px;border-radius:14px;background:var(--surface-card);box-shadow:var(--shadow-pop);display:flex;flex-direction:column;gap:8px}',
+      'html[data-theme="dark"] .ms7c-pop{background:var(--glass-solid);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4)}',
+      '.ms7c-th{background:var(--surface-card)}',
+      '.ms7c-sticky-foot{background:var(--surface-muted)}',
+      'html[data-theme="dark"] .ms7c-table th,html[data-theme="dark"] .ms7c-th,html[data-theme="dark"] .ms7c-table tfoot td,html[data-theme="dark"] .ms7c-sticky-foot{background:var(--glass-solid)}',
+      'html[data-theme="dark"] .ms7c-sum{background:color-mix(in oklab,var(--ms7-lime-500) 14%,var(--glass-solid))}',
       '.ms7c-kpi-val{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.ms7c-bar{display:flex;align-items:center;gap:10px 12px;flex-wrap:wrap}',
       '.ms7c-bar-dates{display:flex;align-items:center;gap:8px;flex-wrap:wrap}',
@@ -1072,7 +1081,7 @@
               placeholder={f.opId && f.opId !== '__eu' ? 'Automático: ' + DB.proxLink(f.opId) : 'Automático (Link 1, 2, 3…)'}
               value={f.linkN || ''}
               onChange={u('linkN')}
-              hint="Em branco: numera sozinho por operador"
+              hint={'Em branco: numera sozinho por\u00a0operador'}
             />
             {NovoBox('redes')}
             <Input label="Qtd. depositantes" type="number" value={f.qtd} onChange={u('qtd')} />
@@ -1092,7 +1101,7 @@
               placeholder="0,00"
               value={f.salario || ''}
               onChange={u('salario')}
-              hint="Opcional (R$ 0,00 para comissão pura)"
+              hint={'Opcional (R$ 0,00 para comissão\u00a0pura)'}
             />
             <div style={{ border: '1px solid var(--line)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
               <Input label="Média de depósito" prefix="R$" placeholder="0,00" value={f.mediaDep || ''} onChange={u('mediaDep')} />
@@ -1365,17 +1374,13 @@
             )}
           />
           {c.status === 'Ativa' || c.status === 'Em andamento' ? (
-            <label style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: 14, fontWeight: 500, cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={fin}
-                onChange={function (e) {
-                  setFin(e.target.checked);
-                }}
-                style={{ width: 18, height: 18, margin: 0, accentColor: 'var(--ms7-green-900)' }}
-              />
-              {'Finalizar a cooperação de ' + DB.opName(c.opId) + ' com ' + feitas + ' contas'}
-            </label>
+            <DS.Checkbox
+              checked={fin}
+              onChange={function (v) {
+                setFin(!!v);
+              }}
+              label={'Finalizar a cooperação de ' + DB.opName(c.opId) + ' com ' + feitas + ' contas'}
+            />
           ) : null}
           <div className="ms7c-hint" style={{ fontSize: 13 }}>
             {'Cria uma cooperação nova com a mesma plataforma, conta mãe, link, comissão e os depósitos das contas que faltam. A cooperação atual fica com as contas feitas, e a devolução recalcula sozinha. Escolha os grupos de chaves PIX na\u00a0cooperação\u00a0nova.'}
@@ -1781,7 +1786,6 @@
       textAlign: 'left',
       borderBottom: '1px solid var(--line)',
       whiteSpace: 'nowrap',
-      background: 'var(--surface-card)',
       position: 'sticky',
       top: 0,
       zIndex: 1,
@@ -1982,6 +1986,9 @@
         >
           <div style={{ flex: '1 1 220px', minWidth: 0 }}>
             <div className="ms7c-sec-title" style={{ gap: 8 }}>
+              <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 0 }}>
+                🧾
+              </span>
               Tabela de contas
               <DS.CountDot tone="muted">{c.contas.length}</DS.CountDot>
             </div>
@@ -2083,22 +2090,7 @@
                 Colunas
               </Button>
               {colsOpen ? (
-                <div
-                  style={{
-                    position: 'absolute',
-                    right: 0,
-                    top: 40,
-                    zIndex: 20,
-                    width: 210,
-                    padding: 12,
-                    borderRadius: 14,
-                    background: 'var(--surface-card)',
-                    boxShadow: 'var(--shadow-pop)',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: 8,
-                  }}
-                >
+                <div className="ms7c-pop">
                   <div className="ms7-eyebrow" style={{ marginBottom: 2 }}>
                     Vale para você e o operador
                   </div>
@@ -2371,6 +2363,7 @@
               />
             </div>
             <div
+              className="ms7c-sticky-foot"
               style={{
                 position: 'sticky',
                 bottom: 0,
@@ -2378,7 +2371,6 @@
                 gridTemplateColumns: 'repeat(4,minmax(0,1fr))',
                 gap: 4,
                 padding: '8px 10px',
-                background: 'var(--surface-muted)',
                 borderTop: '1px solid var(--line)',
               }}
             >
@@ -2461,13 +2453,13 @@
                 {!c.contas.length ? (
                   <tr>
                     <td colSpan={cols.length + 3} style={{ whiteSpace: 'normal' }}>
-                      <Empty art="Coop" compact title="Nenhuma conta ainda" sub={'Adicione uma conta, importe uma lista ou cole as chaves PIX.'} />
+                      <Empty art="Coop" compact emoji={false} title="Nenhuma conta ainda" sub={'Adicione uma conta, importe uma lista ou cole as chaves PIX.'} />
                     </td>
                   </tr>
                 ) : bq && !achados ? (
                   <tr>
                     <td colSpan={cols.length + 3} style={{ whiteSpace: 'normal' }}>
-                      <Empty art="Search" compact title="Nenhuma conta encontrada" sub={'Nenhum usuário, chave ou valor bate com a busca.'} />
+                      <Empty art="Search" compact emoji={false} title="Nenhuma conta encontrada" sub={'Nenhum usuário, chave ou valor bate com a busca.'} />
                     </td>
                   </tr>
                 ) : null}
@@ -2635,7 +2627,7 @@
                 setColar(false);
               }}
               title="Colar chaves PIX"
-              subtitle="Uma chave por linha, na ordem das contas com saque"
+              subtitle={'Uma chave por linha, na ordem das contas com\u00a0saque'}
               footer={
                 <React.Fragment>
                   <Button
@@ -2878,7 +2870,7 @@
                     onChange={function (e) {
                       setTxt(e.target.value);
                     }}
-                    hint="O número diz a linha da tabela. As linhas de total do Telegram são ignoradas. O operador preenche depois só usuário, saque e chave PIX."
+                    hint={'O número diz a linha da tabela. As linhas de total do Telegram são ignoradas. O operador preenche depois só usuário, saque e chave\u00a0PIX.'}
                   />
                   <div className="ms7c-grid2" style={{ gap: 12 }}>
                     <Input
@@ -2924,9 +2916,9 @@
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                           <thead>
                             <tr>
-                              <th style={Object.assign({}, th, { width: 60 })}>#</th>
-                              <th style={Object.assign({}, th, { textAlign: 'right' })}>Valor</th>
-                              <th style={Object.assign({}, th, { width: 70, textAlign: 'center' })}>R</th>
+                              <th className="ms7c-th" style={Object.assign({}, th, { width: 60 })}>#</th>
+                              <th className="ms7c-th" style={Object.assign({}, th, { textAlign: 'right' })}>Valor</th>
+                              <th className="ms7c-th" style={Object.assign({}, th, { width: 70, textAlign: 'center' })}>R</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -2981,7 +2973,7 @@
               onChange={function (e) {
                 setTxt(e.target.value);
               }}
-              hint="Com usuário: preenche a conta desse usuário (ou a próxima linha vazia, se ele ainda não existir). Só valor: preenche na ordem as contas que ainda não têm esse valor."
+              hint={'Com usuário: preenche a conta desse usuário (ou a próxima linha vazia, se ele ainda não existir). Só valor: preenche na ordem as contas que ainda não têm esse\u00a0valor.'}
             />
           ) : (
             <Input
@@ -2993,7 +2985,7 @@
               onChange={function (e) {
                 setTxt(e.target.value);
               }}
-              hint="As contas preenchem primeiro as linhas vazias; se faltar linha, novas são criadas."
+              hint={'As contas preenchem primeiro as linhas vazias; se faltar linha, novas são\u00a0criadas.'}
             />
           )}
         </Modal>
@@ -3090,10 +3082,10 @@
     return (
       <div className="ms7-card" style={{ padding: '18px 20px', display: 'flex', flexDirection: 'column', gap: 14 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}>
-            <DS.Icon name="key-round" size={15} strokeWidth={2} />
-          </span>
-          <span className="ms7c-sec-title" style={{ flex: 1 }}>
+          <span className="ms7c-sec-title" style={{ flex: 1, gap: 8 }}>
+            <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 0 }}>
+              🔑
+            </span>
             Grupos de chaves PIX
             {meus.length ? <DS.CountDot tone="muted">{meus.length}</DS.CountDot> : null}
           </span>
@@ -3103,6 +3095,7 @@
           <Empty
             art="Keys"
             compact
+            emoji={false}
             title="Nenhum grupo escolhido"
             sub={'O operador vê os lotes do operador e da plataforma. Escolha os grupos para ele trabalhar só com eles.'}
             action={canAdmin && !fim ? escolher : null}
@@ -3299,7 +3292,7 @@
                 );
               })
             ) : (
-              <Empty art="Keys" compact title="Nenhum lote cadastrado" sub="Cadastre em Gestão → Chaves PIX." />
+              <Empty art="Keys" compact title="Nenhum lote cadastrado" sub={'Cadastre em Gestão → Chaves\u00a0PIX.'} />
             )}
           </div>
         </Modal>
@@ -3442,7 +3435,7 @@
             type="number"
             value={f.depositantes}
             onChange={u('depositantes')}
-            hint="Parou antes? Ex.: 50 → 20. Depósito e comissão contam só essas."
+            hint={'Parou antes? Ex.: 50 → 20. Depósito e comissão contam só\u00a0essas.'}
           />
           <div style={{ gridColumn: '1 / -1' }}>
             <Input label="Descrição" multiline rows={3} value={f.descricao} onChange={u('descricao')} />
@@ -3741,7 +3734,7 @@
               {info.map(function (x) {
                 return (
                   <div key={x[0]} className="ms7c-fact">
-                    <span className="ms7c-tile" style={{ background: 'var(--surface-card)', color: 'var(--text-secondary)', marginRight: 6 }}>
+                    <span className="ms7c-tile is-soft" style={{ marginRight: 6 }}>
                       <DS.Icon name={x[2]} size={15} />
                     </span>
                     <div style={{ flex: 1, minWidth: 0 }}>
@@ -4111,7 +4104,7 @@
                   <div key={x[0]} className="ms7-card ms7c-kpi">
                     <div className="ms7c-kpi-head">
                       <span className="ms7-eyebrow">{x[0]}</span>
-                      <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, ' + x[4] + ' 12%, var(--surface-card))', color: x[4] }}>
+                      <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, ' + x[4] + ' 16%, transparent)', color: x[4] }}>
                         <DS.Icon name={x[3]} size={15} strokeWidth={2} />
                       </span>
                     </div>
@@ -4337,8 +4330,9 @@
             <Empty
               art="Coop"
               icon={bau ? 'package' : 'briefcase'}
+              emoji={bau ? '📦' : undefined}
               title={bau ? 'Nenhum baú encontrado' : 'Nenhuma cooperação encontrada'}
-              sub={bau ? 'Ajuste os filtros ou crie um novo baú.' : 'Ajuste os filtros ou crie uma nova cooperação.'}
+              sub={bau ? 'Ajuste os filtros ou crie um novo baú.' : 'Ajuste os filtros ou crie uma nova cooperação.'}
               action={
                 <Button
                   variant="brand"
@@ -4400,6 +4394,9 @@
           <Card
             title={
               <span style={{ display: 'inline-flex', alignItems: 'center', gap: 8 }}>
+                <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 0 }}>
+                  🧾
+                </span>
                 Lista geral de contas
                 <DS.CountDot tone="muted">{rows.length}</DS.CountDot>
               </span>
@@ -4560,14 +4557,21 @@
               ]}
             />
             {rows.length === 0 ? (
-              <Empty art="Coop" icon="list" title="Nenhum resultado." sub={'Nenhuma conta bate com o filtro ou a\u00a0busca.'} compact />
+              <Empty art="Coop" icon="list" emoji={false} title="Nenhum resultado." sub={'Nenhuma conta bate com o filtro ou a\u00a0busca.'} compact />
             ) : rows.length > 60 ? (
               <Hint>{'Mostrando 60 de ' + rows.length + '. Use a busca ou exporte para ver todas.'}</Hint>
             ) : null}
           </Card>
         ) : (
           <Card
-            title="Listas globais"
+            title={
+              <React.Fragment>
+                <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+                  🗂️
+                </span>
+                Listas globais
+              </React.Fragment>
+            }
             action={
               <div style={{ display: 'flex', gap: 10 }}>
                 <Button
@@ -4593,14 +4597,14 @@
               </div>
             }
           >
-            <Hint>Catálogos reutilizáveis de contas.</Hint>
+            <Hint>{'Catálogos reutilizáveis de\u00a0contas.'}</Hint>
             {listas.length ? (
               <div className="ms7-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 12 }}>
                 {listas.map(function (l) {
                   return (
                     <div key={l.id} className="ms7c-lista">
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-                        <span className="ms7c-tile" style={{ background: 'var(--surface-card)', color: 'var(--ms7-green-900)' }}>
+                        <span className="ms7c-tile is-brand">
                           <DS.Icon name="list-checks" size={15} strokeWidth={2} />
                         </span>
                         <span className="ms7c-lista-t">{l.nome}</span>
@@ -4633,7 +4637,7 @@
                 })}
               </div>
             ) : (
-              <Empty art="Coop" title="Nenhuma lista global ainda" sub={'Crie uma lista ou importe uma do Telegram para reaproveitar\u00a0contas.'} compact />
+              <Empty art="Coop" emoji={false} title="Nenhuma lista global ainda" sub={'Crie uma lista ou importe uma do Telegram para reaproveitar\u00a0contas.'} compact />
             )}
           </Card>
         )}
@@ -4712,85 +4716,340 @@
     );
   }
   function AvisosScreen({ session }) {
-    const { Card, Input, Checkbox, Button, IconButton, Badge } = DS;
+    const { Card, Input, Button, IconButton, Badge, Tabs, Select } = DS;
     const isOp = session.role === 'operador';
-    const [list, setList] = usePersist('avisos', MS7.avisos);
+    const me = session.opId;
+    DB.useDB();
+    const [list0, setList] = usePersist('avisos', []);
+    const list = (Array.isArray(list0) ? list0 : []).filter(function (a) {
+      return a && a.titulo;
+    });
+    const ops = (DB.get().operadores || [])
+      .filter(function (o) {
+        return o.ativo !== false;
+      })
+      .sort(function (x, y) {
+        return x.nome.localeCompare(y.nome, 'pt-BR');
+      });
     const [t, setT] = React.useState('');
     const [c, setC] = React.useState('');
-    const [all, setAll] = React.useState(true);
-    const [gs, setGs] = React.useState([]);
-    const ok = t && c && (all || gs.length);
+    const [para, setPara] = React.useState([]);
+    const [edId, setEdId] = React.useState(null);
+    const [aba, setAba] = React.useState('rec');
+    const [abre, setAbre] = React.useState(null);
+    const [fil, setFil] = React.useState('todos');
+    const quando = function (a) {
+      if (a.em) return a.em;
+      const m = String(a.data || '').match(/(\d{2})\/(\d{2})\/(\d{4})(?:\s+(\d{2}):(\d{2}))?/);
+      if (m) return new Date(+m[3], +m[2] - 1, +m[1], +(m[4] || 0), +(m[5] || 0)).getTime();
+      return typeof a.id === 'number' && a.id > 1e12 ? a.id : 0;
+    };
+    const alvo = function (a) {
+      return Array.isArray(a.para) && a.para.length
+        ? ops.filter(function (o) {
+            return a.para.indexOf(o.id) >= 0;
+          })
+        : ops;
+    };
+    const feito = function (a, id) {
+      return !!(a.feitos && a.feitos[id]);
+    };
+    const hoje0 = new Date();
+    hoje0.setHours(0, 0, 0, 0);
+    const lim = hoje0.getTime() - 6 * 86400000;
+    const ord = list.slice().sort(function (x, y) {
+      return quando(y) - quando(x);
+    });
+    const visiveis = ord.filter(function (a) {
+      return !isOp || !Array.isArray(a.para) || !a.para.length || a.para.indexOf(me) >= 0;
+    });
+    const rec = visiveis.filter(function (a) {
+        return quando(a) >= lim;
+      }),
+      ant = visiveis.filter(function (a) {
+        return quando(a) < lim;
+      });
+    const base = (aba === 'rec' ? rec : ant).filter(function (a) {
+      if (fil === 'todos') return true;
+      if (isOp) return fil === 'pend' ? !feito(a, me) : feito(a, me);
+      const al = alvo(a);
+      const n = al.filter(function (o) {
+        return feito(a, o.id);
+      }).length;
+      return fil === 'pend' ? n < al.length : n === al.length && al.length > 0;
+    });
+    const diaL = function (ms) {
+      if (!ms) return 'Sem data';
+      const d = new Date(ms);
+      d.setHours(0, 0, 0, 0);
+      const df = Math.round((hoje0 - d) / 86400000);
+      if (df === 0) return 'Hoje';
+      if (df === 1) return 'Ontem';
+      return d.toLocaleDateString('pt-BR', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' });
+    };
+    const grupos = [];
+    base.forEach(function (a) {
+      const k = diaL(quando(a));
+      let g = grupos.find(function (x) {
+        return x.k === k;
+      });
+      if (!g) {
+        g = { k: k, l: [] };
+        grupos.push(g);
+      }
+      g.l.push(a);
+    });
     function pub() {
-      setList(
-        [
-          {
-            id: Date.now(),
-            titulo: t,
-            conteudo: c,
-            data: DB.fmtDate(DB.iso(DB.today)) + ' ' + new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-            publico: all ? 'Todos os usuários' : gs.join(', '),
-          },
-        ].concat(list),
-      );
+      const em = Date.now();
+      const data = new Date(em).toLocaleDateString('pt-BR') + ' ' + new Date(em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      if (edId != null) {
+        setList(
+          list.map(function (a) {
+            return a.id === edId ? Object.assign({}, a, { titulo: t, conteudo: c, para: para.slice(), publico: para.length ? para.map(DB.opName).join(', ') : 'Todos os operadores' }) : a;
+          }),
+        );
+        toast('Aviso atualizado');
+      } else {
+        setList([{ id: em, em: em, data: data, titulo: t, conteudo: c, para: para.slice(), publico: para.length ? para.map(DB.opName).join(', ') : 'Todos os operadores', feitos: {} }].concat(list));
+        toast('Aviso publicado');
+      }
       setT('');
       setC('');
-      setGs([]);
-      setAll(true);
-      toast('Aviso publicado');
+      setPara([]);
+      setEdId(null);
     }
-    const listCard = (
-      <Card title="Avisos publicados" subtitle={list.length ? list.length + (list.length === 1 ? ' aviso' : ' avisos') : null}>
-        {list.length ? (
-          <div className="ms7-stagger" style={{ display: 'flex', flexDirection: 'column' }}>
-            {list.map(function (a) {
-              return (
-                <div key={a.id} className="ms7c-av">
-                  <span className="ms7c-tile" style={{ width: 34, height: 34, background: 'var(--ms7-lime-100)', color: 'var(--ms7-green-ink)' }}>
-                    <DS.Icon name="megaphone" size={16} strokeWidth={2} />
-                  </span>
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.005em', lineHeight: 1.3 }}>{a.titulo}</div>
-                    <p style={{ margin: '3px 0 8px', fontSize: 13, fontWeight: 500, lineHeight: 1.5, whiteSpace: 'pre-line', color: 'var(--text-secondary)' }}>
-                      {a.conteudo}
-                    </p>
-                    <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
-                      <span className="ms7-num" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
-                        {a.data}
-                      </span>
-                      <Badge size="sm" variant="soft" tone="blue">
-                        {a.publico}
-                      </Badge>
-                    </div>
-                  </div>
-                  {!isOp ? (
-                    <IconButton
-                      icon="trash-2"
-                      className="ms7c-av-del"
-                      size={30}
-                      iconSize={15}
-                      label="Remover aviso"
-                      onClick={function () {
-                        setList(
-                          list.filter(function (x) {
-                            return x.id !== a.id;
-                          }),
-                        );
+    function marcar(a) {
+      const f = Object.assign({}, a.feitos || {});
+      if (f[me]) delete f[me];
+      else f[me] = Date.now();
+      setList(
+        list.map(function (x) {
+          return x.id === a.id ? Object.assign({}, x, { feitos: f }) : x;
+        }),
+      );
+      toast(f[me] ? 'Marcado como feito' : 'Desmarcado');
+    }
+    const hm = function (ms) {
+      return new Date(ms).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+    };
+    const chip = function (on, label, fn, key) {
+      return (
+        <button key={key || label} type="button" className={'ms7c-opt' + (on ? ' is-on' : '')} onClick={fn} aria-pressed={on} style={{ height: 34, minWidth: 0, padding: '0 12px', fontSize: 13 }}>
+          {label}
+        </button>
+      );
+    };
+    const card = function (a) {
+      const al = alvo(a);
+      const fe = al.filter(function (o) {
+        return feito(a, o.id);
+      });
+      const meu = feito(a, me);
+      const open = abre === a.id;
+      const paraTxt =
+        Array.isArray(a.para) && a.para.length
+          ? al
+              .map(function (o) {
+                return o.nome;
+              })
+              .join(', ')
+          : 'Todos os operadores';
+      return (
+        <div key={a.id} className="ms7c-av">
+          <span
+            className="ms7c-tile"
+            style={{
+              width: 34,
+              height: 34,
+              background: isOp && meu ? 'color-mix(in oklab, var(--ms7-green) 16%, transparent)' : 'var(--ms7-lime-100)',
+              color: isOp && meu ? 'var(--ms7-green)' : 'var(--ms7-green-ink)',
+            }}
+          >
+            <DS.Icon name={isOp && meu ? 'circle-check' : 'megaphone'} size={16} strokeWidth={2} />
+          </span>
+          <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            <div>
+              <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.005em', lineHeight: 1.3 }}>{a.titulo}</div>
+              <p style={{ margin: '3px 0 0', fontSize: 13, fontWeight: 500, lineHeight: 1.5, whiteSpace: 'pre-line', color: 'var(--text-secondary)' }}>
+                {a.conteudo}
+              </p>
+            </div>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
+              <span className="ms7-num" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
+                {quando(a) ? hm(quando(a)) : a.data || ''}
+              </span>
+              {!isOp ? (
+                <Badge size="sm" variant="soft" tone="blue">
+                  {paraTxt}
+                </Badge>
+              ) : null}
+              {isOp ? (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className={meu ? 'ms7c-fin' : ''}
+                  iconLeft={meu ? 'circle-check' : 'circle'}
+                  aria-pressed={meu}
+                  onClick={function () {
+                    marcar(a);
+                  }}
+                  style={{ marginLeft: 'auto' }}
+                >
+                  {meu ? 'Feito · ' + hm(a.feitos[me]) : 'Marcar como feito'}
+                </Button>
+              ) : null}
+            </div>
+            {!isOp ? (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+                <button
+                  type="button"
+                  onClick={function () {
+                    setAbre(open ? null : a.id);
+                  }}
+                  aria-expanded={open}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: 0,
+                    border: 0,
+                    background: 'transparent',
+                    color: 'var(--text-primary)',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                    width: '100%',
+                  }}
+                >
+                  <span className="ms7-bar" style={{ flex: 1, minWidth: 0, display: 'block' }}>
+                    <i
+                      style={{
+                        width: (al.length ? (fe.length / al.length) * 100 : 0) + '%',
+                        background: al.length && fe.length === al.length ? 'var(--ms7-green)' : 'var(--ms7-orange)',
+                        transition: 'width 600ms var(--ease-out)',
                       }}
-                    />
-                  ) : null}
+                    ></i>
+                  </span>
+                  <span className="ms7-num" style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', color: al.length && fe.length === al.length ? 'var(--ms7-green)' : 'var(--text-secondary)' }}>
+                    {fe.length + ' de ' + al.length + ' fizeram'}
+                  </span>
+                  <DS.Icon name={open ? 'chevron-up' : 'chevron-down'} size={16} color="var(--text-secondary)" />
+                </button>
+                {open ? (
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(180px,1fr))', gap: 6 }}>
+                    {al.map(function (o) {
+                      const ok = feito(a, o.id);
+                      return (
+                        <span key={o.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--surface-muted)', fontSize: 13, fontWeight: 500, minWidth: 0 }}>
+                          <DS.Icon name={ok ? 'circle-check' : 'circle-x'} size={15} strokeWidth={2} color={ok ? 'var(--ms7-green)' : 'var(--ms7-error)'} />
+                          <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.nome}</span>
+                          <span className="ms7-num" style={{ fontSize: 11.5, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                            {ok ? hm(a.feitos[o.id]) : 'não fez'}
+                          </span>
+                        </span>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </div>
+            ) : null}
+          </div>
+          {!isOp ? (
+            <div style={{ display: 'flex', gap: 2, flexShrink: 0 }}>
+              <IconButton
+                icon="pencil"
+                className="ms7c-av-del"
+                size={30}
+                iconSize={15}
+                label="Editar aviso"
+                onClick={function () {
+                  setEdId(a.id);
+                  setT(a.titulo);
+                  setC(a.conteudo);
+                  setPara(Array.isArray(a.para) ? a.para.slice() : []);
+                  window.scrollTo(0, 0);
+                }}
+              />
+              <IconButton
+                icon="trash-2"
+                className="ms7c-av-del"
+                size={30}
+                iconSize={15}
+                label="Apagar aviso"
+                onClick={function () {
+                  if (confirm('Apagar este aviso?'))
+                    setList(
+                      list.filter(function (x) {
+                        return x.id !== a.id;
+                      }),
+                    );
+                }}
+              />
+            </div>
+          ) : null}
+        </div>
+      );
+    };
+    const nVis = visiveis.length;
+    const lista = (
+      <Card
+        title={
+          <React.Fragment>
+            <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+              📣
+            </span>
+            Avisos publicados
+          </React.Fragment>
+        }
+        subtitle={nVis ? nVis + (nVis === 1 ? ' aviso' : ' avisos') : null}
+      >
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap', marginBottom: 14 }}>
+          <Tabs
+            variant="chips"
+            value={aba}
+            onChange={setAba}
+            items={[
+              { id: 'rec', label: 'Últimos 7 dias', count: rec.length },
+              { id: 'ant', label: 'Antigos', count: ant.length },
+            ]}
+          />
+          <Select
+            variant="pill"
+            aria-label="Filtrar avisos"
+            value={fil}
+            onChange={function (e) {
+              setFil(e.target.value);
+            }}
+            options={[
+              { value: 'todos', label: 'Todos' },
+              { value: 'pend', label: isOp ? 'Pendentes' : 'Faltam fazer' },
+              { value: 'ok', label: isOp ? 'Feitos' : 'Todos fizeram' },
+            ]}
+          />
+        </div>
+        {grupos.length ? (
+          <div className="ms7-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
+            {grupos.map(function (g) {
+              return (
+                <div key={g.k}>
+                  <div className="ms7-eyebrow" style={{ padding: '8px 0 6px' }}>
+                    {g.k}
+                  </div>
+                  <div style={{ display: 'flex', flexDirection: 'column' }}>{g.l.map(card)}</div>
                 </div>
               );
             })}
           </div>
         ) : (
-          <Empty art="Bell" icon="megaphone" title="Nenhum aviso publicado ainda" sub={'Os avisos publicados ficam listados aqui.'} />
+          <Empty art="Bell" icon="megaphone" emoji={false} title={aba === 'ant' ? 'Nenhum aviso antigo' : 'Nenhum aviso nos últimos 7 dias'} sub={'Os avisos publicados ficam listados aqui.'} />
         )}
       </Card>
     );
-    if (isOp) return listCard;
+    if (isOp) return lista;
+    const ok = t.trim() && c.trim();
     return (
       <Grid min={340}>
-        <Card title="Publicar aviso">
+        <Card title={edId != null ? 'Editar aviso' : 'Publicar aviso'}>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
             <Input
               label="Título do aviso"
@@ -4812,39 +5071,57 @@
             <div style={{ background: 'var(--surface-muted)', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
               <span className="ms7-label" style={{ gap: 6 }}>
                 <DS.Icon name="users" size={14} />
-                Público-alvo
+                Para quem
               </span>
-              <Checkbox label="Notificar todos os usuários" checked={all} onChange={setAll} />
-              {!all
-                ? MS7.grupos.map(function (g) {
-                    return (
-                      <Checkbox
-                        key={g}
-                        label={g}
-                        checked={gs.indexOf(g) >= 0}
-                        onChange={function (v) {
-                          setGs(
-                            v
-                              ? gs.concat([g])
-                              : gs.filter(function (x) {
-                                  return x !== g;
-                                }),
-                          );
-                        }}
-                        style={{ paddingLeft: 28 }}
-                      />
-                    );
-                  })
-                : null}
+              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                {chip(
+                  !para.length,
+                  'Todos os operadores',
+                  function () {
+                    setPara([]);
+                  },
+                  '__all',
+                )}
+                {ops.map(function (o) {
+                  const on = para.indexOf(o.id) >= 0;
+                  return chip(
+                    on,
+                    o.nome,
+                    function () {
+                      setPara(
+                        on
+                          ? para.filter(function (x) {
+                              return x !== o.id;
+                            })
+                          : para.concat([o.id]),
+                      );
+                    },
+                    o.id,
+                  );
+                })}
+              </div>
             </div>
-            <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
+              {edId != null ? (
+                <Button
+                  variant="secondary"
+                  onClick={function () {
+                    setEdId(null);
+                    setT('');
+                    setC('');
+                    setPara([]);
+                  }}
+                >
+                  Cancelar
+                </Button>
+              ) : null}
               <Button variant="brand" iconLeft="megaphone" disabled={!ok} onClick={pub}>
-                Publicar aviso
+                {edId != null ? 'Salvar' : 'Publicar aviso'}
               </Button>
             </div>
           </div>
         </Card>
-        {listCard}
+        {lista}
       </Grid>
     );
   }
@@ -5116,7 +5393,7 @@
           })
         ) : (
           <DS.Card padding={16}>
-            <Empty art="Wallet" title={st === 'pend' ? 'Nada falta enviar nos baús.' : 'Nada aqui.'} sub={st === 'pend' ? 'Quando um baú tiver depósito ou comissão a enviar, ele aparece aqui.' : 'Mude o filtro acima para ver outros envios.'} />
+            <Empty art="Wallet" title={st === 'pend' ? 'Nada falta enviar nos baús.' : 'Nada aqui.'} sub={st === 'pend' ? 'Quando um baú tiver depósito ou comissão a enviar, ele aparece\u00a0aqui.' : 'Mude o filtro acima para ver outros\u00a0envios.'} />
           </DS.Card>
         )}
         {reg ? (

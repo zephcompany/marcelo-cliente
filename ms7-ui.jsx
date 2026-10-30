@@ -339,7 +339,7 @@
         {
           role: 'dialog',
           'aria-modal': 'true',
-          className: 'ms7-modal',
+          className: 'ms7-modal ms7-glow ms7-glow-soft',
           style: { maxWidth: w },
           onClick: function (e) {
             e.stopPropagation();
@@ -990,6 +990,51 @@
   });
   Button._ms7 = IconButton._ms7 = Badge._ms7 = Avatar._ms7 = 1;
   window.MS7Motion = { watch: watch, Reveal: Reveal, Stagger: Stagger, CountUp: CountUp };
+  /* luz que segue o cursor nos cards (.ms7-card): grava --mx/--my no card sob o ponteiro */
+  (function () {
+    if (window.__ms7Spot || !window.matchMedia || !window.matchMedia('(hover: hover)').matches) return;
+    window.__ms7Spot = true;
+    let raf = 0, ev = null, last = null;
+    document.addEventListener('pointermove', function (e) { ev = e; if (!raf) raf = requestAnimationFrame(tick); }, { passive: true });
+    function tick() {
+      raf = 0; if (!ev) return;
+      const card = ev.target && ev.target.closest ? ev.target.closest('.ms7-card') : null;
+      if (card !== last && last) { last.style.removeProperty('--spot'); }
+      last = card; if (!card) return;
+      const r = card.getBoundingClientRect();
+      card.style.setProperty('--mx', (ev.clientX - r.left) + 'px'); card.style.setProperty('--my', (ev.clientY - r.top) + 'px');
+    }
+    document.addEventListener('pointerleave', function () { if (last) { last.style.removeProperty('--spot'); last = null; } });
+  })();
+  /* cursor personalizado (ponto + anel), só em dispositivos com mouse */
+  (function () {
+    if (window.__ms7Cur || !window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    window.__ms7Cur = true;
+    const root = document.documentElement; root.classList.add('ms7-cursor');
+    const dot = document.createElement('div'); dot.className = 'ms7-cur ms7-cur-dot'; dot.setAttribute('aria-hidden', 'true');
+    const ring = document.createElement('div'); ring.className = 'ms7-cur ms7-cur-ring'; ring.setAttribute('aria-hidden', 'true');
+    document.body.appendChild(ring); document.body.appendChild(dot);
+    let x = -100, y = -100, rx = -100, ry = -100, on = false, raf = 0;
+    const SEL = 'a,button,[role="button"],.ms7-hover-card,.ms7-tab,.ms7-rail-item,.ms7-mnav-tab,label,select,summary,.ms7-cmdk-it,.ms7-np-it,.ms7-table tbody tr.is-click,[onclick],.ms7-check,.ms7-switch,.ms7-user-pic';
+    const TXT = 'input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="date"]):not([type="time"]),textarea,[contenteditable="true"]';
+    function loop() { rx += (x - rx) * 0.22; ry += (y - ry) * 0.22; ring.style.transform = 'translate3d(' + rx + 'px,' + ry + 'px,0)'; raf = Math.abs(x - rx) + Math.abs(y - ry) > 0.2 ? requestAnimationFrame(loop) : 0; }
+    document.addEventListener('pointermove', function (e) {
+      if (e.pointerType && e.pointerType !== 'mouse') return;
+      x = e.clientX; y = e.clientY; dot.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+      if (!on) { on = true; rx = x; ry = y; root.classList.add('is-cur-on'); }
+      if (!raf) raf = requestAnimationFrame(loop);
+      const t = e.target;
+      root.classList.toggle('is-cur-text', !!(t && t.closest && t.closest(TXT)));
+      root.classList.toggle('is-cur-hover', !!(t && t.closest && !t.closest(TXT) && t.closest(SEL)));
+    }, { passive: true });
+    document.addEventListener('pointerdown', function () { root.classList.add('is-cur-down'); }, { passive: true });
+    document.addEventListener('pointerup', function () { root.classList.remove('is-cur-down'); }, { passive: true });
+    document.addEventListener('mouseleave', function () { on = false; root.classList.remove('is-cur-on'); });
+    document.addEventListener('mouseenter', function () { on = true; root.classList.add('is-cur-on'); });
+    window.addEventListener('blur', function () { root.classList.remove('is-cur-on', 'is-cur-down'); on = false; });
+  })();
+  /* ruído do fundo (tema escuro) */
+  (function () { if (document.querySelector('.ms7-noise')) return; const n = document.createElement('div'); n.className = 'ms7-noise'; n.setAttribute('aria-hidden', 'true'); document.body.appendChild(n); })();
   window.MS7Art = Art;
   window.MS7ArtFor = artFor;
 })();

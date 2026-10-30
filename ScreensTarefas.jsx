@@ -5,12 +5,16 @@
     const CSS = [
       '@keyframes ms7tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}',
       '@keyframes ms7tPop{0%{transform:scale(.7)}55%{transform:scale(1.12)}100%{transform:scale(1)}}',
-      '.ms7t-wrap{display:flex;flex-direction:column;gap:24px;width:100%;max-width:980px;margin:0 auto}',
+      '.ms7t-wrap{display:flex;flex-direction:column;gap:24px;width:100%;max-width:1080px;margin:0}',
       '.ms7t-hero{display:flex;align-items:center;gap:24px;flex-wrap:wrap}',
       '.ms7t-hero-main{flex:1 1 260px;min-width:0;display:flex;align-items:center;gap:16px}',
       '.ms7t-ring{flex-shrink:0;display:block}',
       '.ms7t-ring .track{stroke:var(--line)}',
       '.ms7t-ring .fill{stroke:var(--ms7-green-900);transition:stroke-dashoffset 600ms var(--ease-out)}',
+      'html[data-theme="dark"] .ms7t-ring .track{stroke:rgba(255,255,255,.1)}',
+      'html[data-theme="dark"] .ms7t-ring .fill{stroke:var(--ms7-lime-500)}',
+      '.ms7t-tile{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green-900) 16%,transparent);color:var(--ms7-green-900)}',
+      '.ms7t-hbar{flex:1;min-width:0}',
       '.ms7t-date{font-size:13px;font-weight:500;color:var(--text-secondary)}',
       '.ms7t-h{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.1;margin-top:3px}',
       '.ms7t-facts{display:flex;gap:28px;flex-wrap:wrap}',
@@ -316,7 +320,7 @@
     return (
       <div className="ms7t-row">
         <Check on={ok} urg={urg && !ok} onClick={onToggle} />
-        <button type="button" onClick={onEdit} className="ms7t-txt">
+        <button type="button" onClick={isOp ? undefined : onEdit} className="ms7t-txt" style={isOp ? { cursor: 'default' } : null}>
           <div className={'ms7t-t' + (ok ? ' is-done' : '')}>{t.txt}</div>
           {temTags ? (
             <div className="ms7t-tags" style={{ opacity: ok ? 0.55 : 1 }}>
@@ -341,10 +345,12 @@
             </div>
           ) : null}
         </button>
-        <div className="ms7t-act">
-          <DS.IconButton icon="pencil" size={30} iconSize={14} label="Editar" onClick={onEdit} />
-          <DS.IconButton icon="trash-2" size={30} iconSize={14} label="Apagar" onClick={onDel} />
-        </div>
+        {isOp ? null : (
+          <div className="ms7t-act">
+            <DS.IconButton icon="pencil" size={30} iconSize={14} label="Editar" onClick={onEdit} />
+            <DS.IconButton icon="trash-2" size={30} iconSize={14} label="Apagar" onClick={onDel} />
+          </div>
+        )}
       </div>
     );
   }
@@ -365,6 +371,193 @@
           {vazio ? <Empty art="Tasks" title={vazio} sub={vazioSub} compact /> : null}
         </div>
       </section>
+    );
+  }
+
+  function Historico({ L, isOp, ops, me }) {
+    const [dias, setDias] = React.useState(7);
+    const [quem, setQuem] = React.useState(isOp ? me : 'todos');
+    const [abre, setAbre] = React.useState(null);
+    const hoje = hojeISO();
+    const D = [];
+    for (let i = 0; i < dias; i++) D.push(addD(hoje, -i));
+    const LL = L.filter(function (t) {
+      const r = respDe(t);
+      if (isOp) return r === me;
+      return quem === 'todos' || r === quem;
+    });
+    const dia = D.map(function (d) {
+      const its = LL.filter(function (t) {
+        return vale(t, d);
+      }).map(function (t) {
+        return { t: t, ok: feita(t, d), em: t.rep === 'diaria' ? t.feitos && t.feitos[d] : t.feitoEm };
+      });
+      return {
+        d: d,
+        its: its,
+        ok: its.filter(function (x) {
+          return x.ok;
+        }).length,
+      };
+    }).filter(function (x) {
+      return x.its.length;
+    });
+    const pessoas = {};
+    dia.forEach(function (x) {
+      x.its.forEach(function (i) {
+        const r = respDe(i.t);
+        const p = (pessoas[r] = pessoas[r] || { ok: 0, n: 0 });
+        p.n++;
+        if (i.ok) p.ok++;
+      });
+    });
+    const pk = Object.keys(pessoas).sort(function (a, b) {
+      return respNome(a).localeCompare(respNome(b), 'pt-BR');
+    });
+    const hm = function (ms) {
+      return ms ? new Date(ms).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', timeZone: TZ }) : '';
+    };
+    return (
+      <React.Fragment>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
+          <Seg
+            value={dias}
+            onChange={setDias}
+            items={[
+              [7, '7 dias'],
+              [15, '15 dias'],
+              [30, '30 dias'],
+            ]}
+          />
+          {!isOp ? (
+            <DS.Select
+              variant="pill"
+              aria-label="Responsável"
+              value={quem}
+              onChange={function (e) {
+                setQuem(e.target.value);
+              }}
+              options={[
+                { value: 'todos', label: 'Todos os responsáveis' },
+                { value: 'admin', label: 'Gestão' },
+              ].concat(
+                ops.map(function (o) {
+                  return { value: o.id, label: o.nome };
+                }),
+              )}
+            />
+          ) : null}
+        </div>
+        {!isOp && pk.length ? (
+          <DS.Card
+            title={
+              <React.Fragment>
+                <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+                  📊
+                </span>
+                Resumo do período
+              </React.Fragment>
+            }
+            subtitle={'Últimos ' + dias + ' dias, por responsável.'}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+              {pk.map(function (k) {
+                const p = pessoas[k];
+                const pc = p.n ? Math.round((p.ok / p.n) * 100) : 0;
+                return (
+                  <div key={k} style={{ display: 'grid', gridTemplateColumns: 'minmax(120px,200px) 1fr auto', gap: 12, alignItems: 'center' }}>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 8, minWidth: 0 }}>
+                      <DS.Avatar name={respNome(k)} size={24} />
+                      <span style={{ fontSize: 13.5, fontWeight: 600, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{respNome(k)}</span>
+                    </span>
+                    <div className="ms7-bar ms7t-hbar">
+                      <i
+                        style={{
+                          width: pc + '%',
+                          background: pc === 100 ? 'var(--ms7-green)' : pc >= 60 ? 'var(--ms7-orange)' : 'var(--ms7-error)',
+                          transition: 'width 600ms var(--ease-out)',
+                        }}
+                      ></i>
+                    </div>
+                    <span className="ms7-num" style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
+                      {p.ok + ' feitas · ' + (p.n - p.ok) + ' não feitas'}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </DS.Card>
+        ) : null}
+        {dia.length ? (
+          dia.map(function (x) {
+            const open = abre === x.d || dia.length <= 3;
+            const tudo = x.ok === x.its.length;
+            return (
+              <section key={x.d} className="ms7-card ms7t-list">
+                <button
+                  type="button"
+                  onClick={function () {
+                    setAbre(abre === x.d ? null : x.d);
+                  }}
+                  aria-expanded={open}
+                  style={{
+                    width: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: 10,
+                    padding: '9px 12px',
+                    border: 0,
+                    borderRadius: 10,
+                    background: 'transparent',
+                    color: 'var(--text-primary)',
+                    fontFamily: 'inherit',
+                    cursor: 'pointer',
+                    textAlign: 'left',
+                  }}
+                >
+                  <span
+                    className="dot"
+                    style={{ width: 7, height: 7, borderRadius: '50%', flexShrink: 0, background: tudo ? 'var(--ms7-green)' : x.ok ? 'var(--ms7-orange)' : 'var(--ms7-error)' }}
+                  ></span>
+                  <span style={{ flex: 1, minWidth: 0, fontSize: 14, fontWeight: 600, letterSpacing: '-0.005em' }}>{diaL(x.d) + (x.d === hoje || x.d === addD(hoje, -1) ? ' · ' + dm(x.d) : '')}</span>
+                  <span className="ms7-num" style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', color: tudo ? 'var(--ms7-green)' : 'var(--text-secondary)' }}>
+                    {x.ok + ' de ' + x.its.length + ' feitas'}
+                  </span>
+                  <DS.Icon name={open ? 'chevron-up' : 'chevron-down'} size={16} color="var(--text-secondary)" />
+                </button>
+                {open
+                  ? x.its.map(function (i) {
+                      const r = respDe(i.t);
+                      return (
+                        <div key={i.t.id} className="ms7t-row" style={{ gap: 12, padding: '10px 12px' }}>
+                          <DS.Icon name={i.ok ? 'circle-check' : 'circle-x'} size={18} strokeWidth={2} color={i.ok ? 'var(--ms7-green)' : 'var(--ms7-error)'} />
+                          <div className={'ms7t-t' + (i.ok ? ' is-done' : '')} style={{ flex: 1, minWidth: 0 }}>
+                            {i.t.txt}
+                          </div>
+                          {!isOp ? (
+                            <DS.Badge size="sm" variant="soft" tone={r === 'admin' ? 'gray' : 'blue'}>
+                              {respNome(r)}
+                            </DS.Badge>
+                          ) : null}
+                          <span
+                            className="ms7-num"
+                            style={{ width: 64, textAlign: 'right', fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', color: i.ok ? 'var(--ms7-green)' : 'var(--ms7-error)' }}
+                          >
+                            {i.ok ? hm(i.em) || 'feita' : 'não fez'}
+                          </span>
+                        </div>
+                      );
+                    })
+                  : null}
+              </section>
+            );
+          })
+        ) : (
+          <div className="ms7-card ms7t-list">
+            <Empty art="Tasks" compact title="Nenhuma tarefa neste período" sub={'Mude o período ou o responsável para ver outras\u00a0tarefas.'} />
+          </div>
+        )}
+      </React.Fragment>
     );
   }
 
@@ -393,6 +586,7 @@
     const [qUrg, setQUrg] = React.useState(false);
     const [qRep, setQRep] = React.useState(false);
     const [edit, setEdit] = React.useState(null);
+    const [aba, setAba] = React.useState('agenda');
     const hoje = hojeISO(),
       amanha = addD(hoje, 1);
     const salvar = function (fn) {
@@ -556,10 +750,28 @@
       return t.prio === 'urgente' && !feita(t, hoje);
     }).length;
 
+    const ABAS = (
+      <Seg
+        value={aba}
+        onChange={setAba}
+        items={[
+          ['agenda', 'Agenda'],
+          ['hist', 'Histórico'],
+        ]}
+      />
+    );
+    if (aba === 'hist')
+      return (
+        <div className="ms7t-wrap">
+          <div>{ABAS}</div>
+          <Historico L={L0} isOp={isOp} ops={ops} me={session.opId} />
+        </div>
+      );
     const R = 24,
       C = 2 * Math.PI * R;
     return (
       <div className="ms7t-wrap">
+        <div>{ABAS}</div>
         <DS.Card padding={24}>
           <div className="ms7t-hero">
             <div className="ms7t-hero-main">
@@ -603,77 +815,81 @@
               })}
             </div>
           </div>
-          <form onSubmit={add} className="ms7t-new">
-            <DS.Input
-              icon="plus"
-              value={txt}
-              onChange={function (e) {
-                setTxt(e.target.value);
-              }}
-              placeholder="Nova tarefa e aperte Enter"
-              style={{ minHeight: 44 }}
-            />
-            <DS.Button variant="brand" iconLeft="plus" onClick={add} style={{ height: 44 }}>
-              Adicionar
-            </DS.Button>
-          </form>
-          <div className="ms7t-opts">
-            {!isOp ? (
-              <DS.Select
-                variant="pill"
-                aria-label="Para quem"
-                value={qResp}
-                onChange={function (e) {
-                  setQResp(e.target.value);
-                }}
-                options={[
-                  { value: 'admin', label: 'Gestão' },
-                  { value: '__todos', label: 'Todos os operadores (' + ops.length + ')' },
-                ].concat(
-                  ops.map(function (o) {
-                    return { value: o.id, label: o.nome };
-                  }),
+          {isOp ? null : (
+            <React.Fragment>
+              <form onSubmit={add} className="ms7t-new">
+                <DS.Input
+                  icon="plus"
+                  value={txt}
+                  onChange={function (e) {
+                    setTxt(e.target.value);
+                  }}
+                  placeholder="Nova tarefa e aperte Enter"
+                  style={{ minHeight: 44 }}
+                />
+                <DS.Button variant="brand" iconLeft="plus" onClick={add} style={{ height: 44 }}>
+                  Adicionar
+                </DS.Button>
+              </form>
+              <div className="ms7t-opts">
+                {!isOp ? (
+                  <DS.Select
+                    variant="pill"
+                    aria-label="Para quem"
+                    value={qResp}
+                    onChange={function (e) {
+                      setQResp(e.target.value);
+                    }}
+                    options={[
+                      { value: 'admin', label: 'Gestão' },
+                      { value: '__todos', label: 'Todos os operadores (' + ops.length + ')' },
+                    ].concat(
+                      ops.map(function (o) {
+                        return { value: o.id, label: o.nome };
+                      }),
+                    )}
+                  />
+                ) : null}
+                {qRep ? null : (
+                  <input
+                    type="date"
+                    className="ms7-native"
+                    aria-label="Dia"
+                    value={qDia}
+                    onChange={function (e) {
+                      setQDia(e.target.value);
+                    }}
+                    style={{ height: 34, borderRadius: 999, fontSize: 12.5, fontWeight: 600 }}
+                  />
                 )}
-              />
-            ) : null}
-            {qRep ? null : (
-              <input
-                type="date"
-                className="ms7-native"
-                aria-label="Dia"
-                value={qDia}
-                onChange={function (e) {
-                  setQDia(e.target.value);
-                }}
-                style={{ height: 34, borderRadius: 999, fontSize: 12.5, fontWeight: 600 }}
-              />
-            )}
-            <DS.Button
-              size="sm"
-              variant={qRep ? 'primary' : 'outline'}
-              iconLeft="repeat"
-              aria-pressed={qRep}
-              onClick={function () {
-                setQRep(!qRep);
-              }}
-              style={{ borderRadius: 999 }}
-            >
-              Todo dia
-            </DS.Button>
-            <DS.Button
-              size="sm"
-              variant={qUrg ? 'primary' : 'outline'}
-              iconLeft="flame"
-              aria-pressed={qUrg}
-              onClick={function () {
-                setQUrg(!qUrg);
-              }}
-              style={{ borderRadius: 999 }}
-            >
-              Urgente
-            </DS.Button>
-            <span className="ms7t-tip">Clique numa tarefa para repetir, mudar o dia ou escrever uma&nbsp;observação.</span>
-          </div>
+                <DS.Button
+                  size="sm"
+                  variant={qRep ? 'primary' : 'outline'}
+                  iconLeft="repeat"
+                  aria-pressed={qRep}
+                  onClick={function () {
+                    setQRep(!qRep);
+                  }}
+                  style={{ borderRadius: 999 }}
+                >
+                  Todo dia
+                </DS.Button>
+                <DS.Button
+                  size="sm"
+                  variant={qUrg ? 'primary' : 'outline'}
+                  iconLeft="flame"
+                  aria-pressed={qUrg}
+                  onClick={function () {
+                    setQUrg(!qUrg);
+                  }}
+                  style={{ borderRadius: 999 }}
+                >
+                  Urgente
+                </DS.Button>
+                <span className="ms7t-tip">Clique numa tarefa para repetir, mudar o dia ou escrever uma&nbsp;observação.</span>
+              </div>
+            </React.Fragment>
+          )}
         </DS.Card>
 
         {!isOp ? (
@@ -738,7 +954,7 @@
           const ks = Object.keys(grp).sort(function (x, y) {
             return x === 'admin' ? -1 : y === 'admin' ? 1 : respNome(x).localeCompare(respNome(y), 'pt-BR');
           });
-          const novaDiaria = (
+          const novaDiaria = isOp ? null : (
             <DS.Button
               size="sm"
               variant="outline"
@@ -753,21 +969,9 @@
           return (
             <DS.Card
               title={'Tarefas diárias' + (fixas.length ? ' · ' + fixas.length : '')}
-              subtitle="Repetem todo dia, ou só nos dias escolhidos, e entram na lista de Hoje."
+              subtitle={'Repetem todo dia, ou só nos dias escolhidos, e entram na lista de\u00a0Hoje.'}
               icon={
-                <span
-                  style={{
-                    width: 30,
-                    height: 30,
-                    borderRadius: 9,
-                    flexShrink: 0,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))',
-                    color: 'var(--ms7-green-900)',
-                  }}
-                >
+                <span className="ms7t-tile">
                   <DS.Icon name="repeat" size={15} strokeWidth={2} />
                 </span>
               }
@@ -820,26 +1024,28 @@
                                     .join(' ')
                                 : 'Todo dia') + (x.hora ? ' · ' + x.hora : '')}
                             </span>
-                            <DS.IconButton
-                              icon="pencil"
-                              size={28}
-                              iconSize={13}
-                              label="Editar"
-                              onClick={function () {
-                                setEdit(x);
-                              }}
-                            />
-                            {!isOp || x.criadoPor === session.opId ? (
-                              <DS.IconButton
-                                icon="trash-2"
-                                size={28}
-                                iconSize={13}
-                                label="Apagar"
-                                onClick={function () {
-                                  del(x);
-                                }}
-                              />
-                            ) : null}
+                            {isOp ? null : (
+                              <React.Fragment>
+                                <DS.IconButton
+                                  icon="pencil"
+                                  size={28}
+                                  iconSize={13}
+                                  label="Editar"
+                                  onClick={function () {
+                                    setEdit(x);
+                                  }}
+                                />
+                                <DS.IconButton
+                                  icon="trash-2"
+                                  size={28}
+                                  iconSize={13}
+                                  label="Apagar"
+                                  onClick={function () {
+                                    del(x);
+                                  }}
+                                />
+                              </React.Fragment>
+                            )}
                           </div>
                         );
                       })}

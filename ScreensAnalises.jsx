@@ -1,7 +1,119 @@
 (function () {
   const DS = window.MS7DesignSystem_5d5172;
+  /* CSS só desta tela (tokens) — heatmap que funciona no preto */
+  (function () {
+    if (document.getElementById('ms7-analises-css')) return;
+    const s = document.createElement('style');
+    s.id = 'ms7-analises-css';
+    s.textContent = [
+      '.ms7a-heat-wrap{overflow-x:auto;margin:0 -4px;padding:2px 4px 6px;-webkit-overflow-scrolling:touch}',
+      '.ms7a-heat{display:grid;grid-template-columns:44px repeat(24,minmax(0,1fr));gap:3px;align-items:center;min-width:640px}',
+      '.ms7a-heat-h{font-size:10.5px;font-weight:600;letter-spacing:.04em;color:var(--text-secondary);text-align:center;font-variant-numeric:tabular-nums;padding-bottom:2px}',
+      '.ms7a-heat-d{font-size:12px;font-weight:600;color:var(--text-primary);padding-right:6px}',
+      '.ms7a-heat-c{aspect-ratio:1;border-radius:4px;background:var(--surface-muted);cursor:default;transition:transform var(--dur-fast),box-shadow var(--dur-fast)}',
+      '.ms7a-heat-c.is-on{box-shadow:0 0 0 2px var(--text-primary),0 0 0 3px var(--surface-page);transform:scale(1.06);position:relative;z-index:1}',
+      '.ms7a-heat-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:14px}',
+      '.ms7a-heat-v{font-size:13.5px;font-weight:500;min-height:20px;max-width:360px;color:var(--text-secondary)}.ms7a-heat-v b{font-weight:600;color:var(--text-primary)}',
+      '.ms7a-heat-leg{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}',
+      '.ms7a-heat-leg>i{width:120px;height:10px;border-radius:5px;background:linear-gradient(90deg,var(--surface-muted),var(--ms7-green),var(--ms7-green-900));background:linear-gradient(in oklab 90deg,var(--surface-muted),var(--ms7-green),var(--ms7-green-900))}',
+    ].join('');
+    document.head.appendChild(s);
+  })();
+  /* título de card com 1 emoji (regra do guia) */
+  const ttl = function (emo, txt) {
+    return (
+      <React.Fragment>
+        <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+          {emo}
+        </span>
+        {txt}
+      </React.Fragment>
+    );
+  };
+  const DIAS = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb', 'Dom'];
+  /* escala sequencial em tokens: superfície → verde → acento (lima no escuro, verde-escuro no claro) */
+  const heatColor = function (t) {
+    if (!(t > 0)) return 'var(--surface-muted)';
+    if (t < 0.5) return 'color-mix(in oklab, var(--ms7-green) ' + Math.round(8 + t * 2 * 92) + '%, var(--surface-muted))';
+    return 'color-mix(in oklab, var(--ms7-green-900) ' + Math.round((t - 0.5) * 2 * 100) + '%, var(--ms7-green))';
+  };
+  /* grade do heatmap (só apresentação; a matriz vem pronta da tela) */
+  function HeatGrid({ matrix, metricLabel, format }) {
+    const [hi, setHi] = React.useState(null);
+    let max = 0;
+    (matrix || []).forEach(function (r) {
+      r.forEach(function (v) {
+        if (v > max) max = v;
+      });
+    });
+    const f =
+      format ||
+      function (v) {
+        return String(v);
+      };
+    return (
+      <div>
+        <div className="ms7a-heat-wrap">
+          <div className="ms7a-heat">
+            <span></span>
+            {Array.from({ length: 24 }).map(function (_, h) {
+              return (
+                <span key={'h' + h} className="ms7a-heat-h">
+                  {h % 3 === 0 ? h + 'h' : ''}
+                </span>
+              );
+            })}
+            {(matrix || []).map(function (row, d) {
+              return (
+                <React.Fragment key={d}>
+                  <span className="ms7a-heat-d">{DIAS[d]}</span>
+                  {row.map(function (v, h) {
+                    const on = hi && hi[0] === d && hi[1] === h;
+                    return (
+                      <span
+                        key={h}
+                        className={'ms7a-heat-c' + (on ? ' is-on' : '')}
+                        style={{ background: heatColor(max ? v / max : 0) }}
+                        onMouseEnter={function () {
+                          setHi([d, h]);
+                        }}
+                        onMouseLeave={function () {
+                          setHi(null);
+                        }}
+                        onClick={function () {
+                          setHi(on ? null : [d, h]);
+                        }}
+                      ></span>
+                    );
+                  })}
+                </React.Fragment>
+              );
+            })}
+          </div>
+        </div>
+        <div className="ms7a-heat-foot">
+          <span className="ms7a-heat-v ms7-balance">
+            {hi ? (
+              <React.Fragment>
+                <b>{DIAS[hi[0]] + ' · ' + hi[1] + 'h'}</b>
+                {' — ' + metricLabel + ': '}
+                <b className="ms7-num">{f(matrix[hi[0]][hi[1]])}</b>
+              </React.Fragment>
+            ) : (
+              'Passe o mouse ou toque numa célula para ver o valor'
+            )}
+          </span>
+          <span className="ms7a-heat-leg">
+            Menor
+            <i></i>
+            Maior
+          </span>
+        </div>
+      </div>
+    );
+  }
   function HeatmapScreen() {
-    const { Card, Tabs, Heatmap } = DS;
+    const { Card, Tabs } = DS;
     const [metric, setMetric] = usePersist('heat-m', 'lucro');
     const [per, setPer] = usePersist('heat-per', 'Todos');
     const f = { Hoje: 0.12, '7 dias': 0.35, '30 dias': 1, Todos: 1.6 }[per] || 1;
@@ -24,15 +136,10 @@
           />
         </PeriodBar>
         <Card
-          title="Heatmap de operação"
-          subtitle={'Melhores horários para operar — ' + (metric === 'lucro' ? 'lucro' : 'quantidade') + ' por dia da semana e hora (horário de Brasília)'}
-          icon={
-            <span className="ms7d-tile" style={{ width: 30, height: 30, borderRadius: 9, background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}>
-              <DS.Icon name="grid-3x3" size={15} strokeWidth={2} />
-            </span>
-          }
+          title={ttl('🔥', 'Heatmap de operação')}
+          subtitle={'Melhores horários para operar — ' + (metric === 'lucro' ? 'lucro' : 'quantidade') + ' por dia da semana e hora (horário de Brasília)'}
         >
-          <Heatmap matrix={m} metricLabel={metric === 'lucro' ? 'Lucro' : 'Quantidade'} format={metric === 'lucro' ? MS7.brl : MS7.num} />
+          <HeatGrid matrix={m} metricLabel={metric === 'lucro' ? 'Lucro' : 'Quantidade'} format={metric === 'lucro' ? MS7.brl : MS7.num} />
         </Card>
       </div>
     );
@@ -72,7 +179,7 @@
             { icon: 'calendar-days', label: 'Progresso do mês', value: day + ' / ' + total + ' dias', tone: 'orange' },
           ]}
         />
-        <Card title="Projeção de lucro líquido" subtitle="Realizado × projeção, dia a dia">
+        <Card title={ttl('📈', 'Projeção de lucro líquido')} subtitle="Realizado × projeção, dia a dia">
           <LineChart
             height={280}
             labels={labels}
@@ -133,7 +240,7 @@
     function add() {
       const v = parseFloat(String(f.valor).replace(',', '.'));
       if (!v) {
-        toast('Informe o valor');
+        toast('✍️ Informe o valor');
         return;
       }
       DB.A.addCusto({ comp: '09/2026', cat: f.cat, desc: f.desc || catOf(f.cat).label, valor: v });
@@ -142,7 +249,7 @@
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
         <PeriodBar value={per} onChange={setPer} />
-        <Card title="Registrar custo" subtitle="Proxies, servidores, softwares e bots entram no custo por conta.">
+        <Card title={ttl('🧾', 'Registrar custo')} subtitle={'Proxies, servidores, softwares e bots entram no custo por conta.'}>
           <div className="ms7d-form">
             <Select
               label="Categoria"
@@ -186,12 +293,12 @@
           ]}
         />
         <Grid min={340}>
-          <Card title="Custos por categoria" subtitle={agg.length ? 'Total ' + MS7.brl(total) + ' no período' : null}>
+          <Card title={ttl('💸', 'Custos por categoria')} subtitle={agg.length ? 'Total ' + MS7.brl(total) + ' no período' : null}>
             {agg.length ? (
               <div style={{ display: 'flex', flexDirection: 'column' }}>
                 <div style={{ display: 'flex', height: 10, borderRadius: 5, overflow: 'hidden', marginBottom: 6, background: 'var(--surface-muted)' }}>
                   {agg.map(function (a) {
-                    return <span key={a.c.id} style={{ width: (a.v / total) * 100 + '%', background: a.c.color, boxShadow: '-2px 0 0 var(--surface-card)' }}></span>;
+                    return <span key={a.c.id} style={{ width: (a.v / total) * 100 + '%', background: a.c.color, boxShadow: '-2px 0 0 var(--surface-page)' }}></span>;
                   })}
                 </div>
                 <div className="ms7d-list">
@@ -218,7 +325,7 @@
             )}
           </Card>
           <Card
-            title="Registros"
+            title={ttl('📋', 'Registros')}
             action={
               <Button
                 size="sm"
@@ -503,12 +610,12 @@
           ]}
         />
         {chart ? (
-          <Card title={modo === 'Semana' ? 'Comissão por dia' : 'Comissão por semana'}>
+          <Card title={ttl('💸', modo === 'Semana' ? 'Comissão por dia' : 'Comissão por semana')}>
             <DS.BarChart height={200} data={chart} series={[{ name: 'Comissão', color: 'var(--chart-1)' }]} />
           </Card>
         ) : null}
         <Card
-          title="Comissão por operador"
+          title={ttl('🧾', 'Comissão por operador')}
           action={
             <Button
               size="sm"
@@ -613,7 +720,7 @@
                             DB.A.pagar(r.id, r.saldo, de);
                           });
                           setSelP({});
-                          toast(sl.length + (sl.length === 1 ? ' pagamento registrado' : ' pagamentos registrados'));
+                          toast('✅ ' + sl.length + (sl.length === 1 ? ' pagamento registrado' : ' pagamentos registrados'));
                         }
                       }}
                     >

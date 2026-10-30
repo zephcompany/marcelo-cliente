@@ -13,8 +13,11 @@
     '.ms7-np-it.is-new::before{content:"";position:absolute;left:4px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--ms7-green);transform:translateY(-50%)}',
     '.ms7-np-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}',
     '.ms7-np-t{font-size:13.5px;font-weight:600;letter-spacing:-.005em;line-height:1.3}.ms7-np-b{font-size:12.5px;font-weight:500;line-height:1.5;white-space:pre-line;color:var(--text-secondary);margin-top:3px}.ms7-np-at{font-size:11.5px;font-weight:500;color:var(--text-secondary);white-space:nowrap}',
-    '.ms7-push{position:fixed;top:20px;right:20px;z-index:2100;width:368px;max-width:calc(100vw - 40px);background:color-mix(in oklab,#111512 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#F3F5F1;border-radius:18px;padding:14px 16px;box-shadow:0 30px 70px -24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);cursor:pointer;animation:ms7-push-in 520ms var(--ease-spring) both}',
+    '.ms7-push{position:fixed;top:88px;right:20px;z-index:2100;width:368px;max-width:calc(100vw - 40px);background:color-mix(in oklab,#111512 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#F3F5F1;border-radius:18px;padding:14px 16px;box-shadow:0 30px 70px -24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);cursor:pointer;animation:ms7-push-in 520ms var(--ease-spring) both}',
     '@keyframes ms7-push-in{from{opacity:0;transform:translateY(-14px) scale(.96)}to{opacity:1;transform:none}}',
+    'html[data-theme="dark"] .ms7-np{background:var(--glass-solid);backdrop-filter:blur(30px) saturate(1.4);-webkit-backdrop-filter:blur(30px) saturate(1.4)}',
+    'html[data-theme="dark"] .ms7-np-it:hover{background:var(--glass-2)}',
+    'html[data-theme="dark"] .ms7-push{background:var(--glass-solid);backdrop-filter:blur(26px) saturate(1.4);-webkit-backdrop-filter:blur(26px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,255,255,.12),0 30px 70px -24px rgba(0,0,0,.8)}',
     '.ms7-push-top{display:flex;align-items:center;gap:8px;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:#9AA39D;margin-bottom:10px}',
     '.ms7-rank{display:flex;flex-direction:column}.ms7-rank-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border-subtle)}.ms7-rank-row:last-child{border-bottom:0}',
     '.ms7-rank-n{width:26px;height:26px;border-radius:8px;background:var(--surface-muted);color:var(--text-primary);font-size:11px;font-weight:600;display:flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}.ms7-rank-row:first-child .ms7-rank-n{background:var(--ms7-lime-500);color:#0C3B26}',
@@ -82,8 +85,11 @@
       </span>
     );
   }
-  function Empty({ icon, title, sub, action, art, compact }) {
+  const EMPTY_EMO = { Tasks: '✅', Coop: '🤝', Keys: '🔑', Target: '🎯', Clock: '⏱️', Wallet: '💸', Chart: '📊', People: '👥', Bell: '🔔', Globe: '🌐', Inbox: '📭', Search: '🔎' };
+  const EMPTY_EMO_ICON = { 'check-square': '✅', 'list-checks': '✅', briefcase: '🤝', 'key-round': '🔑', key: '🔑', target: '🎯', clock: '⏱️', wallet: '💸', 'bar-chart-3': '📊', 'bar-chart': '📊', users: '👥', user: '👤', bell: '🔔', globe: '🌐', inbox: '📭', search: '🔎', 'graduation-cap': '🎓', megaphone: '📣', box: '📦', 'credit-card': '💳', gift: '🎁', trophy: '🏆' };
+  function Empty({ icon, title, sub, action, art, compact, emoji }) {
     const Art = art ? window.MS7Art[art] || window.MS7Art.Inbox : window.MS7ArtFor ? window.MS7ArtFor(icon) : null;
+    const emo = emoji === false ? null : emoji || (art && EMPTY_EMO[art]) || EMPTY_EMO_ICON[icon] || null;
     return (
       <div className="ms7-empty" style={compact ? { padding: '20px 12px' } : null} data-reveal="scale">
         {Art ? (
@@ -95,7 +101,14 @@
             <DS.Icon name={icon || 'inbox'} size={22} />
           </span>
         )}
-        <b className="ms7-empty-title">{title}</b>
+        <b className="ms7-empty-title">
+          {emo ? (
+            <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+              {emo}
+            </span>
+          ) : null}
+          {title}
+        </b>
         {sub ? <span className="ms7-empty-sub">{sub}</span> : null}
         {action ? <div style={{ marginTop: 8 }}>{action}</div> : null}
       </div>
@@ -140,9 +153,12 @@
     return m ? (
       <div className="ms7-toast" key={m.k} role="status">
         <span style={{ width: 22, height: 22, borderRadius: 7, background: 'var(--ms7-lime-500)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <DS.Icon name="check" size={13} color="#0C3B26" strokeWidth={3} />
+          <DS.Icon name="check" size={13} color="#0B2416" strokeWidth={3} />
         </span>
         {m.m}
+        <span className="ms7-emo" aria-hidden="true" style={{ marginLeft: 2 }}>
+          {/[\u{1F300}-\u{1FAFF}\u2600-\u27BF]/u.test(String(m.m)) ? '' : '✨'}
+        </span>
       </div>
     ) : null;
   }

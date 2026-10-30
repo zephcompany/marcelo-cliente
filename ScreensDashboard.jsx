@@ -11,23 +11,28 @@
       '.ms7d-fact{min-width:0;padding:0 18px}.ms7d-fact:first-child{padding-left:0}.ms7d-fact+.ms7d-fact{border-left:1px solid var(--line)}',
       '.ms7d-fact-v{margin-top:5px;font-size:18px;font-weight:600;letter-spacing:-.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '@media (max-width:520px){.ms7d-facts{grid-template-columns:1fr}.ms7d-fact{padding:10px 0;border-left:0!important;border-top:1px solid var(--border-subtle)}.ms7d-fact:first-child{border-top:0;padding-top:0}}',
-      '.ms7d-tip{position:absolute;top:6px;padding:8px 12px;border-radius:10px;background:var(--surface-card);box-shadow:var(--shadow-pop);pointer-events:none;white-space:nowrap;animation:ms7-pop 200ms var(--ease-out) both}',
+      /* flutuantes (tooltip do gráfico): vidro sólido — no claro cai no card */
+      '.ms7d-tip{position:absolute;top:6px;padding:8px 12px;border-radius:10px;background:var(--glass-solid,var(--surface-card));backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);box-shadow:var(--shadow-pop);pointer-events:none;white-space:nowrap;animation:ms7-pop 200ms var(--ease-out) both}',
       '.ms7d-tip-d{display:block;font-size:11.5px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--text-secondary)}',
+      /* tooltips dos gráficos do DS (bar/line) — eram caixa preta com texto branco */
+      '.ms7-chart-bar>div>div>div,.ms7-chart-line>div>div>div{background:var(--glass-solid,var(--surface-card))!important;color:var(--text-primary)!important;backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4);box-shadow:var(--shadow-pop);border-radius:9px!important;padding:7px 10px!important;font-size:12px!important;font-variant-numeric:tabular-nums;z-index:2}',
+      '.ms7-chart-line svg circle{stroke:var(--surface-page)!important}',
       '.ms7d-list{display:flex;flex-direction:column}',
       '.ms7d-row{display:flex;align-items:center;gap:12px;padding:12px 10px;margin:0 -10px;border-radius:10px;transition:background var(--dur-fast)}',
-      '.ms7d-row:hover{background:var(--surface-muted)}.ms7d-row.is-click{cursor:pointer}',
+      '.ms7d-row:hover{background:var(--glass-2,var(--surface-muted))}.ms7d-row.is-click{cursor:pointer}',
       '.ms7d-list>.ms7d-row:not(:last-child){border-bottom:1px solid var(--border-subtle)}',
       '.ms7d-tile{width:34px;height:34px;border-radius:10px;flex-shrink:0;display:flex;align-items:center;justify-content:center}',
       '.ms7d-t{font-size:14px;font-weight:600;letter-spacing:-.005em;line-height:1.3;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.ms7d-s{font-size:12.5px;font-weight:500;color:var(--text-secondary);margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
-      '@media (max-width:520px){.ms7d-t,.ms7d-s{white-space:normal}}',
+      '.ms7d-val{font-size:13.5px;font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}',
+      '@media (max-width:520px){.ms7d-t,.ms7d-s{white-space:normal}.ms7d-row.has-val{flex-wrap:wrap}.ms7d-row.has-val>.ms7d-val{flex:1 0 100%;padding-left:46px;margin-top:-2px}}',
       '.ms7d-chips{display:flex;flex-wrap:wrap;gap:8px}',
-      '.ms7d-chip{display:inline-flex;align-items:center;height:36px;padding:0 14px 0 10px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);transition:border-color var(--dur-fast),background var(--dur-fast),transform var(--dur-base) var(--ease-standard)}',
-      '.ms7d-chip:hover{border-color:var(--line-strong);transform:translateY(-1px)}',
-      '.ms7d-chip.is-on{border-color:color-mix(in oklab,var(--ms7-green-900) 40%,var(--line));background:color-mix(in oklab,var(--ms7-green-900) 7%,var(--surface-card))}',
+      '.ms7d-chip{display:inline-flex;align-items:center;height:36px;padding:0 14px 0 10px;border-radius:999px;border:1px solid var(--line);background:var(--glass,var(--surface-card));box-shadow:var(--glass-edge,none);transition:border-color var(--dur-fast),background var(--dur-fast),transform var(--dur-base) var(--ease-standard)}',
+      '.ms7d-chip:hover{border-color:var(--line-strong);background:var(--glass-2,var(--surface-card));transform:translateY(-1px)}',
+      '.ms7d-chip.is-on{border-color:color-mix(in oklab,var(--ms7-green-900) 45%,var(--line));background:color-mix(in oklab,var(--ms7-green-900) 10%,transparent)}',
       '.ms7d-chip .ms7-check{font-size:13.5px;font-weight:600;gap:8px}',
       '.ms7d-pos{width:26px;height:26px;border-radius:8px;background:var(--surface-muted);font-size:11px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;font-variant-numeric:tabular-nums}',
-      '.ms7d-pos.is-first{background:var(--ms7-lime-500);color:#0C3B26}',
+      '.ms7d-pos.is-first{background:var(--ms7-lime-500);color:var(--text-on-lime)}',
       '.ms7d-rede{padding:18px 20px;display:flex;flex-direction:column;gap:12px}',
       '.ms7d-rede-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;padding-top:12px;border-top:1px solid var(--border-subtle)}',
       '.ms7d-tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px}',
@@ -156,12 +161,23 @@
   const tint = function (c) {
     return 'color-mix(in oklab, ' + c + ' 12%, var(--surface-card))';
   };
+  /* título de card com 1 emoji (regra do guia: só em título, antes do texto) */
+  const ttl = function (emo, txt) {
+    return (
+      <React.Fragment>
+        <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+          {emo}
+        </span>
+        {txt}
+      </React.Fragment>
+    );
+  };
   function AlertsCard({ session }) {
     const { Card, Badge } = DS;
     const al = buildAlerts(session);
     return (
       <Card
-        title="Alertas"
+        title={ttl('🔔', 'Alertas')}
         action={
           al.length ? (
             <Badge size="sm" tone="error">
@@ -202,32 +218,8 @@
   }
   function FinHero({ per, op, gC }) {
     const db = DB.get();
-    const mc = 'natural';
-    const setMc = function () {};
-    const TEMAS = {
-      natural: {
-        n: 'Natural',
-        bg: 'var(--surface-card)',
-        fg: 'var(--text-primary)',
-        ac: 'var(--text-primary)',
-        sw: '#E9ECEA',
-        bd: '1px solid var(--border-default)',
-      },
-      preto: { n: 'Preto', bg: 'linear-gradient(150deg,#0E1110 0%,#232826 100%)', fg: '#fff', ac: '#C9F76A', sw: '#151917' },
-      amarelo: { n: 'Amarelo', bg: 'linear-gradient(150deg,#2E2404 0%,#6B4F00 100%)', fg: '#fff', ac: '#FFD54A', sw: '#B8860B' },
-      azul: { n: 'Azul', bg: 'linear-gradient(150deg,#0A1E3D 0%,#1D4E89 100%)', fg: '#fff', ac: '#9CCBFF', sw: '#1D4E89' },
-      petroleo: {
-        n: 'Azul-petróleo (azul + verde MS7)',
-        bg: 'linear-gradient(150deg,#06232B 0%,#0B4A55 55%,#0E6B63 120%)',
-        fg: '#fff',
-        ac: '#C9F76A',
-        sw: '#0B4A55',
-      },
-      marinho: { n: 'Azul-marinho com verde', bg: 'linear-gradient(150deg,#0A1730 0%,#12305A 100%)', fg: '#fff', ac: '#C9F76A', sw: '#12305A' },
-      vermelho: { n: 'Vermelho', bg: 'linear-gradient(150deg,#360B0B 0%,#8A1C1C 100%)', fg: '#fff', ac: '#FFB4A8', sw: '#B22222' },
-      verde: { n: 'Verde', bg: 'linear-gradient(150deg, #0C3B26 0%, #005D3B 60%, #1B9461 140%)', fg: '#fff', ac: '#C9F76A', sw: '#1B9461' },
-    };
-    const TM = TEMAS[mc] || TEMAS.natural;
+    /* cor da linha/área do gráfico: acento (lima no escuro, verde no claro) */
+    const LINE = 'var(--ms7-green-900)';
     const notifs = window.useNotifs ? useNotifs() : [];
     const [hv, setHv] = React.useState(null);
     const L = comPer(op || null, per);
@@ -355,13 +347,13 @@
                   >
                     <defs>
                       <linearGradient id="ms7fh" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stopColor="var(--ms7-green)" stopOpacity=".26"></stop>
-                        <stop offset="1" stopColor="var(--ms7-green)" stopOpacity="0"></stop>
+                        <stop offset="0" stopColor={LINE} stopOpacity=".28"></stop>
+                        <stop offset="1" stopColor={LINE} stopOpacity="0"></stop>
                       </linearGradient>
                     </defs>
-                    <line x1="0" x2={W} y1={y0} y2={y0} stroke="var(--line)" strokeDasharray="4 4"></line>
+                    <line x1="0" x2={W} y1={y0} y2={y0} stroke="var(--line-strong)" strokeDasharray="4 4"></line>
                     <path d={area} fill="url(#ms7fh)"></path>
-                    <path d={line} fill="none" stroke="var(--ms7-green)" strokeWidth="2.25" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke"></path>
+                    <path d={line} fill="none" stroke={LINE} strokeWidth="2.25" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke"></path>
                     {pts.map(function (p, i) {
                       return (
                         <rect
@@ -394,8 +386,9 @@
                     marginLeft: -5,
                     marginTop: -5,
                     borderRadius: '50%',
-                    background: 'var(--surface-card)',
-                    border: '2px solid ' + col(vals[hv]),
+                    background: 'var(--surface-page)',
+                    border: '2px solid ' + LINE,
+                    boxShadow: '0 0 0 1px var(--surface-page)',
                     pointerEvents: 'none',
                   }}
                 ></span>
@@ -428,7 +421,7 @@
           </section>
           <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
             <DS.Card
-              title="Metas"
+              title={ttl('🎯', 'Metas')}
               padding={20}
               action={
                 <DS.Button
@@ -445,7 +438,8 @@
             >
               <DS.CountUp
                 value={brlS(sm(at) + sm(fi))}
-                style={{ display: 'block', fontSize: 28, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, color: mc === 'natural' ? col(sm(at) + sm(fi)) : TM.ac }}
+                className="ms7-num"
+                style={{ display: 'block', fontSize: 28, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, color: col(sm(at) + sm(fi)) }}
               />
               <div style={{ marginTop: 12 }}>
                 {[
@@ -464,7 +458,7 @@
                 })}
               </div>
             </DS.Card>
-            <DS.Card title="Resultados" padding={20}>
+            <DS.Card title={ttl('📈', 'Resultados')} padding={20}>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
                 {comp.map(function (x) {
                   return (
@@ -493,7 +487,7 @@
         </div>
         <Grid min={340}>
           <DS.Card
-            title="Sua próxima ação"
+            title={ttl('⚡', 'Sua próxima ação')}
             action={
               acoes.length ? (
                 <DS.Badge tone="gray" variant="soft">
@@ -535,7 +529,7 @@
               <Empty art="Tasks" compact title="Nada pendente agora" sub="Cooperações finalizadas, tarefas do dia e contas bloqueadas aparecem aqui." />
             )}
           </DS.Card>
-          <DS.Card title="Últimas remessas">
+          <DS.Card title={ttl('🧾', 'Últimas remessas')}>
             {rem.length ? (
               <div className="ms7d-list">
                 {rem.map(function (n) {
@@ -545,14 +539,14 @@
                       return /^Resultado/.test(x);
                     }) || '';
                   return (
-                    <div key={n.id} className="ms7d-row">
+                    <div key={n.id} className={'ms7d-row' + (r ? ' has-val' : '')}>
                       <DS.Avatar name={(b[0] || '').replace(/^Operador:\s*/, '') || '?'} size={34} />
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div className="ms7d-t">{n.title}</div>
                         <div className="ms7d-s">{[(b[0] || '').replace(/^Operador:\s*/, ''), b[1], n.at].filter(Boolean).join(' · ')}</div>
                       </div>
                       {r ? (
-                        <span className="ms7-num" style={{ fontSize: 13.5, fontWeight: 600, whiteSpace: 'nowrap', color: /-R\$/.test(r) ? 'var(--ms7-error)' : 'var(--ms7-green)' }}>
+                        <span className="ms7-num ms7d-val" style={{ color: /-R\$/.test(r) ? 'var(--ms7-error)' : 'var(--ms7-green)' }}>
                           {r.replace(/^Resultado:\s*/, '')}
                         </span>
                       ) : null}
@@ -643,7 +637,7 @@
         {isOp ? <KpiRow items={kpis} /> : <FinHero per={per} op={op} gC={gC} />}
         {isOp ? (
           <Grid min={340}>
-            <Card title="Minhas cooperações no período">
+            <Card title={ttl('🤝', 'Minhas cooperações no período')}>
               <RankList
                 rows={DB.coopsFor({ opId: session.opId, per: per }).map(function (c) {
                   return { nome: DB.coopNome(c), v: DB.calc(c).com };
@@ -673,7 +667,7 @@
               ['Lucro total', MS7.brl(gC.lucro - cu), gC.lucro - cu >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)'],
             ];
             return (
-              <Card title="Resumo do período">
+              <Card title={ttl('📊', 'Resumo do período')}>
                 <div className="ms7d-tiles ms7-stagger">
                   {it.map(function (x) {
                     return (
@@ -691,7 +685,7 @@
           })()
         ) : (
           <Card
-            title="Operadores"
+            title={ttl('👥', 'Operadores')}
             action={
               <DS.Button
                 size="sm"
@@ -831,7 +825,22 @@
                 </table>
               </div>
             ) : (
-              <Empty art="People" title="Nenhum operador" sub="Cadastre operadores em Gestão → Operadores." />
+              <Empty
+                art="People"
+                title="Nenhum operador"
+                sub="Cadastre operadores em Gestão → Operadores."
+                action={
+                  <DS.Button
+                    variant="brand"
+                    iconLeft="user-plus"
+                    onClick={function () {
+                      window.ms7Go('gestao');
+                    }}
+                  >
+                    Cadastrar operador
+                  </DS.Button>
+                }
+              />
             )}
           </Card>
         )}
@@ -947,7 +956,7 @@
             { icon: 'circle-check', label: 'Coops concluídas', value: s('concluidas'), tone: 'orange' },
           ]}
         />
-        <Card title="Operadores" subtitle="Marque os operadores que deseja comparar.">
+        <Card title={ttl('👥', 'Operadores')} subtitle="Marque os operadores que deseja comparar.">
           <div className="ms7d-chips">
             {O.map(function (o) {
               const on = sel.indexOf(o.id) >= 0;
@@ -979,7 +988,7 @@
                 <BarChart height={200} data={d('com', 1000)} series={[{ name: 'Comissão', color: 'var(--chart-2)' }]} />
               </Card>
             </Grid>
-            <Card title="Comparação ranqueada" reveal>
+            <Card title={ttl('🏆', 'Comparação ranqueada')} reveal>
               <DataTable
                 rows={rows.map(function (o, i) {
                   return Object.assign({ pos: i + 1 }, o);
@@ -1103,13 +1112,13 @@
             </Card>
             <div>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.25 }}>Redes</h3>
+                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.25 }}>{ttl('🌐', 'Redes')}</h3>
                 <DS.CountDot tone="muted">{R.length}</DS.CountDot>
               </div>
               <div className="ms7-stagger" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(230px,1fr))', gap: 16 }}>
                 {R.map(function (r) {
                   return (
-                    <section key={r.nome} className="ms7-card ms7-hover-card ms7d-rede">
+                    <section key={r.nome} className="ms7-card ms7d-rede">
                       <div style={{ display: 'flex', alignItems: 'center', gap: 10, minWidth: 0 }}>
                         <span className="ms7d-tile" style={{ width: 30, height: 30, borderRadius: 9, background: tint('var(--ms7-green-900)'), color: 'var(--ms7-green-900)' }}>
                           <DS.Icon name="network" size={15} strokeWidth={2} />

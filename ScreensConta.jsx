@@ -18,16 +18,15 @@
       '.ms7c-mono>span{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.ms7c-act{opacity:.45;transition:opacity var(--dur-fast)}.ms7c-row:hover .ms7c-act,tr:hover .ms7c-act{opacity:1}@media (hover:none){.ms7c-act{opacity:1}}',
       '.ms7c-prod{display:flex;flex-direction:column;gap:6px;padding:18px;transition:box-shadow var(--dur-base),transform var(--dur-base) var(--ease-standard)}',
-      '.ms7c-prod.is-on{box-shadow:0 0 0 1.5px var(--ms7-green-900)}',
+      '.ms7c-prod.is-on{box-shadow:var(--shadow-card),0 0 0 1.5px var(--ms7-green-900)}',
+      '.ms7c-price{font-size:22px;font-weight:600;letter-spacing:-.03em;line-height:1.1;color:var(--text-brand);margin-top:4px}',
       '.ms7c-stepn{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;border:1.5px solid var(--line-strong);color:var(--text-secondary);background:var(--surface-card);flex-shrink:0;transition:all var(--dur-base) var(--ease-standard)}',
       '.ms7c-stepn.is-done{background:var(--ms7-green-900);border-color:var(--ms7-green-900);color:var(--text-inverse)}',
-      '.ms7c-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:0;padding:0;transition:transform var(--dur-base) var(--ease-spring),box-shadow var(--dur-fast)}.ms7c-swatch:hover{transform:scale(1.08)}',
-      '.ms7c-plan{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer}.ms7c-plan.is-on{box-shadow:0 0 0 1.5px var(--ms7-green-900)}',
-      '.ms7-card.is-dark{--ms7c-inv-acc:var(--ms7-lime-500);--ms7c-inv-track:color-mix(in oklab,var(--text-inverse) 14%,transparent)}',
-      'html[data-theme="dark"] .ms7-card.is-dark{--ms7c-inv-acc:var(--text-on-lime);--ms7c-inv-track:color-mix(in oklab,var(--text-inverse) 12%,transparent)}',
-      '.ms7-btn.ms7c-inv-btn{background:transparent;color:inherit;border-color:color-mix(in oklab,currentColor 28%,transparent)}',
-      '.ms7-btn.ms7c-inv-btn:hover:not(:disabled){background:color-mix(in oklab,currentColor 10%,transparent);border-color:color-mix(in oklab,currentColor 45%,transparent);box-shadow:none}',
-      '.ms7c-bar-inv{height:8px;border-radius:8px;background:var(--ms7c-inv-track);overflow:hidden}.ms7c-bar-inv>i{display:block;height:100%;border-radius:8px;background:var(--ms7c-inv-acc);transform-origin:left;animation:ms7-grow-x 900ms var(--ease-out) both}',
+      '.ms7c-swatch{width:32px;height:32px;border-radius:50%;cursor:pointer;border:0;padding:0;display:flex;align-items:center;justify-content:center;box-shadow:0 0 0 1px color-mix(in oklab,var(--text-primary) 18%,transparent);transition:transform var(--dur-base) var(--ease-spring),box-shadow var(--dur-fast)}.ms7c-swatch:hover{transform:scale(1.08)}',
+      '.ms7c-swatch[aria-pressed="true"]{box-shadow:0 0 0 2px var(--surface-page),0 0 0 4px var(--text-brand)}',
+      '.ms7c-plan{display:flex;align-items:center;gap:14px;padding:16px 18px;cursor:pointer}.ms7c-plan.is-on{box-shadow:var(--shadow-card),0 0 0 1.5px var(--ms7-green-900)}',
+      '.ms7-card.ms7c-plancard{box-shadow:var(--shadow-card),0 0 0 1.5px color-mix(in oklab,var(--ms7-green-900) 55%,transparent)}',
+      '.ms7c-plancard .ms7-bar{height:8px;border-radius:8px}.ms7c-plancard .ms7-bar>i{background:var(--ms7-green-900);border-radius:8px}',
       '.ms7c-sw{display:flex;align-items:center;padding:10px 12px;border:1px solid var(--border-subtle);border-radius:10px;transition:border-color var(--dur-fast)}.ms7c-sw:hover{border-color:var(--line-strong)}.ms7c-sw .ms7-switch{width:100%}',
       '.ms7c-tabs{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}',
       '.ms7c-tabwrap{max-width:100%;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}.ms7c-tabwrap::-webkit-scrollbar{display:none}.ms7c-tabwrap>.ms7-tabs{min-width:max-content}',
@@ -46,6 +45,17 @@
       <span className="ms7-balance" style={{ display: 'block' }}>
         {nb(p.children)}
       </span>
+    );
+  }
+  /* título de card com emoji (1 por card, sempre antes do texto) */
+  function Tt(emo, text) {
+    return (
+      <React.Fragment>
+        <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+          {emo}
+        </span>
+        {text}
+      </React.Fragment>
     );
   }
   function AlunosScreen() {
@@ -127,7 +137,7 @@
               ]}
             />
             <Grid min={320}>
-              <Card title="Top 10 alunos por resultado" subtitle={nb('Resultado acumulado, em mil reais')} reveal>
+              <Card title={Tt('🎓', 'Top 10 alunos por resultado')} subtitle={nb('Resultado acumulado, em mil reais')} reveal>
                 {rank.length ? (
                   <BarChart
                     height={240}
@@ -137,7 +147,7 @@
                     series={[{ name: 'Resultado (mil R$)', color: 'var(--chart-1)' }]}
                   />
                 ) : (
-                  <Empty art="Chart" title="Sem resultados ainda" sub={<Sub>Quando os alunos fecharem ciclos, o top 10 aparece aqui.</Sub>} />
+                  <Empty art="Chart" emoji={false} title="Sem resultados ainda" sub={<Sub>Quando os alunos fecharem ciclos, o top 10 aparece aqui.</Sub>} />
                 )}
               </Card>
               <Card title="Ranking resumido" subtitle={nb('Do maior para o menor resultado')} reveal>
@@ -155,7 +165,7 @@
             </Grid>
           </React.Fragment>
         ) : (
-          <Card title="Gestão de alunos" subtitle={rows.length + (rows.length === 1 ? ' aluno cadastrado' : ' alunos cadastrados')} reveal>
+          <Card title={Tt('🎓', 'Gestão de alunos')} subtitle={rows.length + (rows.length === 1 ? ' aluno cadastrado' : ' alunos cadastrados')} reveal>
             {rows.length ? (
               <DataTable
                 style={{ margin: '0 -14px -10px' }}
@@ -257,6 +267,7 @@
             ) : (
               <Empty
                 art="People"
+                emoji={false}
                 title="Nenhum aluno cadastrado"
                 sub={<Sub>Cadastre seus alunos para acompanhar contas, resultado e ranking num lugar só.</Sub>}
                 action={
@@ -397,7 +408,7 @@
     }, 0);
     return (
       <React.Fragment>
-        <Card title="Comprar" subtitle={nb('Escolha a quantidade de cada produto e pague por PIX')} reveal>
+        <Card title={Tt('🛒', 'Comprar')} subtitle={nb('Escolha a quantidade de cada produto e pague por PIX')} reveal>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {!prod ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
@@ -422,9 +433,7 @@
                       <span className="ms7c-c" style={{ lineHeight: 1.45 }}>
                         {p.desc}
                       </span>
-                      <span className="ms7-num" style={{ fontSize: 20, fontWeight: 600, letterSpacing: '-0.03em', marginTop: 4 }}>
-                        {MS7.brl(p.preco)}
-                      </span>
+                      <span className="ms7-num ms7c-price">{MS7.brl(p.preco)}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 'auto', paddingTop: 8 }}>
                         <DS.IconButton
                           icon="minus"
@@ -464,6 +473,7 @@
             ) : (
               <Empty
                 art="Globe"
+                emoji={false}
                 compact
                 title="Nenhum produto à venda agora"
                 sub={<Sub>Quando houver proxies disponíveis para compra, elas aparecem aqui.</Sub>}
@@ -512,7 +522,7 @@
           </div>
         </Card>
         {on && peds.length ? (
-          <Card title="Meus pedidos" subtitle={nb('Compras feitas por PIX e o status da entrega')} reveal>
+          <Card title={Tt('🧾', 'Meus pedidos')} subtitle={nb('Compras feitas por PIX e o status da entrega')} reveal>
             <div className="ms7c-list">
               {peds.map(function (p) {
                 const ok = p.status === 'approved';
@@ -617,7 +627,7 @@
             },
           ]}
         />
-        <Card title="Minhas proxies" subtitle={nb('Endereço de conexão, tráfego usado e vencimento')} reveal>
+        <Card title={Tt('🌐', 'Minhas proxies')} subtitle={nb('Endereço de conexão, tráfego usado e vencimento')} reveal>
           {list.length ? (
             <div className="ms7c-list">
               {list.map(function (p) {
@@ -680,6 +690,7 @@
           ) : (
             <Empty
               art="Globe"
+              emoji={false}
               title="Nenhuma proxy ainda"
               sub={<Sub>Compre uma proxy abaixo e ela aparece aqui com o endereço de conexão pronto para copiar.</Sub>}
             />
@@ -785,31 +796,14 @@
                 { icon: 'receipt-text', label: 'Cobrança projetada', value: MS7.brl(P.preco), tone: 'orange' },
               ]}
             />
-            <Card dark reveal padding={28}>
-              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px 32px', flexWrap: 'wrap' }}>
-                <div style={{ flex: '1 1 220px', minWidth: 0 }}>
-                  <span className="ms7-eyebrow" style={{ color: 'inherit', opacity: 0.65 }}>
-                    Plano atual
-                  </span>
-                  <div style={{ fontSize: 32, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, marginTop: 8, color: 'var(--ms7c-inv-acc)' }}>
-                    {P.nome}
-                  </div>
-                  <div style={{ fontSize: 13.5, fontWeight: 500, marginTop: 6, opacity: 0.8 }}>{P.seats + ' seats de operador · renovação mensal'}</div>
-                </div>
-                <div style={{ flex: '1 1 260px', minWidth: 0 }}>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, opacity: 0.8 }}>{'Uso de seats — ' + P.nome}</span>
-                    <span className="ms7-num" style={{ fontSize: 14, fontWeight: 600 }}>
-                      {used + '/' + P.seats}
-                    </span>
-                  </div>
-                  <div className="ms7c-bar-inv">
-                    <i style={{ width: Math.min(100, (used / P.seats) * 100) + '%' }} />
-                  </div>
-                </div>
+            <Card
+              reveal
+              padding={28}
+              className="ms7c-plancard"
+              title={Tt('💳', 'Plano atual')}
+              action={
                 <Button
                   variant="outline"
-                  className="ms7c-inv-btn"
                   iconLeft="arrow-up-down"
                   onClick={function () {
                     setChg(true);
@@ -817,6 +811,28 @@
                 >
                   Mudar de plano
                 </Button>
+              }
+            >
+              <div style={{ display: 'flex', alignItems: 'flex-end', gap: '20px 32px', flexWrap: 'wrap' }}>
+                <div style={{ flex: '1 1 220px', minWidth: 0 }}>
+                  <div className="ms7-num" style={{ fontSize: 34, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, color: 'var(--text-brand)' }}>
+                    {P.nome}
+                  </div>
+                  <div className="ms7c-s" style={{ marginTop: 6 }}>
+                    {nb(P.seats + ' seats de operador · renovação mensal')}
+                  </div>
+                </div>
+                <div style={{ flex: '1 1 260px', minWidth: 0 }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
+                    <span className="ms7c-c" style={{ fontWeight: 600 }}>{'Uso de seats — ' + P.nome}</span>
+                    <span className="ms7-num" style={{ fontSize: 14, fontWeight: 600 }}>
+                      {used + '/' + P.seats}
+                    </span>
+                  </div>
+                  <div className="ms7-bar">
+                    <i style={{ width: Math.min(100, (used / P.seats) * 100) + '%' }} />
+                  </div>
+                </div>
               </div>
             </Card>
             <Card title="Pague seu plano via PIX" subtitle={nb('Copia e cola ou QR Code, com confirmação automática')} reveal>
@@ -896,7 +912,7 @@
               ]}
             />
             <Card
-              title="Assinaturas"
+              title={Tt('💳', 'Assinaturas')}
               subtitle={tenants.length + (tenants.length === 1 ? ' tenant' : ' tenants')}
               reveal
               action={
@@ -986,7 +1002,7 @@
                   ]}
                 />
               ) : (
-                <Empty art="Search" compact title="Nenhuma assinatura com esse status" sub={<Sub>Troque o filtro para ver as outras assinaturas.</Sub>} />
+                <Empty art="Search" emoji={false} compact title="Nenhuma assinatura com esse status" sub={<Sub>Troque o filtro para ver as outras assinaturas.</Sub>} />
               )}
             </Card>
           </React.Fragment>
@@ -1110,7 +1126,7 @@
       );
     }
     return (
-      <Card title="Instalar como app e receber notificações" subtitle={nb('Quatro passos, uma vez só por aparelho')} reveal>
+      <Card title={Tt('🔔', 'Instalar como app e receber notificações')} subtitle={nb('Quatro passos, uma vez só por aparelho')} reveal>
         <Hint>
           {nb(
             'Instale o painel no celular ou no computador. Ele abre como um app e mostra as notificações do sistema: início de meta, conta bloqueada e ciclo fechado com lucro ou prejuízo.',
@@ -1131,7 +1147,7 @@
           ) : (
             <Button
               size="sm"
-              variant="brand"
+              variant="outline"
               iconLeft="download"
               disabled={!inst}
               onClick={function () {
@@ -1364,9 +1380,10 @@
     }, []);
     if (!session.real)
       return (
-        <Card title="Acessos">
+        <Card title={Tt('🔐', 'Acessos')}>
           <Empty
             art="Keys"
+            emoji={false}
             title="Modo demonstração"
             sub={<Sub>Entre com email e senha num servidor para criar logins dos operadores. No modo demonstração os acessos não são reais.</Sub>}
           />
@@ -1440,7 +1457,7 @@
     const ROLE_COLOR = { 'shield-check': 'var(--ms7-green-900)', user: 'var(--ms7-blue)', briefcase: 'var(--ms7-purple)' };
     return (
       <Card
-        title="Acessos"
+        title={Tt('🔐', 'Acessos')}
         subtitle={list ? list.length + (list.length === 1 ? ' acesso' : ' acessos') : undefined}
         action={
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
@@ -1518,7 +1535,7 @@
             })}
         </div>
         {err ? (
-          <Empty art="Keys" compact title="Não deu para carregar os acessos" sub={err} />
+          <Empty art="Keys" emoji={false} compact title="Não deu para carregar os acessos" sub={err} />
         ) : !list ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             {[0, 1, 2].map(function (i) {
@@ -1528,6 +1545,7 @@
         ) : !list.length ? (
           <Empty
             art="Keys"
+            emoji={false}
             compact
             title="Nenhum acesso criado"
             sub={<Sub>Crie o primeiro acesso para que cada pessoa entre com o próprio email e senha.</Sub>}
@@ -1773,7 +1791,8 @@
                     style={{
                       padding: 16,
                       borderRadius: 12,
-                      boxShadow: 'var(--shadow-card)',
+                      background: 'var(--surface-muted)',
+                      boxShadow: '0 0 0 1px var(--line)',
                       display: 'flex',
                       flexDirection: 'column',
                       gap: 8,
@@ -1972,7 +1991,7 @@
         </div>
         {tabV === 'acessos' ? <AcessosCard session={session} /> : null}
         {tabV === 'marca' ? (
-          <Card title="Identidade do painel" subtitle={nb('Cores, nome e logo usados em todas as áreas do sistema')}>
+          <Card title={Tt('🎨', 'Identidade do painel')} subtitle={nb('Cores, nome e logo usados em todas as áreas do sistema')}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(240px,1fr))', gap: '18px 24px', alignItems: 'start' }}>
               <Input label="Nome do painel" icon="type" defaultValue="MS7 Dashboards" />
               <div className="ms7-field">
@@ -1990,13 +2009,10 @@
                         onClick={function () {
                           setCor(c);
                         }}
-                        style={{
-                          background: c,
-                          boxShadow: on
-                            ? '0 0 0 2px var(--surface-card), 0 0 0 4px ' + c
-                            : '0 0 0 1px color-mix(in oklab, var(--text-primary) 10%, transparent)',
-                        }}
-                      />
+                        style={{ background: c, color: '#fff' /* sobre a cor escolhida pelo usuário */ }}
+                      >
+                        {on ? <DS.Icon name="check" size={15} strokeWidth={2.5} /> : null}
+                      </button>
                     );
                   })}
                 </div>
@@ -2019,7 +2035,7 @@
                   height: 64,
                   borderRadius: 14,
                   background: cor,
-                  color: '#fff',
+                  color: '#fff' /* sobre a cor escolhida pelo usuário */,
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
@@ -2035,7 +2051,7 @@
               <div style={{ flex: '1 1 200px', minWidth: 0 }}>
                 <div className="ms7c-t">Logo</div>
                 <div className="ms7c-c" style={{ marginTop: 2 }}>
-                  Prévia com a cor principal escolhida
+                  {nb('Prévia com a cor principal escolhida')}
                 </div>
               </div>
               <Button variant="outline" iconLeft="upload">
@@ -2051,15 +2067,7 @@
           </React.Fragment>
         ) : null}
         {tabV === 'telegram' ? (
-          <Card
-            title="Telegram"
-            subtitle={nb('Receba no Telegram as contas importadas e os demais avisos do painel')}
-            icon={
-              <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, var(--ms7-blue) 12%, var(--surface-card))', color: 'var(--ms7-blue)' }}>
-                <DS.Icon name="send" size={17} strokeWidth={2} />
-              </span>
-            }
-          >
+          <Card title={Tt('✈️', 'Telegram')} subtitle={nb('Receba no Telegram as contas importadas e os demais avisos do painel')}>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
               <Input label="Token do bot" type="password" icon="bot" defaultValue="7382910:AAH-exemplo" />
               <div className="ms7-field">
@@ -2106,7 +2114,7 @@
         {tabV === 'conta' ? <ExemploCard role={role} /> : null}
         {tabV === 'conta' ? <SenhaCard session={session} /> : null}
         {tabV === 'conta' ? (
-          <Card title="Minha conta" subtitle={nb('Nome, email e aparência do painel')}>
+          <Card title={Tt('👤', 'Minha conta')} subtitle={nb('Nome, email e aparência do painel')}>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(min(100%,320px),1fr))', gap: '16px 20px', alignItems: 'start' }}>
               <Input label="Nome" icon="user" defaultValue="Marcelo" />
               <Input label="E-mail" icon="mail" defaultValue="marcelo@ms7.com" />

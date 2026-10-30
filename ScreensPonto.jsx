@@ -51,12 +51,13 @@
       '.ms7p-mark .v{font-size:17px;font-weight:600;letter-spacing:-.02em;color:var(--text-secondary)}',
       '.ms7p-mark.is-on .lab{color:var(--ms7-green-ink)}',
       '.ms7p-mark.is-on .v{color:var(--text-primary)}',
+      '.ms7p-mark.is-now{box-shadow:0 0 0 1px color-mix(in oklab,var(--ms7-green-900) 45%,transparent)}',
       '.ms7p-prog{width:100%;margin-top:14px;text-align:left}',
       '.ms7p-prog .l{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;font-weight:500;color:var(--text-secondary);margin-bottom:8px}',
       '.ms7p-prog .l .v{font-size:14px;font-weight:600;color:var(--text-primary)}',
       '.ms7p-note{margin-top:14px;font-size:12px;font-weight:500;color:var(--text-secondary);line-height:1.5;max-width:420px}',
       '.ms7p-done{width:100%;max-width:380px;margin-top:22px;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:12px;background:var(--surface-muted);font-size:14px;font-weight:600;text-align:left}',
-      '.ms7p-done .ico{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green) 14%,var(--surface-card));color:var(--ms7-green)}',
+      '.ms7p-done .ico{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green) 16%,transparent);color:var(--ms7-green)}',
       '.ms7p-mot{display:flex;gap:8px;flex-wrap:wrap}',
       '.ms7p-mot button{display:inline-flex;align-items:center;gap:8px;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);font-family:inherit;font-size:13.5px;font-weight:600;cursor:pointer;transition:background var(--dur-fast),border-color var(--dur-fast),color var(--dur-fast)}',
       '.ms7p-mot button:hover{border-color:var(--line-strong)}',
@@ -64,6 +65,16 @@
       '.ms7p-regra{display:flex;flex-direction:column;gap:10px;padding:14px 0;border-top:1px solid var(--border-subtle)}',
       '.ms7p-regra:first-of-type{border-top:0;padding-top:0}',
       '@media (max-width:640px){.ms7p-row{grid-template-columns:auto minmax(0,1fr) auto;row-gap:6px}.ms7p-row .ms7p-worked{grid-column:2;text-align:left;min-width:0}.ms7p-row .ms7p-act{grid-column:3;grid-row:1}.ms7p-marks{grid-template-columns:repeat(2,minmax(0,1fr))}.ms7p-clock{font-size:38px}.ms7p-h{font-size:20px}}',
+      /* vidro no preto: chips de filtro e de motivo em glass, ativo em lima */
+      'html[data-theme="dark"] .ms7p-chip,html[data-theme="dark"] .ms7p-mot button{background:var(--glass);box-shadow:var(--glass-edge)}',
+      'html[data-theme="dark"] .ms7p-chip:hover,html[data-theme="dark"] .ms7p-mot button:hover{background:var(--glass-2)}',
+      'html[data-theme="dark"] .ms7p-chip.is-on{background:var(--ms7-lime-500);border-color:var(--ms7-lime-500);color:var(--text-on-lime);box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}',
+      'html[data-theme="dark"] .ms7p-chip.is-on .n{color:var(--text-on-lime);opacity:.7}',
+      'html[data-theme="dark"] .ms7p-mot button.is-on{background:var(--ms7-lime-500);border-color:var(--ms7-lime-500);color:var(--text-on-lime);box-shadow:inset 0 1px 0 rgba(255,255,255,.45)}',
+      'html[data-theme="dark"] .ms7p-row:hover{background:var(--glass-2)}',
+      'html[data-theme="dark"] .ms7p-mark,html[data-theme="dark"] .ms7p-pause,html[data-theme="dark"] .ms7p-done{background:var(--glass)}',
+      'html[data-theme="dark"] .ms7p-mark.is-now{background:color-mix(in oklab,var(--ms7-lime-500) 8%,transparent);box-shadow:0 0 0 1px color-mix(in oklab,var(--ms7-lime-500) 45%,transparent)}',
+      'html[data-theme="dark"] .ms7p-sec-head .ln{background:var(--line)}',
     ].join('');
     let s = document.getElementById('ms7-ponto-css');
     if (!s) {
@@ -73,6 +84,14 @@
     }
     s.textContent = CSS;
   })();
+  /* emoji de título de card (1 por card, sempre antes do texto) */
+  function Emo({ e }) {
+    return (
+      <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+        {e}
+      </span>
+    );
+  }
   const F = [
     ['entrada', 'Entrada', 'log-in'],
     ['almocoIni', 'Saída almoço', 'utensils'],
@@ -327,12 +346,17 @@
     );
   }
   function Marks({ r, compact }) {
+    /* a última marcação feita é o "estado atual": ganha o fio em lima */
+    let last = -1;
+    F.forEach(function (f, i) {
+      if (r[f[0]]) last = i;
+    });
     return (
       <div className="ms7p-marks" style={compact ? { gridTemplateColumns: 'repeat(2,minmax(0,1fr))' } : null}>
-        {F.map(function (f) {
+        {F.map(function (f, i) {
           const on = !!r[f[0]];
           return (
-            <div key={f[0]} className={'ms7p-mark' + (on ? ' is-on' : '')}>
+            <div key={f[0]} className={'ms7p-mark' + (on ? ' is-on' : '') + (on && i === last && !r.saida ? ' is-now' : '')}>
               <span className="lab">
                 <DS.Icon name={f[2]} size={12} strokeWidth={2} />
                 {f[1]}
@@ -640,11 +664,18 @@
           })
         ) : (
           <Card>
-            <Empty art="People" title="Nenhum operador ativo" sub="Cadastre operadores em Gestão → Operadores." />
+            <Empty art="People" title="Nenhum operador ativo" sub={'Cadastre operadores em Gestão → Operadores.'} />
           </Card>
         )}
         {(db.pontoLog || []).length ? (
-          <Card title="Últimos avisos">
+          <Card
+            title={
+              <React.Fragment>
+                <Emo e="🔔" />
+                Últimos avisos
+              </React.Fragment>
+            }
+          >
             <div style={{ display: 'flex', flexDirection: 'column' }}>
               {db.pontoLog.slice(0, 8).map(function (a, i) {
                 const alerta = a.tipo !== 'marcacao';
@@ -653,7 +684,7 @@
                     <span
                       className="ico"
                       style={{
-                        background: alerta ? 'color-mix(in oklab, var(--ms7-error) 12%, var(--surface-card))' : 'var(--surface-muted)',
+                        background: alerta ? 'color-mix(in oklab, var(--ms7-error) 14%, transparent)' : 'var(--surface-muted)',
                         color: alerta ? 'var(--ms7-error)' : 'var(--text-primary)',
                       }}
                     >
@@ -719,7 +750,14 @@
           ]}
         />
         {rows.length ? (
-          <Card title="Horas por operador">
+          <Card
+            title={
+              <React.Fragment>
+                <Emo e="📊" />
+                Horas por operador
+              </React.Fragment>
+            }
+          >
             <BarChart
               height={220}
               data={rows.slice(0, 10).map(function (r) {
@@ -797,7 +835,7 @@
             </Button>
           }
         >
-          <Hint>Saldo = horas trabalhadas menos a jornada prevista, somando só os dias com saída registrada.</Hint>
+          <Hint>Saldo = horas trabalhadas menos a jornada prevista, somando só os dias com saída&nbsp;registrada.</Hint>
           <DataTable
             rows={rows}
             columns={[
@@ -873,7 +911,12 @@
       });
     return (
       <Card
-        title="Registros de ponto"
+        title={
+          <React.Fragment>
+            <Emo e="⏱️" />
+            Registros de ponto
+          </React.Fragment>
+        }
         action={
           <Button
             size="sm"
@@ -1104,8 +1147,15 @@
     };
     return (
       <Grid min={340}>
-        <Card title="Jornada padrão">
-          <Hint>Vale para todos os operadores, a não ser que tenham regra própria ao lado.</Hint>
+        <Card
+          title={
+            <React.Fragment>
+              <Emo e="⏱️" />
+              Jornada padrão
+            </React.Fragment>
+          }
+        >
+          <Hint>Vale para todos os operadores, a não ser que tenham regra própria ao&nbsp;lado.</Hint>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
             <Input label="Horário de entrada" type="time" value={f.entrada} onChange={u('entrada')} />
             <Input label="Jornada por dia (horas)" value={f.jornada} onChange={u('jornada')} />
@@ -1133,8 +1183,15 @@
             </Button>
           </div>
         </Card>
-        <Card title="Regras por operador">
-          <Hint>Deixe em branco para usar a jornada padrão.</Hint>
+        <Card
+          title={
+            <React.Fragment>
+              <Emo e="👥" />
+              Regras por operador
+            </React.Fragment>
+          }
+        >
+          <Hint>Deixe em branco para usar a jornada&nbsp;padrão.</Hint>
           {db.operadores.map(function (o) {
             return <OpRegra key={o.id} o={o} def={def} />;
           })}
@@ -1156,10 +1213,17 @@
       ['semSaida', 'Esqueceu de registrar a saída'],
     ];
     return (
-      <Card title="Notificações do ponto">
+      <Card
+        title={
+          <React.Fragment>
+            <Emo e="🔔" />
+            Notificações do ponto
+          </React.Fragment>
+        }
+      >
         <Hint>
           Chegam no sino do painel e no celular ou computador onde você ativou as notificações (Configurações → Notificações). O servidor envia mesmo
-          com o painel fechado.
+          com o painel&nbsp;fechado.
         </Hint>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {L.map(function (x) {
@@ -1361,7 +1425,14 @@
             { icon: 'scale', label: 'Saldo do mês', value: (mes.saldo >= 0 ? '+' : '') + dur(mes.saldo), tone: 'yellow' },
           ]}
         />
-        <Card title="Meu histórico (30 dias)">
+        <Card
+          title={
+            <React.Fragment>
+              <Emo e="⏱️" />
+              Meu histórico (30 dias)
+            </React.Fragment>
+          }
+        >
           {hist.length ? (
             <DataTable
               rows={hist}
@@ -1428,7 +1499,7 @@
               ]}
             />
           ) : (
-            <Empty art="Clock" title="Nenhum registro ainda" sub="Registre sua entrada para começar." />
+            <Empty art="Clock" title="Nenhum registro ainda" sub={'Registre sua entrada para começar.'} />
           )}
         </Card>
       </div>

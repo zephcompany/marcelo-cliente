@@ -2,6 +2,7 @@
   const DS = window.MS7DesignSystem_5d5172;
   /* ---------- CSS só desta tela (tokens) ---------- */
   const CSS = [
+    /* moldura do QR: branco puro de propósito (zona de silêncio do QR Code, precisa ser branca para a leitura) */
     '.ms7v-qr{width:216px;height:216px;border-radius:12px;background:#fff;box-shadow:0 0 0 1px var(--line);padding:8px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;overflow:hidden}',
     '.ms7v-qr.is-ph{background:var(--surface-card)}',
     '.ms7v-qr img{width:100%;height:100%;border-radius:6px;display:block}',
@@ -13,7 +14,6 @@
     '.ms7v-status>i{width:7px;height:7px;border-radius:50%;flex-shrink:0;background:currentColor}',
     '.ms7v-ok{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green) 14%,var(--surface-card));color:var(--ms7-green);animation:ms7-pop 420ms var(--ease-spring) both}',
     '.ms7v-amount{font-size:24px;font-weight:600;letter-spacing:-.03em;line-height:1.1}',
-    '.ms7v-tile{width:40px;height:40px;border-radius:11px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900)}',
   ].join('');
   if (!document.getElementById('ms7-vagas-css')) {
     const st = document.createElement('style');
@@ -136,7 +136,7 @@
     }
     function copiar() {
       navigator.clipboard && navigator.clipboard.writeText(st.copia || '');
-      toast('Código PIX copiado');
+      toast('📋 Código PIX copiado');
     }
     return (
       <Modal
@@ -241,21 +241,21 @@
           flexWrap: 'wrap',
         }}
       >
-        <span className="ms7v-tile">
-          <DS.Icon name="user-plus" size={19} />
-        </span>
         <div style={{ flex: '1 1 240px', minWidth: 0 }}>
           <div style={{ fontSize: 16, fontWeight: 600, letterSpacing: '-0.015em', lineHeight: 1.25 }}>
-            {v.vagas ? 'Vagas de operador: ' + v.usadas + ' de ' + v.vagas + ' em uso' : 'Seu painel é só seu'}
+            <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+              🎟️
+            </span>
+            {v.vagas ? 'Vagas de operador: ' + v.usadas + ' de ' + v.vagas + ' em uso' : 'Seu painel é só seu'}
           </div>
           <div style={{ fontSize: 13.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)', marginTop: 3, textWrap: 'pretty' }}>
             {v.vagas
               ? livres
-                ? livres + (livres === 1 ? ' vaga livre para cadastrar.' : ' vagas livres para cadastrar.')
-                : 'Todas as vagas em uso. Compre outra para adicionar mais um operador.'
+                ? livres + (livres === 1 ? ' vaga livre para cadastrar.' : ' vagas livres para cadastrar.')
+                : 'Todas as vagas em uso. Compre outra para adicionar mais um operador.'
               : 'Quer uma equipe? Adicione operadores e acompanhe as operações e o lucro de cada um. Pagamento único de ' +
                 MS7.brl(v.preco) +
-                ' por operador.'}
+                ' por operador.'}
           </div>
         </div>
         <DS.Button
@@ -284,7 +284,7 @@
     const v = cache;
     const n = (DB.get().operadores || []).length;
     if (v && v.vagas > n) return true;
-    toast('Compre uma vaga de operador para adicionar mais um');
+    toast('🎟️ Compre uma vaga de operador para adicionar mais um');
     return false;
   }
   Object.assign(window, { VagasCard: VagasCard, useVagas: useVagas, podeNovoOperador: podeNovoOperador });
@@ -346,7 +346,7 @@
     function copiar() {
       const t = st.copia || '';
       const ok = function () {
-        toast('Código PIX copiado. Cole no app do seu banco.');
+        toast('📋 Código PIX copiado. Cole no app do seu banco.');
       };
       if (navigator.clipboard && navigator.clipboard.writeText)
         navigator.clipboard.writeText(t).then(ok, function () {

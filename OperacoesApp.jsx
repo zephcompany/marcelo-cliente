@@ -61,7 +61,8 @@
     '.ms7-head::after{content:"";position:absolute;left:var(--page-pad);right:var(--page-pad);bottom:0;height:1px;background:var(--line);opacity:0;transition:opacity 240ms}',
     '.ms7-head.is-stuck::after{opacity:1}',
     '.ms7-head h1{flex:1 1 200px;min-width:0;margin:0;font-size:var(--text-page-title);font-weight:600;letter-spacing:-.03em;line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;animation:ms7-up-sm 420ms var(--ease-out) both}',
-    '.ms7-head h1 em{font-family:var(--font-serif);font-style:italic;font-weight:400;letter-spacing:-.01em;color:var(--ms7-green-900);font-size:1.12em}',
+    '.ms7-head h1 em{font-style:normal;font-weight:600;letter-spacing:-.03em;color:var(--text-brand)}',
+    '.ms7-head h1 .ms7-emo{font-size:.9em;margin-left:8px}',
     '.ms7-head-sub{display:block;font-size:13px;font-weight:500;color:var(--text-secondary);letter-spacing:0;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
     '.ms7-head-tools{display:flex;align-items:center;gap:6px;flex-shrink:0;margin-left:auto}',
     '.ms7-search-btn{height:38px;display:inline-flex;align-items:center;gap:8px;padding:0 10px 0 12px;border-radius:11px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-secondary);font-size:13px;font-weight:500;cursor:pointer;transition:border-color 200ms,box-shadow 240ms var(--ease-standard),transform 240ms var(--ease-standard),color 200ms}',
@@ -101,7 +102,7 @@
     'html[data-theme="dark"] .ms7-login-brand .mark{background:#F3F5F1;color:#0B0D0C}',
     '.ms7-login-brand .nm{display:flex;flex-direction:column;line-height:1.1}.ms7-login-brand .nm b{font-size:16px;font-weight:600;letter-spacing:-.02em}.ms7-login-brand .nm span{font-size:11px;font-weight:500;letter-spacing:.14em;text-transform:uppercase;color:var(--text-secondary);margin-top:4px}',
     '.ms7-login h2{margin:0;font-size:30px;font-weight:600;letter-spacing:-.035em;line-height:1.05}',
-    '.ms7-login h2 em{font-family:var(--font-serif);font-style:italic;font-weight:400;color:var(--ms7-green-900);font-size:1.1em}',
+    '.ms7-login h2 em{font-style:normal;font-weight:600;color:var(--text-brand)}',
     '.ms7-login .sub{margin:10px 0 28px;font-size:15px;font-weight:500;color:var(--text-secondary);line-height:1.5}',
     '.ms7-login .card{padding:4px 0 0}',
     '.ms7-login .foot{margin-top:28px;font-size:12.5px;font-weight:500;color:var(--text-secondary);display:flex;gap:6px;align-items:center}',
@@ -111,7 +112,7 @@
     '.ms7-login-side::before{content:"";position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px);background-size:48px 48px;mask-image:radial-gradient(ellipse at 50% 40%,#000 30%,transparent 75%);-webkit-mask-image:radial-gradient(ellipse at 50% 40%,#000 30%,transparent 75%)}',
     '.ms7-login-side .ey{position:relative;font-size:11px;font-weight:600;letter-spacing:.2em;text-transform:uppercase;color:#C9F775;margin-bottom:18px;animation:ms7-up 600ms var(--ease-out) both}',
     '.ms7-login-side h3{position:relative;margin:0 0 14px;font-size:clamp(28px,3vw,42px);font-weight:500;letter-spacing:-.03em;line-height:1.05;max-width:520px;animation:ms7-up 600ms 80ms var(--ease-out) both}',
-    '.ms7-login-side h3 em{font-family:var(--font-serif);font-style:italic;font-weight:400;color:#C9F775;font-size:1.08em}',
+    '.ms7-login-side h3 em{font-style:normal;font-weight:600;color:#C9F775}',
     '.ms7-login-side p{position:relative;margin:0 0 36px;font-size:15px;font-weight:400;color:rgba(255,255,255,.72);max-width:440px;line-height:1.55;animation:ms7-up 600ms 160ms var(--ease-out) both}',
     '.ms7-prev{position:relative;max-width:560px;margin-top:54px;animation:ms7-up 700ms 240ms var(--ease-out) both}',
     '.ms7-prev-card{background:#fff;color:#111512;border-radius:18px;padding:20px 22px;box-shadow:0 40px 80px -30px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.1);font-family:var(--font-sans)}',
@@ -135,6 +136,37 @@
     '.ms7-login-theme{position:absolute;top:18px;right:18px;z-index:2;width:40px;height:40px;border-radius:12px;border:1px solid var(--line);background:var(--surface-card);color:var(--text-primary);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 240ms var(--ease-spring),background 200ms}',
     '.ms7-login-theme:hover{transform:rotate(-12deg) scale(1.05)}',
     '.ms7-login-form .ms7-login-theme{right:auto;left:18px}',
+    /* black glass (tema escuro) */
+    'html[data-theme="dark"] .ms7-head{background:color-mix(in oklab,var(--surface-page) 72%,transparent);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3)}',
+    'html[data-theme="dark"] .ms7-search-btn{background:var(--glass);box-shadow:var(--glass-edge);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}',
+    'html[data-theme="dark"] .ms7-search-btn kbd{background:rgba(255,255,255,.08);border-color:var(--line)}',
+    'html[data-theme="dark"] .ms7-user-cam{background:var(--glass-solid)}',
+    'html[data-theme="dark"] .ms7-user-sync{border-color:#0b0d0c}',
+    'html[data-theme="dark"] .ms7-banner{background:var(--glass);backdrop-filter:var(--glass-blur);-webkit-backdrop-filter:var(--glass-blur)}',
+    'html[data-theme="dark"] .ms7-cmdk-bg{background:rgba(4,5,5,.55);backdrop-filter:blur(12px) saturate(1.2);-webkit-backdrop-filter:blur(12px) saturate(1.2)}',
+    'html[data-theme="dark"] .ms7-cmdk{background:var(--glass-solid);backdrop-filter:blur(30px) saturate(1.4);-webkit-backdrop-filter:blur(30px) saturate(1.4)}',
+    'html[data-theme="dark"] .ms7-cmdk-it:hover,html[data-theme="dark"] .ms7-cmdk-it.is-act{background:var(--glass-2)}',
+    'html[data-theme="dark"] .ms7-cmdk-it .tile{background:rgba(255,255,255,.08)}',
+    'html[data-theme="dark"] .ms7-cmdk-it:hover .tile,html[data-theme="dark"] .ms7-cmdk-it.is-act .tile{background:var(--ms7-lime-500);color:var(--text-on-lime)}',
+    'html[data-theme="dark"] .ms7-cmdk-foot{background:rgba(255,255,255,.03)}html[data-theme="dark"] .ms7-cmdk-foot kbd{background:rgba(255,255,255,.08)}',
+    'html[data-theme="dark"] .ms7-login{background:#070808}',
+    'html[data-theme="dark"] .ms7-login-form{background:radial-gradient(700px 500px at 10% 0%,rgba(201,247,117,.08),transparent 60%)}',
+    'html[data-theme="dark"] .ms7-login-side{background:#0A0C0B;background-image:radial-gradient(900px 600px at 80% -10%,rgba(201,247,117,.16),transparent 60%),radial-gradient(800px 600px at 0% 100%,rgba(10,90,60,.55),transparent 62%),linear-gradient(160deg,#101412,#070808)}',
+    'html[data-theme="dark"] .ms7-login-side::before{background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px)}',
+    'html[data-theme="dark"] .ms7-login-brand .mark{background:var(--ms7-lime-500);color:var(--text-on-lime);box-shadow:0 14px 30px -14px rgba(201,247,117,.6)}',
+    'html[data-theme="dark"] .ms7-login .lnk{color:var(--text-primary)}',
+    'html[data-theme="dark"] .ms7-login-theme{background:var(--glass);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}',
+    'html[data-theme="dark"] .ms7-prev-card{background:rgba(20,23,21,.8);color:#F1F3EF;backdrop-filter:blur(26px) saturate(1.4);-webkit-backdrop-filter:blur(26px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,255,255,.12),0 50px 100px -40px rgba(0,0,0,.9)}',
+    'html[data-theme="dark"] .ms7-prev-top .dot{background:#4ADE80;box-shadow:0 0 0 3px rgba(74,222,128,.2)}html[data-theme="dark"] .ms7-prev-top span{color:#8E978F;background:rgba(255,255,255,.08)}',
+    'html[data-theme="dark"] .ms7-prev-kpi{background:rgba(255,255,255,.05);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}html[data-theme="dark"] .ms7-prev-kpi small{color:#8E978F}',
+    'html[data-theme="dark"] .ms7-prev-chart i{background:#C9F775}html[data-theme="dark"] .ms7-prev-chart i:nth-child(odd){background:rgba(201,247,117,.28)}html[data-theme="dark"] .ms7-prev-chart i:last-child{background:#4ADE80}',
+    'html[data-theme="dark"] .ms7-prev-row{background:rgba(255,255,255,.05)}html[data-theme="dark"] .ms7-prev-row .av{background:rgba(201,247,117,.16);color:#C9F775}',
+    'html[data-theme="dark"] .ms7-prev-bar{background:rgba(255,255,255,.1)}html[data-theme="dark"] .ms7-prev-bar i{background:#4ADE80}',
+    'html[data-theme="dark"] .ms7-prev-row .vl{color:#4ADE80}html[data-theme="dark"] .ms7-prev-row .vl.neg{color:#FF6E66}html[data-theme="dark"] .ms7-prev-kpi b{color:#F1F3EF}',
+    'html[data-theme="dark"] .ms7-prev-toast{background:rgba(20,23,21,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,255,255,.12),0 30px 60px -24px rgba(0,0,0,.8)}',
+    'html[data-theme="dark"] .ms7-prev-ring{background:rgba(20,23,21,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,255,255,.12),0 30px 60px -24px rgba(0,0,0,.8)}',
+    'html[data-theme="dark"] .ms7-prev-ring circle.bg{stroke:rgba(255,255,255,.1)}html[data-theme="dark"] .ms7-prev-ring circle.fg{stroke:#C9F775}html[data-theme="dark"] .ms7-prev-ring b{color:#F1F3EF}html[data-theme="dark"] .ms7-prev-ring small{color:#8E978F}',
+    'html[data-theme="dark"] .ms7-login-side .feat i{background:rgba(255,255,255,.07);box-shadow:inset 0 0 0 1px rgba(255,255,255,.08)}',
     '@media(max-width:980px){.ms7-login{grid-template-columns:1fr}.ms7-login-side{display:none}.ms7-login-form .ms7-login-theme{left:auto;right:18px}}',
     '@media(max-width:760px){.ms7-shell{display:block}.ms7-head{min-height:62px;padding-top:10px;padding-bottom:10px}.ms7-head h1{font-size:22px}.ms7-main{gap:16px;padding-bottom:calc(96px + env(safe-area-inset-bottom))}.ms7-user{padding-left:8px;margin-left:2px}}',
   ].join('');
@@ -309,7 +341,7 @@
   function ProductPreview() {
     return (
       <div className="ms7-prev" aria-hidden="true">
-        <div className="ms7-prev-card">
+        <div className="ms7-prev-card ms7-glow">
           <div className="ms7-prev-top">
             <span className="dot" />
             <b>Operação de hoje</b>
@@ -872,7 +904,7 @@
     return (
       <div className="ms7-cmdk-bg" onClick={onClose}>
         <div
-          className="ms7-cmdk"
+          className="ms7-cmdk ms7-glow ms7-glow-soft"
           onClick={function (e) {
             e.stopPropagation();
           }}
@@ -1138,7 +1170,7 @@
       return !n.read;
     }).length;
     const [theme, setTheme] = React.useState(function () {
-      return localStorage.getItem('ms7op-theme') || 'light';
+      return localStorage.getItem('ms7op-theme') || 'dark';
     });
     const acc = 'branco';
     React.useEffect(
@@ -1310,6 +1342,9 @@
       pg === 'geral' ? (
         <React.Fragment>
           Olá, <em>{first}</em>
+          <span className="ms7-emo" aria-hidden="true">
+            👋
+          </span>
         </React.Fragment>
       ) : isOp && pg === 'cooperacoes' ? (
         'Minhas cooperações'

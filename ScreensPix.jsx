@@ -8,9 +8,9 @@
   const ALL = '__all';
   /* ---------- CSS só desta tela (tokens) ---------- */
   const CSS = [
-    '.ms7px-tile{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900)}',
+    '.ms7px-tile{width:30px;height:30px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;background:color-mix(in oklab,var(--ms7-green-900) 16%,transparent);color:var(--ms7-green-900)}',
     '.ms7px-tit{position:relative;display:flex;flex-direction:column;gap:12px;padding:16px;cursor:pointer;text-align:left;font-family:inherit;color:var(--text-primary);transition:opacity var(--dur-base),transform var(--dur-base) var(--ease-standard),box-shadow var(--dur-base) var(--ease-standard),background var(--dur-base)}',
-    '.ms7px-tit.is-on{box-shadow:0 0 0 2px var(--ms7-green-900);background:color-mix(in oklab,var(--ms7-green-900) 5%,var(--surface-card))}',
+    '.ms7px-tit.is-on{box-shadow:0 0 0 2px var(--ms7-green-900);background:color-mix(in oklab,var(--ms7-green-900) 7%,transparent)}',
     '.ms7px-tit.is-dim{opacity:.55}',
     '.ms7px-bank{display:flex;justify-content:space-between;gap:8px;padding:7px 0;font-size:12.5px;font-weight:500;border-top:1px solid var(--border-subtle)}',
     '.ms7px-bank:first-child{border-top:0;padding-top:0}',
@@ -18,8 +18,20 @@
     '.ms7px-key{display:flex;flex-direction:column;gap:8px;padding:14px;border-radius:12px;background:var(--surface-card);box-shadow:0 0 0 1px var(--line);transition:box-shadow var(--dur-base) var(--ease-standard)}',
     '.ms7px-key:hover{box-shadow:0 0 0 1px var(--line-strong)}',
     '.ms7px-key.is-block{box-shadow:0 0 0 1px color-mix(in oklab,var(--ms7-error) 35%,var(--line))}',
-    '.ms7px-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--border-subtle);font-size:12.5px}',
+    '.ms7px-det{border-top:1px solid var(--line);padding:16px;display:flex;flex-direction:column;gap:12px;background:var(--surface-muted);border-radius:0 0 var(--radius-lg) var(--radius-lg)}',
+    '.ms7px-box{padding:14px;border-radius:12px;background:var(--surface-muted);display:flex;flex-direction:column;gap:8px}',
+    '.ms7px-ok{font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px}',
+    /* vidro no preto */
+    'html[data-theme="dark"] .ms7px-tit.is-on{box-shadow:var(--glass-edge),0 0 0 2px var(--ms7-lime-500);background:color-mix(in oklab,var(--ms7-lime-500) 9%,transparent)}',
+    'html[data-theme="dark"] .ms7px-key{background:var(--glass);box-shadow:var(--glass-edge),0 0 0 1px var(--line)}',
+    'html[data-theme="dark"] .ms7px-key:hover{background:var(--glass-2);box-shadow:var(--glass-edge),0 0 0 1px var(--line-strong)}',
+    'html[data-theme="dark"] .ms7px-key.is-block{box-shadow:var(--glass-edge),0 0 0 1px color-mix(in oklab,var(--ms7-error) 40%,var(--line))}',
+    'html[data-theme="dark"] .ms7px-det{background:rgba(0,0,0,.22)}',
+    'html[data-theme="dark"] .ms7px-box{background:var(--glass)}',
+    'html[data-theme="dark"] .ms7px-row:hover{background:var(--glass)}',
+    '.ms7px-row{display:flex;align-items:center;gap:10px;padding:9px 14px;border-top:1px solid var(--border-subtle);font-size:12.5px;transition:background var(--dur-fast)}',
     '.ms7px-row:first-child{border-top:0}',
+    '.ms7px-row:hover{background:var(--surface-muted)}',
     '.ms7px-list{border:1px solid var(--line);border-radius:12px;overflow:hidden}',
     '.ms7px-lote{display:flex;align-items:center;gap:12px;padding:14px 18px;flex-wrap:wrap}',
     '.ms7px-pills{display:flex;align-items:center;gap:10px}',
@@ -53,7 +65,7 @@
           borderRadius: 11,
           fontSize: 11,
           fontWeight: 600,
-          background: 'color-mix(in oklab, ' + x.dot + ' 12%, var(--surface-card))',
+          background: 'color-mix(in oklab, ' + x.dot + ' 14%, transparent)',
           color: 'color-mix(in oklab, ' + x.dot + ' 88%, var(--text-primary))',
           whiteSpace: 'nowrap',
         }}
@@ -256,15 +268,9 @@
           </div>
           {v ? (
             <div
+              className="ms7px-ok"
               style={{
-                fontSize: 13,
-                fontWeight: 600,
-                display: 'flex',
-                alignItems: 'center',
-                gap: 8,
-                padding: '10px 12px',
-                borderRadius: 10,
-                background: 'color-mix(in oklab, ' + (ok ? 'var(--ms7-green)' : 'var(--ms7-error)') + ' 10%, var(--surface-card))',
+                background: 'color-mix(in oklab, ' + (ok ? 'var(--ms7-green)' : 'var(--ms7-error)') + ' 12%, transparent)',
                 color: ok ? 'var(--ms7-green)' : 'var(--ms7-error)',
               }}
             >
@@ -992,7 +998,14 @@
           if (!L.length) return null;
           return (
             <Card
-              title="Chaves por titular"
+              title={
+                <React.Fragment>
+                  <span className="ms7-emo" aria-hidden="true" style={{ marginRight: 8 }}>
+                    🔑
+                  </span>
+                  Chaves por titular
+                </React.Fragment>
+              }
               subtitle={L.length + (L.length === 1 ? ' titular' : ' titulares') + ' · clique num titular para ver só os lotes dele'}
               reveal
               action={
@@ -1104,17 +1117,7 @@
             </div>
           </div>
           {found ? (
-            <div
-              style={{
-                marginTop: 14,
-                padding: 14,
-                borderRadius: 12,
-                background: 'var(--surface-muted)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: 8,
-              }}
-            >
+            <div className="ms7px-box" style={{ marginTop: 14 }}>
               <div style={{ fontSize: 13, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 6, color: found.ok ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>
                 <DS.Icon name={found.ok ? 'circle-check' : 'circle-alert'} size={15} strokeWidth={2} />
                 {found.t ? PIXV.LABEL[found.t] + (found.ok ? ' válido' : ' com formato inválido') : 'Formato não reconhecido'}
@@ -1178,7 +1181,7 @@
             <Empty
               art="Keys"
               title="Nenhum lote de chaves PIX"
-              sub="Crie um lote para começar a gerenciar chaves PIX para cooperações."
+              sub="Crie um lote para começar a gerenciar chaves PIX para&nbsp;cooperações."
               action={grupos0.length ? null : novoLote}
             />
           </Card>
@@ -1297,17 +1300,7 @@
                   </div>
                 </div>
                 {on ? (
-                  <div
-                    style={{
-                      borderTop: '1px solid var(--line)',
-                      padding: 16,
-                      display: 'flex',
-                      flexDirection: 'column',
-                      gap: 12,
-                      background: 'var(--surface-muted)',
-                      borderRadius: '0 0 var(--radius-lg) var(--radius-lg)',
-                    }}
-                  >
+                  <div className="ms7px-det">
                     <div className="ms7px-chips">
                       <Tabs
                         variant="chips"
@@ -1328,7 +1321,7 @@
                         })}
                       </div>
                     ) : (
-                      <Empty art="Keys" compact title="Nenhuma chave nesse filtro" sub="Nenhuma chave correspondente ao filtro selecionado." />
+                      <Empty art="Keys" compact title="Nenhuma chave nesse filtro" sub="Nenhuma chave correspondente ao filtro&nbsp;selecionado." />
                     )}
                   </div>
                 ) : null}

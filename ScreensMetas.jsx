@@ -7,7 +7,7 @@
       '.ms7m-card.is-done{opacity:.82}',
       '.ms7m-head{display:flex;align-items:flex-start;gap:10px}',
       '.ms7m-sel{display:flex;align-items:center;height:30px}',
-      '.ms7m-tile{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green-900) 12%,var(--surface-card));color:var(--ms7-green-900)}',
+      '.ms7m-tile{width:30px;height:30px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;background:color-mix(in oklab,var(--ms7-green-900) 16%,transparent);color:var(--ms7-green-900)}',
       '.ms7m-tile.is-done{background:var(--ms7-green-900);color:var(--text-inverse)}',
       '.ms7m-name{font-size:17px;font-weight:600;letter-spacing:-.015em;line-height:1.25;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}',
       '.ms7m-act{display:flex;gap:2px;flex-shrink:0;opacity:.55;transition:opacity var(--dur-fast)}',
@@ -21,9 +21,11 @@
       '.ms7m-fact-row{display:flex;align-items:center;gap:2px;min-width:0}',
       '.ms7m-fact-v{flex:1;min-width:0;font-size:13.5px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-variant-numeric:tabular-nums}',
       '.ms7m-fact-v.is-mono{font-family:var(--font-mono);font-size:13px}',
-      '.ms7m-obs{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--ms7-lime-100);color:var(--ms7-green-ink);font-size:13px;font-weight:500;line-height:1.45}',
+      '.ms7m-obs{display:flex;gap:8px;align-items:flex-start;padding:10px 12px;border-radius:10px;background:var(--soft-warn-bg);color:var(--soft-warn-fg);font-size:13px;font-weight:500;line-height:1.45}',
       '.ms7m-foot{display:flex;gap:6px;flex-wrap:wrap;border-top:1px solid var(--border-subtle);padding-top:14px;margin-top:2px}',
-      '.ms7m-bar{position:sticky;top:8px;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:14px;background:var(--surface-card);box-shadow:0 0 0 1.5px var(--ms7-green-900),0 14px 34px -22px rgba(17,21,18,.35)}',
+      '.ms7m-fin{color:var(--ms7-green-ink)!important;border-color:color-mix(in oklab,var(--ms7-green) 30%,transparent)!important;background:color-mix(in oklab,var(--ms7-green) 8%,var(--surface-card))!important}',
+      '.ms7m-bar{position:sticky;top:8px;z-index:5;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;border-radius:14px;background:var(--surface-card);box-shadow:0 0 0 1.5px var(--ms7-green-900),var(--shadow-pop)}',
+      'html[data-theme="dark"] .ms7m-bar{background:var(--glass-solid);backdrop-filter:blur(24px) saturate(1.4);-webkit-backdrop-filter:blur(24px) saturate(1.4)}',
       '.ms7m-op{padding:18px 20px;display:flex;flex-direction:column;gap:12px}',
       '.ms7m-op-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}',
       '.ms7m-op-name{font-size:16px;font-weight:600;letter-spacing:-.015em}',
@@ -156,13 +158,10 @@
       x = Object.assign({}, x, { comTipo: c0.comTipo, comValor: c0.comValor, comR: c0.comR, comS: c0.comS, opId: x.opId || c0.opId });
     }
     const num = function (v) {
-      return (
-        parseFloat(
-          String(v || '0')
-            .replace(/\./g, '')
-            .replace(',', '.'),
-        ) || 0
-      );
+      if (typeof v === 'number') return v;
+      v = String(v || '0').trim();
+      if (/^\d+\.\d{1,2}$/.test(v)) return parseFloat(v) || 0;
+      return parseFloat(v.replace(/\./g, '').replace(',', '.')) || 0;
     };
     const r2 = function (v) {
       return Math.round(v * 100) / 100;
@@ -853,7 +852,7 @@
                         );
                       })
                     ) : (
-                      <Empty art="Wallet" compact title="Nenhum envio anotado" sub="Os envios registrados para este operador aparecem aqui." />
+                      <Empty art="Wallet" compact title="Nenhum envio anotado" sub={'Os envios registrados para este operador aparecem\u00a0aqui.'} />
                     )}
                   </div>
                 ) : null}
@@ -1310,8 +1309,8 @@
         title={enviada ? 'Editar meta' : m && m.id ? 'Editar meta' : 'Nova meta'}
         subtitle={
           enviada
-            ? 'Já enviada: a cooperação ' + m.coopId + ' foi criada. Mudanças aqui ficam só na meta.'
-            : 'Monte tudo e, no fim, escolha para quem enviar.'
+            ? 'Já enviada: a cooperação ' + m.coopId + ' foi criada. Mudanças aqui ficam só na\u00a0meta.'
+            : 'Monte tudo e, no fim, escolha para quem\u00a0enviar.'
         }
         size="lg"
         footer={
@@ -1899,7 +1898,7 @@
                 <div key={r[0]} className="ms7m-fact">
                   <span className="ms7-eyebrow">{r[0]}</span>
                   <span className="ms7m-fact-row">
-                    <span className={'ms7m-fact-v' + (r[2] === 'id' ? ' is-mono' : '')}>{sen && !ver ? '••••••••' : r[1]}</span>
+                    <span className={'ms7m-fact-v' + (r[2] === 'id' || r[2] === 'user' || sen ? ' is-mono' : '')}>{sen && !ver ? '••••••••' : r[1]}</span>
                     {sen ? (
                       <DS.IconButton
                         icon={ver ? 'eye-off' : 'eye'}
@@ -1957,7 +1956,7 @@
               </DS.Button>
             ) : null
           ) : (
-            <DS.Button size="sm" variant={temEnviar ? 'outline' : 'brand'} iconLeft="check" onClick={onToggle}>
+            <DS.Button size="sm" variant="outline" className={temEnviar ? '' : 'ms7m-fin'} iconLeft="check" onClick={onToggle}>
               Finalizar
             </DS.Button>
           )}
@@ -1986,6 +1985,44 @@
         return fn(Array.isArray(cur) ? cur.slice() : []);
       });
     };
+    React.useEffect(
+      function () {
+        if (ro) return;
+        (db.coops || [])
+          .filter(function (c) {
+            return (
+              c.transferidaDe &&
+              c.status !== 'Lixeira' &&
+              !LA.some(function (x) {
+                return x && x.coopId === c.id;
+              })
+            );
+          })
+          .forEach(function (c) {
+            DB.A.metaParaCoop(c.id);
+          });
+        const fix = function (v) {
+          if (typeof v === 'number') return String(v).replace('.', ',');
+          return typeof v === 'string' && /^\d+\.\d{1,2}$/.test(v.trim()) ? v.trim().replace('.', ',') : v;
+        };
+        const ruins = LA.filter(function (x) {
+          return (
+            x &&
+            x.transferidaDe &&
+            [x.comValor, x.comR, x.comS].some(function (v) {
+              return fix(v) !== v;
+            })
+          );
+        });
+        if (ruins.length)
+          salvar(function (l) {
+            return l.map(function (x) {
+              return x && x.transferidaDe ? Object.assign({}, x, { comValor: fix(x.comValor), comR: fix(x.comR), comS: fix(x.comS) }) : x;
+            });
+          });
+      },
+      [ro, (db.coops || []).length, LA.length],
+    );
     function save(x, enviar) {
       const n = {
         tipo: x.tipo === 'bau' ? 'bau' : 'coop',
