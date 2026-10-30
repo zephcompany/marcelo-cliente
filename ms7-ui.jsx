@@ -998,7 +998,7 @@
     document.addEventListener('pointermove', function (e) { ev = e; if (!raf) raf = requestAnimationFrame(tick); }, { passive: true });
     function tick() {
       raf = 0; if (!ev) return;
-      const card = ev.target && ev.target.closest ? ev.target.closest('.ms7-card') : null;
+      const card = ev.target && ev.target.closest ? ev.target.closest('.ms7-hover-card') : null;
       if (card !== last && last) { last.style.removeProperty('--spot'); }
       last = card; if (!card) return;
       const r = card.getBoundingClientRect();

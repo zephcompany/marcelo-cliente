@@ -1380,7 +1380,7 @@
             onToggle={function () {
               setCollapsed(!collapsed);
             }}
-            style={{ position: 'sticky', top: 0, height: '100vh', borderRight: '1px solid var(--line)' }}
+            style={{ position: 'sticky', top: 0, height: '100vh', alignSelf: 'flex-start', zIndex: 60, borderRight: '1px solid var(--line)' }}
           />
         )}
         <main className="ms7-main">
