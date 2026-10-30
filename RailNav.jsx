@@ -15,6 +15,24 @@
     'html[data-theme="dark"] .ms7-rail-ind{box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 26px -12px rgba(201,247,117,.55)}',
     'html[data-theme="dark"] .ms7-mnav{background:rgba(10,12,11,.78);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}',
     'html[data-theme="dark"] .ms7-mnav-grid{background:var(--glass-solid);backdrop-filter:blur(26px);-webkit-backdrop-filter:blur(26px);box-shadow:var(--shadow-pop)}',
+    /* menu superior (teste): barra de vidro grudada no topo */
+    '.ms7-top{position:sticky;top:0;z-index:45;height:62px;background:color-mix(in oklab,var(--surface-page) 78%,transparent);backdrop-filter:blur(22px) saturate(1.3);-webkit-backdrop-filter:blur(22px) saturate(1.3);border-bottom:1px solid var(--line)}',
+    '.ms7-top-in{max-width:1560px;margin:0 auto;height:100%;display:flex;align-items:center;gap:10px;padding:0 var(--page-pad);box-sizing:border-box}',
+    '.ms7-top-logo{display:flex;align-items:center;gap:10px;border:0;background:transparent;cursor:pointer;color:var(--text-primary);padding:0 6px 0 0;margin-right:10px;flex-shrink:0}',
+    '.ms7-top-logo .ms7-rail-mark{width:34px;height:34px;border-radius:10px;font-size:12.5px}',
+    '.ms7-top-logo b{font-size:15px;font-weight:600;letter-spacing:-.02em;white-space:nowrap}',
+    '.ms7-top-list{position:relative;display:flex;align-items:center;gap:2px;flex:1;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:none;padding:2px}.ms7-top-list::-webkit-scrollbar{display:none}',
+    '.ms7-top-ind{position:absolute;top:2px;height:38px;border-radius:11px;background:var(--acc,#C9F775);transition:left 360ms var(--ease-standard),width 360ms var(--ease-standard),opacity 200ms;pointer-events:none;z-index:0}',
+    'html[data-theme="dark"] .ms7-top-ind{background:linear-gradient(135deg,#DDFF96,#C9F775 55%,#A6EE85);box-shadow:inset 0 1px 0 rgba(255,255,255,.5),0 10px 26px -12px rgba(201,247,117,.55)}',
+    '.ms7-top-item{position:relative;z-index:1;height:38px;display:inline-flex;align-items:center;gap:7px;padding:0 11px;border:0;border-radius:11px;background:transparent;color:var(--text-secondary);cursor:pointer;font-size:13.5px;font-weight:500;letter-spacing:-.005em;white-space:nowrap;transition:color 200ms,background 200ms;flex-shrink:0}',
+    '.ms7-top-item:hover{color:var(--text-primary);background:color-mix(in oklab,var(--text-primary) 6%,transparent)}',
+    '.ms7-top-item.is-on{color:var(--acc-fg,#0C3B26);font-weight:600;background:transparent}.ms7-top-item.is-on:hover{background:transparent}',
+    '.ms7-top-item .bdg{min-width:18px;height:18px;padding:0 5px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;line-height:1;background:color-mix(in oklab,var(--text-primary) 10%,transparent);color:var(--text-primary)}',
+    '.ms7-top-item.is-on .bdg{background:rgba(12,59,38,.14);color:#0C3B26}',
+    '.ms7-top-foot{display:flex;align-items:center;gap:2px;flex-shrink:0;margin-left:6px;padding-left:12px;border-left:1px solid var(--line)}',
+    '.ms7-top-foot .ms7-top-item{padding:0 10px}.ms7-top-foot .ms7-top-item .lbl{display:none}',
+    '@media(min-width:1700px){.ms7-top-foot .ms7-top-item .lbl{display:inline}}',
+    '@media(max-width:1300px){.ms7-top-item .lbl{display:none}.ms7-top-logo b{display:none}}',
     '.ms7-rail-logo:hover .ms7-rail-mark{transform:scale(1.06) rotate(-3deg)}',
     '.ms7-rail-name{display:flex;flex-direction:column;line-height:1.05;min-width:0;opacity:0;transform:translateX(-6px);transition:opacity 220ms var(--ease-out),transform 260ms var(--ease-out)}',
     '.is-open .ms7-rail-name{opacity:1;transform:none;transition-delay:80ms}',
@@ -240,6 +258,45 @@
       </React.Fragment>
     );
   }
+  function TopNav({ items, footerItems, activeId, onNavigate, brand }) {
+    const listRef = React.useRef(null);
+    const [ind, setInd] = React.useState({ left: 0, width: 0, on: false });
+    const measure = React.useCallback(function () {
+      const l = listRef.current;
+      const el = l && l.querySelector('.ms7-top-item.is-on');
+      if (!el) { setInd({ left: 0, width: 0, on: false }); return; }
+      setInd({ left: el.offsetLeft, width: el.offsetWidth, on: true });
+    }, []);
+    React.useLayoutEffect(measure, [activeId, items, measure]);
+    React.useEffect(function () { window.addEventListener('resize', measure); return function () { window.removeEventListener('resize', measure); }; }, [measure]);
+    const Item = function (it) {
+      const on = activeId === it.id;
+      return (
+        <button key={it.id} type="button" data-nav={it.id} className={'ms7-top-item' + (on ? ' is-on' : '')} aria-current={on ? 'page' : undefined} title={it.label} onClick={function () { onNavigate(it.id); }}>
+          <DS.Icon name={it.icon} size={17} strokeWidth={on ? 2.1 : 1.75} />
+          <span className="lbl">{it.label}</span>
+          {it.badge ? <span className="bdg">{it.badge}</span> : null}
+        </button>
+      );
+    };
+    return (
+      <nav className="ms7-top" aria-label="Menu principal">
+        <div className="ms7-top-in">
+        <button type="button" className="ms7-top-logo" onClick={function () { onNavigate(items[0] ? items[0].id : 'geral'); }} aria-label="Início">
+          <span className="ms7-rail-mark" aria-hidden="true"><span style={{ fontWeight: 400 }}>M</span><span style={{ fontWeight: 700 }}>S</span></span>
+          <b>{brand || 'MS Control'}</b>
+        </button>
+        <div className="ms7-top-list" ref={listRef}>
+          <span className="ms7-top-ind" style={{ left: ind.left, width: ind.width, opacity: ind.on ? 1 : 0 }} aria-hidden="true" />
+          {items.map(Item)}
+        </div>
+        {footerItems && footerItems.length ? <div className="ms7-top-foot">{footerItems.map(Item)}</div> : null}
+        </div>
+      </nav>
+    );
+  }
+
   window.RailNav = RailNav;
+  window.TopNav = TopNav;
   window.MobileNav = MobileNav;
 })();

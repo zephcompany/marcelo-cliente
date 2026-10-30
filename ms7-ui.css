@@ -175,7 +175,7 @@ html[data-theme="dark"] {
   --glass-2: rgba(255, 255, 255, 0.08);
   --glass-solid: rgba(17, 19, 18, 0.93);
   --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.09);
-  --glass-blur: blur(18px) saturate(1.35);
+  --glass-blur: blur(26px) saturate(1.4);
   --btn-primary-bg: #F4F6F2;
   --btn-primary-fg: #0B0D0C;
   --btn-primary-hover: #FFFFFF;
@@ -199,14 +199,11 @@ html:not([data-theme="dark"]) option { background: #fff; color: #111512; }
 
 /* ---------- base ---------- */
 html[data-theme="dark"] body { background: var(--surface-page); }
-html[data-theme="dark"] body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background:
-  radial-gradient(1200px 700px at 110% 110%, rgba(10, 110, 70, 0.42), transparent 62%),
-  radial-gradient(900px 600px at -10% 100%, rgba(91, 75, 255, 0.16), transparent 60%),
-  linear-gradient(rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 64px 64px,
-  linear-gradient(90deg, rgba(255, 255, 255, 0.035) 1px, transparent 1px) 0 0 / 64px 64px,
-  #070808;
-  -webkit-mask-image: linear-gradient(#000, #000); }
-html[data-theme="dark"] body::after { content: ""; position: fixed; inset: -20%; z-index: -1; pointer-events: none; filter: blur(70px) saturate(1.2); opacity: .9; background:
+html[data-theme="dark"] body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Crect x='3' y='3' width='50' height='50' rx='9' fill='none' stroke='%23ffffff' stroke-opacity='.07'/%3E%3C/svg%3E");
+  background-size: 56px 56px; background-position: center top;
+  -webkit-mask-image: radial-gradient(ellipse 62% 52% at 50% 0%, #000 12%, transparent 72%); mask-image: radial-gradient(ellipse 62% 52% at 50% 0%, #000 12%, transparent 72%); }
+html[data-theme="dark"] body::after { content: ""; position: fixed; inset: -20%; z-index: -2; pointer-events: none; filter: blur(80px) saturate(1.2); opacity: .8; background:
   radial-gradient(520px 420px at 18% 8%, rgba(201, 247, 117, 0.26), transparent 65%),
   radial-gradient(640px 520px at 78% 18%, rgba(14, 157, 174, 0.22), transparent 65%),
   radial-gradient(560px 480px at 55% 95%, rgba(74, 222, 128, 0.18), transparent 65%),
@@ -510,7 +507,7 @@ html[data-theme="dark"] .ms7-switch-track { background: #2E3531; }
 /* ============================================================
    BLACK GLASS — vidro fosco (tema escuro, padrão)
    ============================================================ */
-html[data-theme="dark"] .ms7-card { background: var(--glass); backdrop-filter: var(--glass-blur); -webkit-backdrop-filter: var(--glass-blur); }
+html[data-theme="dark"] .ms7-card { background: linear-gradient(180deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035) 60%, rgba(255, 255, 255, 0.025)), rgba(12, 14, 13, 0.72); backdrop-filter: blur(26px) saturate(1.4); -webkit-backdrop-filter: blur(26px) saturate(1.4); }
 html[data-theme="dark"] .ms7-card.is-dark { background: var(--surface-inverse); color: var(--text-inverse); backdrop-filter: none; -webkit-backdrop-filter: none; }
 html[data-theme="dark"] .ms7-card:has(.ms7-modal-bg), html[data-theme="dark"] .ms7-hover-card:has(.ms7-modal-bg) { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
 html[data-theme="dark"] .ms7-hover-card:hover { box-shadow: var(--glass-edge), 0 0 0 1px color-mix(in oklab, var(--ms7-lime-500) 45%, var(--line)), 0 24px 50px -28px rgba(0, 0, 0, 0.8); background: var(--glass-2); }
@@ -578,9 +575,9 @@ html[data-theme="dark"] .ms7-empty-title { color: var(--text-primary); }
    ============================================================ */
 .ms7-card { --mx: 50%; --my: 50%; --spot: 0; isolation: isolate; }
 .ms7-card::before { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: -1; opacity: var(--spot); transition: opacity 420ms var(--ease-out);
-  background: radial-gradient(420px circle at var(--mx) var(--my), rgba(201, 247, 117, 0.13), rgba(74, 222, 128, 0.05) 40%, transparent 65%); }
+  background: radial-gradient(380px circle at var(--mx) var(--my), rgba(201, 247, 117, 0.06), rgba(74, 222, 128, 0.02) 40%, transparent 65%); }
 .ms7-card::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; z-index: 2; padding: 1px; opacity: var(--spot); transition: opacity 420ms var(--ease-out);
-  background: radial-gradient(360px circle at var(--mx) var(--my), rgba(234, 255, 155, 0.95), rgba(201, 247, 117, 0.45) 35%, rgba(201, 247, 117, 0.06) 70%, transparent 80%);
+  background: radial-gradient(320px circle at var(--mx) var(--my), rgba(234, 255, 155, 0.6), rgba(201, 247, 117, 0.25) 35%, rgba(201, 247, 117, 0.04) 70%, transparent 80%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0); -webkit-mask-composite: xor; mask-composite: exclude; }
 .ms7-card { position: relative; }
 .ms7-card:hover { --spot: 1; }

@@ -56,6 +56,9 @@
   };
   const CSS = [
     '.ms7-shell{display:flex;min-height:100vh;box-sizing:border-box}',
+    '.ms7-shell.is-top{flex-direction:column}',
+    '.ms7-shell.is-top .ms7-head{top:62px}',
+    '.ms7-shell.is-top .ms7-main{max-width:1560px}',
     '.ms7-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:24px;padding:0 var(--page-pad) 56px;max-width:1560px;margin:0 auto;width:100%}',
     '.ms7-head{position:sticky;top:0;z-index:40;display:flex;align-items:center;flex-wrap:wrap;gap:12px 16px;min-height:76px;padding:14px 0 14px;margin:0 calc(-1 * var(--page-pad));padding-left:var(--page-pad);padding-right:var(--page-pad);background:color-mix(in oklab,var(--surface-page) 82%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}',
     '.ms7-head::after{content:"";position:absolute;left:var(--page-pad);right:var(--page-pad);bottom:0;height:1px;background:var(--line);opacity:0;transition:opacity 240ms}',
@@ -1163,6 +1166,14 @@
       setCollapsedS(v);
       localStorage.setItem('ms7op-menu', v ? 'fechado' : 'aberto');
     };
+    const [navMode, setNavModeS] = React.useState(function () {
+      return localStorage.getItem('ms7op-nav') || 'topo';
+    });
+    const setNavMode = function (v) {
+      setNavModeS(v);
+      localStorage.setItem('ms7op-nav', v);
+    };
+    const topNav = !mobile && navMode === 'topo';
     const [np, setNp] = React.useState(false);
     const [sq, setSq] = React.useState(false);
     const notifs = useNotifs();
@@ -1356,9 +1367,10 @@
         TITLES[pg]
       );
     return (
-      <div className="ms7-shell">
+      <div className={'ms7-shell' + (topNav ? ' is-top' : '')}>
         {mobile ? <MobileNav items={navT} footerItems={foot} activeId={pg} onNavigate={go} /> : null}
-        {mobile ? null : (
+        {topNav ? <TopNav items={navT} footerItems={foot} activeId={pg} onNavigate={go} /> : null}
+        {mobile || topNav ? null : (
           <RailNav
             items={navT}
             footerItems={foot}
@@ -1380,6 +1392,19 @@
             notifications={unread}
             theme={theme}
             setTheme={setTheme}
+            actions={
+              mobile ? null : (
+                <DS.IconButton
+                  icon={topNav ? 'panel-left' : 'panel-top'}
+                  size={38}
+                  iconSize={19}
+                  label={topNav ? 'Usar menu lateral' : 'Usar menu no topo'}
+                  onClick={function () {
+                    setNavMode(topNav ? 'lado' : 'topo');
+                  }}
+                />
+              )
+            }
             onSearch={function () {
               setSq(true);
             }}

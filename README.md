@@ -54,7 +54,7 @@ DATA_DIR=./server/data ADMIN_EMAIL=admin@ms7.com ADMIN_PASSWORD=12345678 node se
 - Fonte Geist (Google Fonts) e Geist Mono para IDs/chaves; pesos 400–600; nada de serif.
 - Acento lima só onde importa: ação principal, aba ativa, item ativo do menu, foco. Dinheiro positivo verde, negativo vermelho.
 - Emojis pontuais (saudação, título de card, estados vazios, toasts) — ícones de ação continuam lucide.
-- Menu lateral com indicador deslizante, tooltips, badges, recolhível; barra inferior no celular.
+- Menu no topo (barra de vidro com indicador lima; botão no cabeçalho alterna para o menu lateral recolhível); barra inferior no celular.
 - Cabeçalho fixo com blur, subtítulo por página, busca estilo command palette (Ctrl+K), status de sincronização no avatar.
 - Login dividido com prévia animada do produto (KPIs contando, gráfico, ciclo fechado, meta).
 - Transição de página, entrada em cascata, reveal no scroll, números que contam, gráficos que crescem, hover sutil nos cards (sem glow).
