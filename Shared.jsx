@@ -13,8 +13,14 @@
     '.ms7-np-it.is-new::before{content:"";position:absolute;left:4px;top:50%;width:4px;height:4px;border-radius:50%;background:var(--ms7-green);transform:translateY(-50%)}',
     '.ms7-np-ico{width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0}',
     '.ms7-np-t{font-size:13.5px;font-weight:600;letter-spacing:-.005em;line-height:1.3}.ms7-np-b{font-size:12.5px;font-weight:500;line-height:1.5;white-space:pre-line;color:var(--text-secondary);margin-top:3px}.ms7-np-at{font-size:11.5px;font-weight:500;color:var(--text-secondary);white-space:nowrap}',
-    '.ms7-push{position:fixed;top:88px;right:20px;z-index:2100;width:368px;max-width:calc(100vw - 40px);background:color-mix(in oklab,#111512 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#F3F5F1;border-radius:18px;padding:14px 16px;box-shadow:0 30px 70px -24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);cursor:pointer;animation:ms7-push-in 520ms var(--ease-spring) both}',
-    '@keyframes ms7-push-in{from{opacity:0;transform:translateY(-14px) scale(.96)}to{opacity:1;transform:none}}',
+    '.ms7-push{position:fixed;top:88px;right:20px;z-index:2100;width:368px;max-width:calc(100vw - 40px);background:color-mix(in oklab,#111512 94%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);color:#F3F5F1;border-radius:18px;padding:14px 16px;box-shadow:0 30px 70px -24px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.08);cursor:grab;touch-action:pan-y;user-select:none;overflow:hidden;transition:transform 420ms cubic-bezier(.22,1.2,.36,1),opacity 300ms;animation:ms7-push-in 760ms cubic-bezier(.2,1.25,.35,1) both}',
+    '.ms7-push:active{cursor:grabbing}',
+    '@keyframes ms7-push-in{0%{opacity:0;transform:translateY(calc(-100% - 110px)) scale(.92);filter:blur(8px)}55%{opacity:1;filter:blur(0)}100%{opacity:1;transform:none;filter:none}}',
+    '.ms7-push.is-in{animation:none}',
+    '.ms7-push.is-out-up{animation:ms7-push-up 380ms cubic-bezier(.55,0,.75,.2) both}.ms7-push.is-out-right{animation:ms7-push-r 380ms cubic-bezier(.4,0,.2,1) both}.ms7-push.is-out-left{animation:ms7-push-l 380ms cubic-bezier(.4,0,.2,1) both}',
+    '@keyframes ms7-push-up{to{opacity:0;transform:translateY(calc(-100% - 110px)) scale(.94)}}@keyframes ms7-push-r{to{opacity:0;transform:translateX(120%) rotate(6deg)}}@keyframes ms7-push-l{to{opacity:0;transform:translateX(-120%) rotate(-6deg)}}',
+    '.ms7-push-time{position:absolute;left:0;bottom:0;height:2px;width:100%;background:var(--ms7-lime-500,#C7F25B);transform-origin:left;animation:ms7-push-t 7s linear both;opacity:.85}.ms7-push.is-hold .ms7-push-time{animation-play-state:paused}@keyframes ms7-push-t{to{transform:scaleX(0)}}',
+    '@media (prefers-reduced-motion:reduce){.ms7-push{animation-duration:1ms}}',
     'html[data-theme="dark"] .ms7-np{background:var(--glass-solid);backdrop-filter:blur(30px) saturate(1.4);-webkit-backdrop-filter:blur(30px) saturate(1.4)}',
     'html[data-theme="dark"] .ms7-np-it:hover{background:var(--glass-2)}',
     'html[data-theme="dark"] .ms7-push{background:var(--glass-solid);backdrop-filter:blur(26px) saturate(1.4);-webkit-backdrop-filter:blur(26px) saturate(1.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.12),0 0 0 1px rgba(255,255,255,.12),0 30px 70px -24px rgba(0,0,0,.8)}',
@@ -411,29 +417,115 @@
   }
   function PushPreview() {
     const [it, setIt] = React.useState(null);
-    pushRef = setIt;
+    const [out, setOut] = React.useState('');
+    const el = React.useRef(null);
+    const drag = React.useRef(null);
+    const hold = React.useRef(false);
+    pushRef = function (v) {
+      setOut('');
+      setIt(v);
+    };
+    function close(dir) {
+      setOut(dir || 'up');
+      setTimeout(function () {
+        setIt(null);
+        setOut('');
+      }, 380);
+    }
     React.useEffect(
       function () {
         if (!it) return;
-        const t = setTimeout(function () {
-          setIt(null);
-        }, 7000);
+        let left = 7000, t0 = Date.now(), t = null;
+        function arm() {
+          t0 = Date.now();
+          t = setTimeout(function () {
+            if (hold.current) return;
+            close('up');
+          }, left);
+        }
+        arm();
+        const n = el.current;
+        function pause() {
+          hold.current = true;
+          clearTimeout(t);
+          left = Math.max(1200, left - (Date.now() - t0));
+          if (n) n.classList.add('is-hold');
+        }
+        function resume() {
+          hold.current = false;
+          if (n) n.classList.remove('is-hold');
+          arm();
+        }
+        if (n) {
+          n.addEventListener('mouseenter', pause);
+          n.addEventListener('mouseleave', resume);
+        }
         return function () {
           clearTimeout(t);
+          if (n) {
+            n.removeEventListener('mouseenter', pause);
+            n.removeEventListener('mouseleave', resume);
+          }
         };
       },
       [it],
     );
+    function onDown(e) {
+      if (e.button != null && e.button !== 0) return;
+      drag.current = { x: e.clientX, dx: 0, moved: false, id: e.pointerId };
+      try {
+        el.current.setPointerCapture(e.pointerId);
+      } catch (er) {}
+    }
+    function onMove(e) {
+      const d = drag.current;
+      if (!d) return;
+      d.dx = e.clientX - d.x;
+      if (Math.abs(d.dx) > 4) d.moved = true;
+      const n = el.current;
+      n.style.transition = 'none';
+      n.style.transform = 'translateX(' + d.dx + 'px) rotate(' + d.dx / 40 + 'deg)';
+      n.style.opacity = String(Math.max(0.15, 1 - Math.abs(d.dx) / 320));
+    }
+    function onUp() {
+      const d = drag.current;
+      drag.current = null;
+      const n = el.current;
+      if (!d || !n) return;
+      n.style.transition = '';
+      if (!d.moved) {
+        n.style.transform = '';
+        n.style.opacity = '';
+        close('up');
+        return;
+      }
+      if (Math.abs(d.dx) > 110) {
+        n.style.transform = '';
+        n.style.opacity = '';
+        close(d.dx > 0 ? 'right' : 'left');
+      } else {
+        n.style.transform = '';
+        n.style.opacity = '';
+      }
+    }
     if (!it) return null;
     const T = NTYPES[it.type] || NTYPES.ciclo;
     return (
       <div
-        className="ms7-push"
+        className={'ms7-push' + (out ? ' is-out-' + out : '')}
         key={it.id}
-        onClick={function () {
-          setIt(null);
+        ref={el}
+        onPointerDown={onDown}
+        onPointerMove={onMove}
+        onPointerUp={onUp}
+        onPointerCancel={onUp}
+        onAnimationEnd={function (e) {
+          if (e.target === el.current && e.animationName === 'ms7-push-in') el.current.classList.add('is-in');
         }}
+        role="status"
+        title="Arraste para o lado para dispensar"
       >
+        <i className="ms7-push-time" aria-hidden="true" />
         <div className="ms7-push-top">
           <span style={{ width: 20, height: 20, borderRadius: 6, background: '#2AABEE', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <DS.Icon name="send" size={11} color="#fff" strokeWidth={2.2} />

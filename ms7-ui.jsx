@@ -1062,6 +1062,29 @@
   })();
   /* ruído do fundo (tema escuro) */
   (function () { if (document.querySelector('.ms7-noise')) return; const n = document.createElement('div'); n.className = 'ms7-noise'; n.setAttribute('aria-hidden', 'true'); document.body.appendChild(n); })();
+  /* barra fina de progresso da rolagem no topo */
+  (function () {
+    if (document.querySelector('.ms7-scrollbar')) return;
+    const w = document.createElement('div');
+    w.className = 'ms7-scrollbar';
+    w.setAttribute('aria-hidden', 'true');
+    const i = document.createElement('i');
+    w.appendChild(i);
+    document.body.appendChild(w);
+    let raf = 0;
+    function upd() {
+      raf = 0;
+      const d = document.documentElement;
+      const max = d.scrollHeight - d.clientHeight;
+      i.style.transform = 'scaleX(' + (max > 8 ? Math.min(1, Math.max(0, d.scrollTop / max)) : 0) + ')';
+    }
+    function req() {
+      if (!raf) raf = requestAnimationFrame(upd);
+    }
+    window.addEventListener('scroll', req, { passive: true });
+    window.addEventListener('resize', req);
+    new MutationObserver(req).observe(document.getElementById('root') || document.body, { childList: true, subtree: true });
+  })();
   window.MS7Art = Art;
   window.MS7ArtFor = artFor;
 })();

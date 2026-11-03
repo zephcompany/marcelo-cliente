@@ -50,7 +50,7 @@
     'html[data-theme="dark"] .ms7g-chip:hover{background:var(--glass-2)}',
     'html[data-theme="dark"] .ms7g-chip.is-on{background:color-mix(in oklab,var(--ms7-lime-500) 14%,transparent);box-shadow:none}',
     'html[data-theme="dark"] .ms7g-cell,html[data-theme="dark"] input.ms7g-cell[type="date"]{background:var(--glass);box-shadow:var(--glass-edge)}',
-    'html[data-theme="dark"] .ms7g-cell:focus{border-color:var(--ms7-lime-500);box-shadow:var(--glass-edge),0 0 0 3px rgba(201,247,117,.18)}',
+    'html[data-theme="dark"] .ms7g-cell:focus{border-color:var(--ms7-lime-500);box-shadow:var(--glass-edge),0 0 0 3px rgba(199,242,91,.18)}',
     'html[data-theme="dark"] .ms7g-tpl:hover,html[data-theme="dark"] .ms7g-tpl.is-on{background:var(--glass-2)}',
     'html[data-theme="dark"] .ms7g-tpl .ms7g-tile{background:var(--glass)}',
     'html[data-theme="dark"] .ms7g-podio-it{background:var(--glass);box-shadow:var(--glass-edge),0 0 0 1px var(--line)}',
