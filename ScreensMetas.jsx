@@ -760,13 +760,22 @@
                         </span>
                         <DS.Button
                           size="sm"
-                          variant="outline"
+                          variant="brand"
                           iconLeft="undo-2"
+                          onClick={function () {
+                            setReg({ k: k, dev: true, titulo: 'Devolução · ' + nome, falta: g.credito });
+                          }}
+                        >
+                          Registrar devolução
+                        </DS.Button>
+                        <DS.Button
+                          size="sm"
+                          variant="ghost"
                           onClick={function () {
                             setSub('dev');
                           }}
                         >
-                          Ver devolução
+                          Ver
                         </DS.Button>
                       </React.Fragment>
                     ) : (

@@ -219,8 +219,47 @@
       }
     } catch (e) {}
   }
+  function bipUrgente() {
+    try {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      const ac = new AC();
+      [0, 0.35, 0.7, 1.6, 1.95, 2.3].forEach(function (t, i) {
+        const o = ac.createOscillator(),
+          g = ac.createGain();
+        o.type = 'sine';
+        o.frequency.value = i % 3 === 2 ? 1175 : 880;
+        g.gain.setValueAtTime(0.0001, ac.currentTime + t);
+        g.gain.exponentialRampToValueAtTime(0.35, ac.currentTime + t + 0.02);
+        g.gain.exponentialRampToValueAtTime(0.0001, ac.currentTime + t + 0.28);
+        o.connect(g);
+        g.connect(ac.destination);
+        o.start(ac.currentTime + t);
+        o.stop(ac.currentTime + t + 0.3);
+      });
+      setTimeout(function () {
+        try {
+          ac.close();
+        } catch (e) {}
+      }, 3500);
+    } catch (e) {}
+    try {
+      navigator.vibrate && navigator.vibrate([300, 150, 300, 150, 600]);
+    } catch (e) {}
+  }
   function TarefasWatcher({ opId }) {
     DB.useDB();
+    const [urg, setUrg] = React.useState(null);
+    React.useEffect(function () {
+      const f = function (e) {
+        setUrg(e.detail);
+        bipUrgente();
+      };
+      window.addEventListener('ms7-urgente-demo', f);
+      return function () {
+        window.removeEventListener('ms7-urgente-demo', f);
+      };
+    }, []);
     const db = DB.get();
     const it = (db.kv || []).find(function (x) {
       return x && x.id === 'tarefas';
@@ -247,6 +286,13 @@
         const novas = meus.filter(function (t) {
           return vis.indexOf(t.id) < 0 && t.criadoPor !== opId;
         });
+        const u = novas.filter(function (t) {
+          return t.prio === 'urgente';
+        });
+        if (u.length) {
+          setUrg(u[0]);
+          bipUrgente();
+        }
         novas.forEach(function (t) {
           notifyLocal({
             type: 'tarefa',
@@ -265,7 +311,48 @@
         opId,
       ],
     );
-    return null;
+    React.useEffect(
+      function () {
+        if (!urg) return;
+        const t = setInterval(bipUrgente, 20000);
+        return function () {
+          clearInterval(t);
+        };
+      },
+      [urg && urg.id],
+    );
+    if (!urg) return null;
+    return (
+      <div className="ms7-modal-bg" style={{ zIndex: 9999 }}>
+        <div role="alertdialog" aria-modal="true" aria-label="Tarefa urgente" className="ms7-modal" style={{ maxWidth: 440 }}>
+          <div className="ms7-modal-body" style={{ padding: '28px 28px 24px', display: 'flex', flexDirection: 'column', gap: 14, alignItems: 'center', textAlign: 'center' }}>
+            <span style={{ width: 60, height: 60, borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'color-mix(in oklab, var(--ms7-error) 14%, transparent)' }}>
+              <DS.Icon name="bell-ring" size={28} color="var(--ms7-error)" />
+            </span>
+            <DS.Badge tone="error">Tarefa urgente</DS.Badge>
+            <h3 className="ms7-modal-title" style={{ lineHeight: 1.3 }}>{urg.txt}</h3>
+            {urg.obs ? <p className="ms7-modal-sub" style={{ margin: 0, whiteSpace: 'pre-line' }}>{urg.obs}</p> : null}
+            {urg.data || urg.hora ? (
+              <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>
+                {(urg.data ? 'Para ' + urg.data.split('-').reverse().slice(0, 2).join('/') : '') + (urg.hora ? ' às ' + urg.hora : '')}
+              </span>
+            ) : null}
+            <DS.Button
+              variant="brand"
+              iconLeft="check"
+              fullWidth
+              onClick={function () {
+                setUrg(null);
+                localStorage.setItem('ms7op-page', 'tarefas');
+                window.dispatchEvent(new CustomEvent('ms7-go', { detail: 'tarefas' }));
+              }}
+            >
+              Vi, vou fazer agora
+            </DS.Button>
+          </div>
+        </div>
+      </div>
+    );
   }
   function tarefasPend(db, resp) {
     const it = (db.kv || []).find(function (x) {

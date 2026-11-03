@@ -3883,6 +3883,12 @@
         setAte0('');
       }
     };
+    React.useEffect(
+      function () {
+        if (dt === 'Diário' || dt === 'Semanal' || dt === 'Mensal') escolhe(dt);
+      },
+      [hoje],
+    );
     const dataDe = function (c) {
       return c.status === 'Concluída'
         ? DB.comData(c)
@@ -4717,7 +4723,8 @@
   }
   function AvisosScreen({ session }) {
     const { Card, Input, Button, IconButton, Badge, Tabs, Select } = DS;
-    const isOp = session.role === 'operador';
+    const leitor = session.role === 'cliente';
+    const isOp = session.role === 'operador' || leitor;
     const me = session.opId;
     DB.useDB();
     const [list0, setList] = usePersist('avisos', []);
@@ -4805,12 +4812,12 @@
       if (edId != null) {
         setList(
           list.map(function (a) {
-            return a.id === edId ? Object.assign({}, a, { titulo: t, conteudo: c, para: para.slice(), publico: para.length ? para.map(DB.opName).join(', ') : 'Todos os operadores' }) : a;
+            return a.id === edId ? Object.assign({}, a, { titulo: t, conteudo: c, para: [], publico: 'Todos' }) : a;
           }),
         );
         toast('Aviso atualizado');
       } else {
-        setList([{ id: em, em: em, data: data, titulo: t, conteudo: c, para: para.slice(), publico: para.length ? para.map(DB.opName).join(', ') : 'Todos os operadores', feitos: {} }].concat(list));
+        setList([{ id: em, em: em, data: data, titulo: t, conteudo: c, para: [], publico: 'Todos', feitos: {} }].concat(list));
         toast('Aviso publicado');
       }
       setT('');
@@ -4848,12 +4855,13 @@
       const open = abre === a.id;
       const paraTxt =
         Array.isArray(a.para) && a.para.length
-          ? al
+          ? 'Para: ' +
+            al
               .map(function (o) {
                 return o.nome;
               })
               .join(', ')
-          : 'Todos os operadores';
+          : 'Para todos';
       return (
         <div key={a.id} className="ms7c-av">
           <span
@@ -4883,7 +4891,7 @@
                   {paraTxt}
                 </Badge>
               ) : null}
-              {isOp ? (
+              {isOp && !leitor ? (
                 <Button
                   size="sm"
                   variant="outline"
@@ -5013,19 +5021,21 @@
               { id: 'ant', label: 'Antigos', count: ant.length },
             ]}
           />
-          <Select
-            variant="pill"
-            aria-label="Filtrar avisos"
-            value={fil}
-            onChange={function (e) {
-              setFil(e.target.value);
-            }}
-            options={[
-              { value: 'todos', label: 'Todos' },
-              { value: 'pend', label: isOp ? 'Pendentes' : 'Faltam fazer' },
-              { value: 'ok', label: isOp ? 'Feitos' : 'Todos fizeram' },
-            ]}
-          />
+          {leitor ? null : (
+            <Select
+              variant="pill"
+              aria-label="Filtrar avisos"
+              value={fil}
+              onChange={function (e) {
+                setFil(e.target.value);
+              }}
+              options={[
+                { value: 'todos', label: 'Todos' },
+                { value: 'pend', label: isOp ? 'Pendentes' : 'Faltam fazer' },
+                { value: 'ok', label: isOp ? 'Feitos' : 'Todos fizeram' },
+              ]}
+            />
+          )}
         </div>
         {grupos.length ? (
           <div className="ms7-stagger" style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
@@ -5068,38 +5078,9 @@
                 setC(e.target.value);
               }}
             />
-            <div style={{ background: 'var(--surface-muted)', borderRadius: 12, padding: 14, display: 'flex', flexDirection: 'column', gap: 10 }}>
-              <span className="ms7-label" style={{ gap: 6 }}>
-                <DS.Icon name="users" size={14} />
-                Para quem
-              </span>
-              <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
-                {chip(
-                  !para.length,
-                  'Todos os operadores',
-                  function () {
-                    setPara([]);
-                  },
-                  '__all',
-                )}
-                {ops.map(function (o) {
-                  const on = para.indexOf(o.id) >= 0;
-                  return chip(
-                    on,
-                    o.nome,
-                    function () {
-                      setPara(
-                        on
-                          ? para.filter(function (x) {
-                              return x !== o.id;
-                            })
-                          : para.concat([o.id]),
-                      );
-                    },
-                    o.id,
-                  );
-                })}
-              </div>
+            <div style={{ background: 'var(--surface-muted)', borderRadius: 12, padding: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
+              <DS.Icon name="globe" size={14} color="var(--text-secondary)" />
+              <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.45 }}>{'Aparece para todo mundo que usa o painel: operadores, clientes e\u00a0admins.'}</span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               {edId != null ? (

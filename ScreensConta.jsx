@@ -1904,6 +1904,54 @@
       </Card>
     );
   }
+  function BackupCard({ role }) {
+    const { Card, Button } = DS;
+    DB.useDB();
+    if (role === 'operador') return null;
+    const db = DB.get();
+    const baixar = function () {
+      const d = new Date();
+      const p = function (n) {
+        return String(n).padStart(2, '0');
+      };
+      const nome = 'ms-control-backup-' + d.getFullYear() + '-' + p(d.getMonth() + 1) + '-' + p(d.getDate()) + '_' + p(d.getHours()) + 'h' + p(d.getMinutes()) + '.json';
+      const blob = new Blob([JSON.stringify({ geradoEm: d.toISOString(), dados: DB.get() }, null, 1)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = nome;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(function () {
+        URL.revokeObjectURL(a.href);
+        a.remove();
+      }, 1500);
+      toast('Cópia dos dados baixada');
+    };
+    const n = function (k) {
+      return Array.isArray(db[k]) ? db[k].length : 0;
+    };
+    return (
+      <Card title="Cópia de segurança">
+        <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+          <span className="ms7c-tile is-lg" style={{ background: 'color-mix(in oklab, var(--ms7-blue) 12%, var(--surface-card))', color: 'var(--ms7-blue)' }}>
+            <DS.Icon name="database-backup" size={20} strokeWidth={2} />
+          </span>
+          <p className="ms7c-s" style={{ margin: 0, flex: '1 1 280px', maxWidth: 640 }}>
+            {nb(
+              'Baixa um arquivo com todos os dados do painel (' +
+                n('coops') +
+                ' cooperações, ' +
+                n('operadores') +
+                ' operadores, chaves PIX, metas, tarefas, ponto e financeiro). Guarde no computador.',
+            )}
+          </p>
+          <Button variant="brand" iconLeft="download" onClick={baixar}>
+            Baixar cópia dos dados
+          </Button>
+        </div>
+      </Card>
+    );
+  }
   function ExemploCard({ role }) {
     const { Card, Button } = DS;
     DB.useDB();
@@ -2111,6 +2159,7 @@
             </div>
           </Card>
         ) : null}
+        {tabV === 'conta' ? <BackupCard role={role} /> : null}
         {tabV === 'conta' ? <ExemploCard role={role} /> : null}
         {tabV === 'conta' ? <SenhaCard session={session} /> : null}
         {tabV === 'conta' ? (

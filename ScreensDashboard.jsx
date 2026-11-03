@@ -279,9 +279,18 @@
         return a + DB.calc(c).lucro;
       }, 0);
     };
+    const tDep = L.reduce(function (a, c) {
+        const k = DB.calc(c);
+        return a + k.dep + k.red;
+      }, 0),
+      tSaq = L.reduce(function (a, c) {
+        const k = DB.calc(c);
+        return a + k.ds + k.dep + k.red;
+      }, 0);
     const comp = [
-      ['Depósitos e saques', ds],
+      ['Saques e baú', tSaq],
       ['Salário', sal],
+      ['Depósitos', -tDep],
       ['Comissão dos operadores', -gC.com],
     ];
     const cmx = Math.max(
@@ -956,7 +965,38 @@
             { icon: 'circle-check', label: 'Coops concluídas', value: s('concluidas'), tone: 'orange' },
           ]}
         />
-        <Card title={ttl('👥', 'Operadores')} subtitle="Marque os operadores que deseja comparar.">
+        <Card
+          title={ttl('👥', 'Operadores')}
+          subtitle={'Marque os operadores que deseja comparar · ' + sel.length + ' de ' + O.length + ' selecionados'}
+          action={
+            <div style={{ display: 'flex', gap: 6 }}>
+              <DS.Button
+                size="sm"
+                variant={sel.length === O.length ? 'brand' : 'secondary'}
+                iconLeft="check-check"
+                onClick={function () {
+                  setSel(
+                    O.map(function (o) {
+                      return o.id;
+                    }),
+                  );
+                }}
+              >
+                {'Todos (' + O.length + ')'}
+              </DS.Button>
+              <DS.Button
+                size="sm"
+                variant="ghost"
+                disabled={!sel.length}
+                onClick={function () {
+                  setSel([]);
+                }}
+              >
+                Limpar
+              </DS.Button>
+            </div>
+          }
+        >
           <div className="ms7d-chips">
             {O.map(function (o) {
               const on = sel.indexOf(o.id) >= 0;

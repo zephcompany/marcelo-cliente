@@ -1,6 +1,8 @@
 (function(){
 const KEY='ms7op-db-v2';
-const TODAY=new Date('2026-09-22T12:00:00');
+const hojeSP=function(){return new Date(new Date().toLocaleDateString('sv-SE',{timeZone:'America/Sao_Paulo'})+'T12:00:00');};
+  let TODAY=hojeSP();setInterval(function(){const n=hojeSP();if(n.getTime()!==TODAY.getTime()){TODAY=n;try{if(window.DB)window.DB.today=n;}catch(e){}}},60000);
+  const DATA_RUIM='2026-09-22';
 function iso(d){return d.toISOString().slice(0,10);}
 function daysAgo(n){const d=new Date(TODAY);d.setDate(d.getDate()-n);return iso(d);}
 function fmtDate(s){if(!s)return '—';const p=s.split('-');return p[2]+'/'+p[1];}
@@ -99,6 +101,13 @@ function stamp(before,after){const now=Date.now();after._del=after._del||{};COLS
   Object.keys(old).forEach(function(id){if(!keep[id])after._del[k+':'+id]=now;});});
   if(JSON.stringify(before.config)!==JSON.stringify(after.config))after.config._u=now;}
 let ver=0;
+function corrigirDatas(){const ruim=function(v){return dIso(v)===DATA_RUIM;};const ts=function(v){return typeof v==='number'&&v>1.7e12?iso(new Date(v)):'';};let precisa=false;
+  (db.coops||[]).forEach(function(c){if(ruim(c.inicio)||ruim(c.fim)||ruim(c.finalizadaEm)||(c.contas||[]).some(function(k){return ruim(k.criada);}))precisa=true;});
+  (db.pagamentos||[]).forEach(function(p){if(ruim(p.data))precisa=true;});(db.custos||[]).forEach(function(p){if(ruim(p.data))precisa=true;});
+  if(!precisa)return 0;const plan={};(db.coops||[]).forEach(function(c){const us=(c.contas||[]).map(function(k){return k._u;}).filter(function(v){return typeof v==='number'&&v>1.7e12;});const ini=us.length?ts(Math.min.apply(null,us)):ts(c._uf);const fimD=ts(c._uf)||(us.length?ts(Math.max.apply(null,us)):'');plan[c.id]={ini:ini,fim:fimD,ct:{}};(c.contas||[]).forEach(function(k){plan[c.id].ct[k.id]=ts(k._u)||ini;});});
+  let n=0;update(function(d){(d.coops||[]).forEach(function(c){const p=plan[c.id];if(!p)return;if(ruim(c.inicio)&&p.ini){c.inicio=p.ini;n++;}if(ruim(c.finalizadaEm)&&p.fim){c.finalizadaEm=p.fim;n++;}if(ruim(c.fim)&&p.fim){c.fim=p.fim;n++;}(c.contas||[]).forEach(function(k){if(ruim(k.criada)&&p.ct[k.id]){k.criada=p.ct[k.id];}});});
+    (d.pagamentos||[]).forEach(function(x){if(ruim(x.data)){const t=+String(x.id||'').replace(/\D/g,'');if(t>1.7e12){x.data=iso(new Date(t));if(x.semana)x.semana=semanaIni(x.data);n++;}}});(d.custos||[]).forEach(function(x){if(ruim(x.data)&&+x.id>1.7e12){x.data=iso(new Date(+x.id));n++;}});});
+  if(n)console.log('[ms7] datas corrigidas:',n);return n;}
 function update(fn){ver++;const before=db;db=JSON.parse(JSON.stringify(db));fn(db);stamp(before,db);save();Sync.push();}
 function blankLocal(d){const o={v:d.v||2,_del:{},config:{}};Object.keys(d).forEach(function(k){if(Array.isArray(d[k]))o[k]=[];});return o;}
 const Sync={status:'local',rev:0,es:null,timer:null,pending:false,
@@ -163,7 +172,7 @@ function dIni(c){return dIso(c.inicio)||dIso(c.criadaEm)||dIso(c._u)||dIso(c.fim
 function comData(c){return dIso(c.finalizadaEm)||dIso(c.fim)||dIni(c);}
 function semanaIni(ds){const d=new Date((ds||iso(TODAY))+'T12:00:00');const w=(d.getDay()+6)%7;d.setDate(d.getDate()-w);return iso(d);}
 function comissoesDe(opId,de,ate){return db.coops.filter(function(c){const dt=comData(c);return c.status==='Concluída'&&(!opId||c.opId===opId)&&dt&&dt>=de&&dt<=ate;}).map(function(c){return {c:c,data:comData(c),com:calc(c).com};});}
-function inPeriod(dateStr,per){if(!per||per==='Todos')return true;dateStr=dIso(dateStr);if(!dateStr)return false;const d=new Date(dateStr+'T12:00:00');const diff=(TODAY-d)/864e5;return per==='Hoje'?diff<1:per==='7 dias'?diff<7:diff<30;}
+function inPeriod(dateStr,per){if(!per||per==='Todos')return true;dateStr=dIso(dateStr);if(!dateStr)return false;const h=iso(TODAY);if(dateStr>h)return per!=='Hoje'?true:false;const d=new Date(dateStr+'T12:00:00');const diff=Math.round((TODAY-d)/864e5);return per==='Hoje'?diff===0:per==='7 dias'?diff<7:diff<30;}
 function coopsFor(opts){opts=opts||{};return db.coops.filter(function(c){return (!opts.opId||c.opId===opts.opId)&&inPeriod(dIni(c),opts.per)&&(opts.lixeira?true:c.status!=='Lixeira');});}
 function agg(list){const cs=list.map(calc);const o={coops:list.length,n:sum(cs,'n'),dep:sum(cs,'dep'),red:sum(cs,'red'),saq:sum(cs,'saq'),res:sum(cs,'res'),bloq:sum(cs,'bloq'),com:sum(cs,'com'),custo:sum(cs,'custo'),lucro:sum(cs,'lucro')};o.roi=(o.com+o.custo)?o.lucro/(o.com+o.custo)*100:0;o.custoConta=0;o.ativas=list.filter(function(c){return c.status==='Em andamento'||c.status==='Ativa';}).length;o.concluidas=list.filter(function(c){return c.status==='Concluída';}).length;return o;}
 function platNorm(p){return String(p||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/\s*[-·|]?\s*link\s*\d+\s*$/i,'').replace(/[\s._\-·|]+/g,'');}
@@ -297,7 +306,7 @@ function usePersist(key,initial){const k='ms7op-p-'+key;useDB();const [,force]=R
   return [read(),set];}
 const COM_LABEL={pct:'% do lucro',conta:'Por conta',fixo:'Valor fixo',misto:'Fixo + por conta',rolo:'Com R / sem R'};
 function comText(c){return c.comTipo==='rolo'?MS7.brl(c.comR!=null?c.comR:2)+' com R · '+MS7.brl(c.comS!=null?c.comS:1.5)+' sem R':c.comTipo==='misto'?MS7.brl(c.comValor)+' fixo + '+MS7.brl(c.comConta||0)+' por conta':c.comTipo==='pct'?c.comValor+'% do lucro':c.comTipo==='conta'?MS7.brl(c.comValor)+' por conta':MS7.brl(c.comValor)+' fixo';}
-window.PIXV=PIXV;window.DB={Sync:Sync,get:function(){return db;},useDB:useDB,calc:calc,pixOrd:pixOrd,proxLink:proxLink,contasValidas:contasValidas,comData:comData,linkId:linkId,dIso:dIso,dIni:dIni,semanaIni:semanaIni,comissoesDe:comissoesDe,contaUsada:contaUsada,saqEf:saqEf,contaOperada:contaOperada,agg:agg,coopsFor:coopsFor,inPeriod:inPeriod,coopNome:coopNome,platNorm:platNorm,opName:opName,coop:coop,A:A,today:TODAY,iso:iso,fmtDate:fmtDate,contaRes:contaRes,contaPronta:contaPronta,temSaqueNovo:temSaqueNovo,cicloTam:cicloTam,COM_LABEL:COM_LABEL,comText:comText};
+window.PIXV=PIXV;window.DB={Sync:Sync,get:function(){return db;},useDB:useDB,calc:calc,pixOrd:pixOrd,proxLink:proxLink,contasValidas:contasValidas,comData:comData,linkId:linkId,dIso:dIso,dIni:dIni,semanaIni:semanaIni,comissoesDe:comissoesDe,contaUsada:contaUsada,saqEf:saqEf,contaOperada:contaOperada,agg:agg,coopsFor:coopsFor,inPeriod:inPeriod,coopNome:coopNome,platNorm:platNorm,opName:opName,coop:coop,A:A,today:TODAY,corrigirDatas:corrigirDatas,iso:iso,fmtDate:fmtDate,contaRes:contaRes,contaPronta:contaPronta,temSaqueNovo:temSaqueNovo,cicloTam:cicloTam,COM_LABEL:COM_LABEL,comText:comText};
 window.exportCSV=exportCSV;window.usePersist=usePersist;
 })();
 

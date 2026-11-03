@@ -1146,6 +1146,15 @@
     const [page, setPage] = React.useState(function () {
       return localStorage.getItem('ms7op-page') || 'geral';
     });
+    React.useEffect(function () {
+      const f = function (e) {
+        setPage(e.detail);
+      };
+      window.addEventListener('ms7-go', f);
+      return function () {
+        window.removeEventListener('ms7-go', f);
+      };
+    }, []);
     const [mobile, setMobile] = React.useState(function () {
       return window.matchMedia('(max-width: 760px)').matches;
     });
@@ -1277,6 +1286,23 @@
         if (session) document.documentElement.setAttribute('data-pg', pg);
       },
       [pg, !!session],
+    );
+    React.useEffect(
+      function () {
+        if (!session || session.role === 'operador') return;
+        let n = 0;
+        const t = setInterval(function () {
+          n++;
+          try {
+            if (DB.corrigirDatas && (DB.Sync ? DB.Sync.status === 'online' || DB.Sync.status === 'local' : true)) DB.corrigirDatas();
+          } catch (e) {}
+          if (n > 20) clearInterval(t);
+        }, 5000);
+        return function () {
+          clearInterval(t);
+        };
+      },
+      [session && session.role],
     );
     if (!session || /[?&]login=1/.test(location.search))
       return (
@@ -1419,7 +1445,8 @@
         </main>
         <Toaster />
         <PushPreview />
-        {isOp ? <TarefasWatcher opId={session.opId} /> : window.AlertNotifier ? <window.AlertNotifier session={session} /> : null}
+        <TarefasWatcher opId={isOp ? session.opId : null} />
+        {isOp ? null : window.AlertNotifier ? <window.AlertNotifier session={session} /> : null}
         {isOp ? null : <PontoWatcher />}
         {np ? (
           <NotifPanel
