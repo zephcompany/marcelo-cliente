@@ -50,6 +50,9 @@ DATA_DIR=./server/data ADMIN_EMAIL=admin@ms7.com ADMIN_PASSWORD=12345678 node se
 
 ## O que mudou no visual (resumo)
 
+**Nov/2026 — direção "CRM glass" (atual):** moldura arredondada com fundo quente desfocado, menu em pílula no topo, trilho de ícones flutuante, título grande com estatísticas ao lado, dashboard refeito (lucro por dia em curva suave, cooperações em andamento em tiles, composição do lucro, próxima ação, remessas), botões e abas em pílula, acentos lima/coral/azul. A lista abaixo descreve a versão anterior (Black Glass); o que conflitar foi substituído.
+
+
 - Tema preto por padrão (`#070808`) com dois campos de luz fixos; cards, menu, cabeçalho, modais, busca e notificações em vidro fosco (translúcido + blur + fio de luz). O tema claro continua como alternativa (botão do sol).
 - Fonte Geist (Google Fonts) e Geist Mono para IDs/chaves; pesos 400–600; nada de serif.
 - Acento lima só onde importa: ação principal, aba ativa, item ativo do menu, foco. Dinheiro positivo verde, negativo vermelho.

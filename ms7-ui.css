@@ -627,3 +627,245 @@ html.is-cur-down .ms7-cur-ring { transform: scale(0.85); }
 html:not([data-theme="dark"]) .ms7-cur-dot { background: #0A5A3C; box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.7), 0 0 10px rgba(10, 90, 60, 0.5); }
 html:not([data-theme="dark"]).is-cur-hover .ms7-cur-ring { border-color: rgba(10, 90, 60, 0.9); background: rgba(10, 90, 60, 0.06); }
 @media (hover: none), (pointer: coarse) { .ms7-cur { display: none !important; } }
+
+/* ============================================================
+   NOVA DIREÇÃO (nov/2026): "CRM glass" — referência do Marcelo
+   moldura arredondada sobre fundo quente desfocado, nav em pílula
+   no topo, trilho de ícones flutuante à esquerda, cards de vidro
+   escuro, tiles internos cinza-vidro, acentos lima / coral / azul.
+   Esta camada sobrescreve a anterior (Black Glass).
+   ============================================================ */
+html[data-theme="dark"] {
+  --ms7-lime-500: #C7F25B;
+  --ms7-lime-600: #B6E544;
+  --ms7-green-900: #C7F25B;
+  --ms7-green-800: #B6E544;
+  --ms7-green: #C7F25B;
+  --ms7-green-100: rgba(199, 242, 91, 0.14);
+  --ms7-green-50: rgba(199, 242, 91, 0.08);
+  --ms7-green-ink: #C7F25B;
+  --ms7-lime-100: rgba(199, 242, 91, 0.12);
+  --text-on-lime: #1A2208;
+  --ms7-coral: #F2896B;
+  --ms7-sky: #84BCF2;
+  --ms7-mint: #74D3A6;
+  --ms7-rose: #E883A6;
+  --ms7-olive: #8E9E4E;
+  --ms7-error: #F2896B;
+  --ms7-orange: #F2A36B;
+  --ms7-yellow: #EBCB6B;
+  --ms7-blue: #84BCF2;
+  --ms7-purple: #B7A1F0;
+  --ms7-turquoise: #6FCFD6;
+  --text-primary: #F3F2F0;
+  --text-secondary: #9C9B98;
+  --text-brand: #C7F25B;
+  --surface-page: #0E0D0C;
+  --surface-card: rgba(22, 21, 20, 0.58);
+  --surface-muted: rgba(255, 255, 255, 0.07);
+  --surface-sunken: rgba(0, 0, 0, 0.28);
+  --line: rgba(255, 255, 255, 0.075);
+  --line-strong: rgba(255, 255, 255, 0.14);
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.09);
+  --border-focus: #C7F25B;
+  --glass: rgba(255, 255, 255, 0.06);
+  --glass-2: rgba(255, 255, 255, 0.1);
+  --glass-solid: rgba(30, 29, 28, 0.94);
+  --glass-edge: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(18px) saturate(1.2);
+  --tile: rgba(255, 255, 255, 0.09);
+  --tile-line: rgba(255, 255, 255, 0.1);
+  --shadow-card: inset 0 1px 0 rgba(255, 255, 255, 0.05), 0 0 0 1px rgba(255, 255, 255, 0.07);
+  --shadow-hover: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 0 0 1px rgba(255, 255, 255, 0.14);
+  --shadow-pop: inset 0 1px 0 rgba(255, 255, 255, 0.1), 0 0 0 1px rgba(255, 255, 255, 0.1), 0 40px 80px -30px rgba(0, 0, 0, 0.85);
+  --chart-1: #C7F25B; --chart-2: #F2896B; --chart-3: #84BCF2; --chart-4: #74D3A6; --chart-5: #E883A6; --chart-6: #EBCB6B;
+  --stat-green: #7FD99A; --stat-blue: #84BCF2; --stat-yellow: #EBCB6B; --stat-orange: #F2A36B;
+  --radius-lg: 22px;
+  --radius-xl: 28px;
+  --acc: #C7F25B;
+  --acc-fg: #1A2208;
+}
+/* efeitos da direção anterior: desligados */
+html[data-theme="dark"] body::before, html[data-theme="dark"] body::after, .ms7-noise, .ms7-cur { display: none !important; }
+.ms7-glow::before, .ms7-hover-card::before, .ms7-hover-card::after, .ms7-spot::before, .ms7-spot::after { display: none !important; }
+
+/* fundo: preto, a "moldura" do app tem a luz quente desfocada */
+html[data-theme="dark"] body { background: #050505; }
+html[data-theme="dark"] .ms7-shell { position: relative; margin: 14px; min-height: calc(100vh - 28px); border-radius: 30px; overflow: clip; isolation: isolate;
+  background:
+    radial-gradient(1100px 700px at 0% 0%, rgba(120, 140, 160, 0.42), transparent 60%),
+    radial-gradient(900px 620px at 55% 105%, rgba(150, 92, 60, 0.42), transparent 62%),
+    radial-gradient(800px 600px at 100% 35%, rgba(70, 58, 52, 0.55), transparent 60%),
+    linear-gradient(180deg, #2A2C2E 0%, #1C1B1A 45%, #1A1614 100%);
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+@media (max-width: 760px) { html[data-theme="dark"] .ms7-shell { margin: 0; border-radius: 0; min-height: 100vh; } }
+
+/* cards: vidro escuro */
+html[data-theme="dark"] .ms7-card { background: var(--surface-card); backdrop-filter: blur(18px) saturate(1.15); -webkit-backdrop-filter: blur(18px) saturate(1.15); box-shadow: var(--shadow-card); border-radius: 22px; }
+html[data-theme="dark"] .ms7-hover-card:hover { background: rgba(28, 27, 26, 0.66); box-shadow: var(--shadow-hover); transform: translateY(-2px); }
+html[data-theme="dark"] .ms7-card.is-dark { background: var(--tile); color: var(--text-primary); box-shadow: inset 0 0 0 1px var(--tile-line); }
+/* tile interno (cards dentro de cards, estilo "Hot deals") */
+.ms7-tile { background: var(--tile, var(--surface-muted)); border-radius: 18px; box-shadow: inset 0 0 0 1px var(--tile-line, var(--line)), inset 0 1px 0 rgba(255,255,255,.06); }
+.ms7-tile.is-blue { background: rgba(132, 188, 242, 0.32); } .ms7-tile.is-olive { background: rgba(160, 178, 80, 0.36); } .ms7-tile.is-coral { background: rgba(196, 104, 76, 0.42); } .ms7-tile.is-gray { background: rgba(255, 255, 255, 0.14); }
+
+/* botões: pílulas */
+html[data-theme="dark"] .ms7-btn { border-radius: 999px; }
+html[data-theme="dark"] .ms7-btn-brand, html[data-theme="dark"] .ms7-btn-lime { background: var(--ms7-lime-500); color: var(--text-on-lime); box-shadow: none; }
+html[data-theme="dark"] .ms7-btn-brand:hover:not(:disabled), html[data-theme="dark"] .ms7-btn-lime:hover:not(:disabled) { background: #D3F877; box-shadow: none; }
+html[data-theme="dark"] .ms7-btn-outline, html[data-theme="dark"] .ms7-btn-secondary { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.1); box-shadow: none; backdrop-filter: none; }
+html[data-theme="dark"] .ms7-btn-outline:hover:not(:disabled), html[data-theme="dark"] .ms7-btn-secondary:hover:not(:disabled) { background: rgba(255, 255, 255, 0.11); border-color: rgba(255, 255, 255, 0.16); box-shadow: none; }
+html[data-theme="dark"] .ms7-btn-primary { background: #F3F2F0; color: #161514; box-shadow: none; }
+html[data-theme="dark"] .ms7-btn-ghost:hover:not(:disabled) { background: rgba(255, 255, 255, 0.07); }
+html[data-theme="dark"] .ms7-btn-danger { background: rgba(242, 137, 107, 0.14); color: #F2896B; border-color: rgba(242, 137, 107, 0.3); }
+html[data-theme="dark"] .ms7-btn-danger:hover:not(:disabled) { background: #F2896B; color: #1A1210; }
+html[data-theme="dark"] .ms7-ibtn { border-radius: 50%; }
+html[data-theme="dark"] .ms7-ibtn-outline, html[data-theme="dark"] .ms7-ibtn { border: 1px solid rgba(255, 255, 255, 0.11); background: transparent; backdrop-filter: none; }
+html[data-theme="dark"] .ms7-ibtn:hover { background: rgba(255, 255, 255, 0.08); }
+html[data-theme="dark"] .ms7-ibtn-badge { background: var(--ms7-coral); color: #1A1210; box-shadow: 0 0 0 2px #1E1D1C; }
+
+/* abas: segmentado em pílula, ativa cinza clara */
+html[data-theme="dark"] .ms7-tabs { border-radius: 999px; background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.06); backdrop-filter: none; padding: 4px; }
+html[data-theme="dark"] .ms7-tabs-ind { border-radius: 999px; background: rgba(255, 255, 255, 0.13); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08); }
+html[data-theme="dark"] .ms7-tab { border-radius: 999px; font-weight: 500; }
+html[data-theme="dark"] .ms7-tabs-chips { background: transparent; box-shadow: none; padding: 0; }
+html[data-theme="dark"] .ms7-tabs-chips .ms7-tab { background: rgba(255, 255, 255, 0.06); box-shadow: none; }
+html[data-theme="dark"] .ms7-tabs-chips .ms7-tabs-ind { background: rgba(255, 255, 255, 0.16); box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1); }
+html[data-theme="dark"] .ms7-tabs-chips .ms7-tab[aria-selected="true"] { color: var(--text-primary); background: transparent; }
+html[data-theme="dark"] .ms7-tabs-chips .ms7-tab[aria-selected="true"] .ms7-countdot { background: rgba(255, 255, 255, 0.16); color: var(--text-primary); }
+html[data-theme="dark"] .ms7-tabs-line .ms7-tabs-ind { background: var(--text-primary); }
+
+/* campos */
+html[data-theme="dark"] .ms7-box { border-radius: 999px; background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.08); box-shadow: none; padding: 0 16px; }
+html[data-theme="dark"] .ms7-box.is-multi { border-radius: 18px; }
+html[data-theme="dark"] .ms7-box.is-focus { border-color: rgba(199, 242, 91, 0.6); box-shadow: 0 0 0 3px rgba(199, 242, 91, 0.12); }
+html[data-theme="dark"] .ms7-pill-select { background: rgba(255, 255, 255, 0.06); border-color: rgba(255, 255, 255, 0.08); box-shadow: none; }
+html[data-theme="dark"] .ms7-native, html[data-theme="dark"] input[type="date"]:not(.ms7-input), html[data-theme="dark"] input[type="time"]:not(.ms7-input) { border-radius: 999px; background: rgba(255, 255, 255, 0.06); box-shadow: none; padding: 0 14px; }
+html[data-theme="dark"] .ms7-checkbox { border-radius: 6px; background: rgba(255, 255, 255, 0.06); }
+html[data-theme="dark"] .ms7-checkbox.is-on { background: var(--ms7-lime-500); border-color: var(--ms7-lime-500); color: var(--text-on-lime); }
+html[data-theme="dark"] .ms7-switch-track.is-on { background: var(--ms7-lime-500); }
+html[data-theme="dark"] .ms7-switch-track.is-on .ms7-switch-thumb { background: #1A2208; }
+
+/* badges: pílulas sólidas suaves (coral / azul / lima / cinza) */
+html[data-theme="dark"] .ms7-badge { font-weight: 600; }
+html[data-theme="dark"] .ms7-countdot { background: rgba(255, 255, 255, 0.12); color: var(--text-primary); }
+
+/* avatar: círculo pastel com iniciais escuras */
+html[data-theme="dark"] .ms7-avatar-inner { background: #DCE9C4; color: #1E2414; box-shadow: none; font-weight: 600; }
+html[data-theme="dark"] .ms7-avatar-online { border-color: #1E1D1C; }
+
+/* tabelas, barras, modais, tooltips */
+html[data-theme="dark"] .ms7-table th { font-weight: 500; letter-spacing: .04em; text-transform: none; font-size: 12px; }
+html[data-theme="dark"] .ms7-table tbody tr:hover td { background: rgba(255, 255, 255, 0.05); }
+html[data-theme="dark"] .ms7-bar { height: 5px; background: rgba(255, 255, 255, 0.1); }
+html[data-theme="dark"] .ms7-bar > i { background: var(--ms7-lime-500); }
+html[data-theme="dark"] .ms7-stepper-fill { background: var(--ms7-lime-500); }
+html[data-theme="dark"] .ms7-modal { background: rgba(32, 31, 30, 0.92); border-radius: 26px; }
+html[data-theme="dark"] .ms7-modal-bg { background: rgba(5, 5, 5, 0.55); }
+html[data-theme="dark"] .ms7-stat-ico { border-radius: 50%; background: rgba(255, 255, 255, 0.07) !important; color: var(--text-primary) !important; box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+html[data-theme="dark"] .ms7-stat-ico svg { stroke: var(--text-primary) !important; }
+html[data-theme="dark"] .ms7-stat-value { background: none; -webkit-text-fill-color: currentColor; color: var(--text-primary); font-weight: 500; }
+html[data-theme="dark"] .ms7-stat-value[style*="--ms7-green)"], html[data-theme="dark"] .ms7-stat-value.is-pos { color: var(--ms7-lime-500); }
+html[data-theme="dark"] .ms7-stat-value[style*="--ms7-error)"], html[data-theme="dark"] .ms7-stat-value.is-neg { color: var(--ms7-coral); }
+html[data-theme="dark"] .ms7-grad-text { background: none; -webkit-text-fill-color: currentColor; color: var(--ms7-lime-500); }
+html[data-theme="dark"] .ms7-eyebrow { letter-spacing: .02em; text-transform: none; font-size: 12.5px; font-weight: 500; }
+html[data-theme="dark"] .ms7-chart svg line { stroke: rgba(255, 255, 255, 0.07) !important; }
+html[data-theme="dark"] .ms7-toast, html[data-theme="dark"] .ms7-tip { border-radius: 999px; }
+
+/* tipografia: títulos leves e grandes, números finos como na referência */
+html[data-theme="dark"] h1, html[data-theme="dark"] h2, html[data-theme="dark"] h3 { font-weight: 500; }
+/* cabeçalho de página: título grande + estatísticas em linha */
+.crm-hstats { display: flex; align-items: center; flex-wrap: wrap; gap: 14px 30px; min-width: 0; }
+.crm-hstat { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.crm-hstat-ico { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.06); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); color: var(--text-primary); }
+.crm-hstat-t { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.crm-hstat-v { display: flex; align-items: center; gap: 8px; }
+.crm-hstat-v b { font-size: 21px; font-weight: 500; letter-spacing: -0.02em; line-height: 1.1; }
+.crm-hstat-l { font-size: 12.5px; font-weight: 400; color: var(--text-secondary); max-width: 190px; line-height: 1.3; }
+.crm-pill { display: inline-flex; align-items: center; height: 22px; padding: 0 9px; border-radius: 999px; font-size: 11.5px; font-weight: 600; white-space: nowrap; }
+.crm-pill.is-coral { background: #F2896B; color: #2A140C; } .crm-pill.is-blue { background: #84BCF2; color: #0E2238; } .crm-pill.is-lime { background: #C7F25B; color: #1A2208; } .crm-pill.is-gray { background: rgba(255, 255, 255, 0.14); color: var(--text-primary); }
+html:not([data-theme="dark"]) .crm-hstat-ico { background: var(--surface-card); box-shadow: 0 0 0 1px var(--line); }
+html[data-theme="dark"] .ms7-stat-ico, html[data-theme="dark"] .ms7-stat-ico * { color: rgba(243, 242, 240, 0.85) !important; }
+html[data-theme="dark"] .ms7-stat-ico svg [stroke]:not([stroke="none"]) { stroke: currentColor !important; }
+html[data-theme="dark"] .ms7-stat-ico { width: 34px; height: 34px; }
+/* ---------- dashboard (direção CRM) ---------- */
+.crm-row1 { display: grid; grid-template-columns: minmax(0, 1.42fr) minmax(0, 1fr); gap: 20px; align-items: stretch; }
+.crm-row2 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; align-items: stretch; }
+@media (max-width: 1180px) { .crm-row1 { grid-template-columns: 1fr; } .crm-row2 { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 760px) { .crm-row2 { grid-template-columns: 1fr; } }
+.crm-card { padding: 22px 22px 22px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.crm-card-h { display: flex; align-items: center; gap: 10px; min-height: 38px; }
+.crm-card-t { flex: 1; font-size: 15px; font-weight: 500; letter-spacing: -0.01em; }
+.crm-card-a { display: flex; align-items: center; gap: 8px; }
+.crm-card-n { font-size: 12.5px; color: var(--text-secondary); margin-right: 4px; white-space: nowrap; }
+.crm-ib { width: 38px; height: 38px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.11); background: transparent; color: var(--text-primary); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; transition: background 180ms, border-color 180ms; }
+.crm-ib:hover { background: rgba(255, 255, 255, 0.08); border-color: rgba(255, 255, 255, 0.18); }
+html:not([data-theme="dark"]) .crm-ib { border-color: var(--line); }
+.crm-big { display: flex; align-items: baseline; flex-wrap: wrap; gap: 6px 14px; }
+.crm-big-v { font-size: clamp(32px, 3.4vw, 42px); font-weight: 400; letter-spacing: -0.035em; line-height: 1; }
+.crm-big.is-sm .crm-big-v { font-size: 30px; }
+.crm-big-s { font-size: 13px; color: var(--text-secondary); } .crm-big-s b { color: var(--text-primary); font-weight: 600; }
+.crm-legend { display: flex; flex-wrap: wrap; gap: 8px 20px; font-size: 12.5px; color: var(--text-secondary); }
+.crm-legend span { display: inline-flex; align-items: center; gap: 8px; }
+.crm-legend i { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+.crm-legend i.is-dash { width: 16px; height: 0; border-radius: 0; border-top: 2px dashed rgba(243, 242, 240, 0.75); }
+.crm-chart { position: relative; display: grid; grid-template-columns: 58px minmax(0, 1fr); grid-template-rows: 230px 22px; margin-top: 4px; flex: 1; min-height: 252px; }
+.crm-chart-y { position: relative; grid-row: 1; }
+.crm-chart-y span { position: absolute; left: 0; transform: translateY(-50%); font-size: 11.5px; color: var(--text-secondary); white-space: nowrap; }
+.crm-chart-plot { position: relative; grid-row: 1; grid-column: 2; }
+.crm-chart-plot svg { display: block; overflow: visible; }
+.crm-line { stroke-dasharray: 2400; stroke-dashoffset: 2400; animation: ms7-draw 1.4s var(--ease-out) .1s forwards; }
+.crm-chart-x { position: relative; grid-row: 2; grid-column: 2; }
+.crm-chart-x span { position: absolute; top: 6px; transform: translateX(-50%); font-size: 11.5px; color: var(--text-secondary); white-space: nowrap; }
+.crm-chart-x span:first-child { transform: none; } .crm-chart-x span:last-child { transform: translateX(-100%); }
+.crm-dot { position: absolute; width: 12px; height: 12px; margin: -6px 0 0 -6px; border-radius: 50%; background: var(--ms7-lime-500); box-shadow: 0 0 0 4px rgba(199, 242, 91, 0.2); pointer-events: none; }
+.crm-tip { position: absolute; top: 4px; padding: 8px 12px; border-radius: 14px; background: var(--glass-solid, var(--surface-card)); box-shadow: var(--shadow-pop); display: flex; flex-direction: column; gap: 2px; pointer-events: none; font-size: 11.5px; color: var(--text-secondary); }
+.crm-tip b { font-size: 14px; font-weight: 600; }
+.crm-deals { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; flex: 1; }
+@media (max-width: 520px) { .crm-deals { grid-template-columns: 1fr; } }
+.crm-deal { display: flex; flex-direction: column; align-items: stretch; text-align: left; gap: 4px; padding: 14px 16px 14px; min-height: 168px; border: 0; color: var(--text-primary); cursor: pointer; font: inherit; transition: transform 220ms var(--ease-standard), background 220ms; }
+.crm-deal:hover { transform: translateY(-2px); background: rgba(255, 255, 255, 0.13); }
+.crm-deal-top { display: flex; align-items: center; justify-content: space-between; font-size: 12px; color: var(--text-secondary); }
+.crm-deal-more { width: 28px; height: 28px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.14); display: inline-flex; align-items: center; justify-content: center; color: var(--text-primary); }
+.crm-deal-n { margin-top: 6px; font-size: 17px; font-weight: 500; letter-spacing: -0.015em; line-height: 1.2; }
+.crm-deal-s { font-size: 12.5px; color: var(--text-secondary); }
+.crm-deal-b { margin-top: auto; padding-top: 12px; display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; }
+.crm-deal-b b { display: block; font-size: 19px; font-weight: 500; letter-spacing: -0.02em; }
+.crm-deal-b small { display: block; font-size: 11.5px; color: var(--text-secondary); margin-top: 2px; }
+.crm-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 12px 16px; border-radius: 999px; border: 0; background: rgba(255, 255, 255, 0.06); color: var(--text-secondary); font: 500 13px var(--font-sans); cursor: pointer; }
+.crm-foot:hover { background: rgba(255, 255, 255, 0.1); }
+.crm-foot b { font-size: 14px; font-weight: 600; }
+.crm-comp { display: flex; flex-direction: column; gap: 14px; margin-top: 4px; }
+.crm-comp-r { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 7px 10px; align-items: center; }
+.crm-comp-l { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); min-width: 0; }
+.crm-comp-l i { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+.crm-comp-v { font-size: 13.5px; font-weight: 500; }
+.crm-comp-bar { grid-column: 1 / -1; height: 10px; border-radius: 999px; background: rgba(255, 255, 255, 0.06); overflow: hidden; }
+.crm-comp-bar i { display: block; height: 100%; border-radius: 999px; transform-origin: left; animation: ms7-grow-x 900ms var(--ease-out) both; }
+.crm-list { display: flex; flex-direction: column; gap: 8px; }
+.crm-li { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 18px; background: rgba(255, 255, 255, 0.05); min-width: 0; }
+.crm-li-ico { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: inline-flex; align-items: center; justify-content: center; background: rgba(255, 255, 255, 0.07); box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08); }
+.crm-li-t { flex: 1; min-width: 0; font-size: 13.5px; font-weight: 500; line-height: 1.3; }
+.crm-li-t small { display: block; font-size: 12px; font-weight: 400; color: var(--text-secondary); margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.crm-li-v { font-size: 13.5px; font-weight: 600; white-space: nowrap; }
+.crm-li-b { display: inline-flex; align-items: center; gap: 4px; height: 32px; padding: 0 12px; border-radius: 999px; border: 0; background: var(--ms7-lime-500); color: var(--text-on-lime, #1A2208); font: 600 12.5px var(--font-sans); cursor: pointer; white-space: nowrap; }
+html:not([data-theme="dark"]) .crm-li, html:not([data-theme="dark"]) .crm-foot { background: var(--surface-muted); }
+/* emojis: fora na direção CRM (a referência não usa) */
+html[data-theme="dark"] .ms7-emo { display: none !important; }
+/* ---------- shell CRM (desktop) ---------- */
+.ms7-shell.is-crm { display: block; }
+.crm-body { display: flex; align-items: flex-start; min-width: 0; }
+.ms7-shell.is-crm .ms7-main { padding: 0 34px 48px 28px; gap: 22px; max-width: none; margin: 0; }
+.crm-head { display: flex; align-items: center; flex-wrap: wrap; gap: 18px 44px; padding: 14px 0 6px; min-height: 92px; }
+.crm-h1 { margin: 0; font-size: 40px; font-weight: 400; letter-spacing: -0.035em; line-height: 1.02; max-width: 230px; animation: ms7-up-sm 420ms var(--ease-out) both; }
+.crm-hstats:empty { display: none; }
+.crm-tools { display: flex; align-items: center; gap: 10px; }
+.crm-tools .ms7-ibtn { width: 40px; height: 40px; }
+.crm-me { position: relative; display: block; cursor: pointer; border-radius: 50%; }
+.crm-me .ms7-avatar-inner { background: var(--ms7-lime-500) !important; color: #1A2208 !important; }
+.crm-me .ms7-user-sync { left: auto; right: -1px; bottom: -1px; border-color: #2a2b2c; }
+@media (max-width: 1180px) { .crm-h1 { font-size: 32px; } .ms7-shell.is-crm .ms7-main { padding: 0 22px 40px 18px; } }
+html[data-theme="dark"] .ms7-stat-value, html[data-theme="dark"] .ms7-stat-value[style*="--ms7-green)"], html[data-theme="dark"] .ms7-stat-value[style*="--ms7-error)"], html[data-theme="dark"] .ms7-stat-value.is-pos, html[data-theme="dark"] .ms7-stat-value.is-neg { background-image: none !important; -webkit-text-fill-color: currentColor; }
+html:not([data-theme="dark"]) .crm-line { stroke: #0A5A3C; }
+html:not([data-theme="dark"]) .crm-media { stroke: rgba(17, 21, 18, 0.45); }
+html:not([data-theme="dark"]) .crm-legend i.is-dash { border-top-color: rgba(17, 21, 18, 0.45); }

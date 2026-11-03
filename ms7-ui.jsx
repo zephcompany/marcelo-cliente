@@ -962,6 +962,31 @@
   }
 
   /* ---------- aplica ---------- */
+
+  /* ---------- cabeçalho de página (direção CRM): slot de estatísticas ao lado do título ---------- */
+  function HeadSlot(p) {
+    const [el, setEl] = React.useState(null);
+    React.useLayoutEffect(function () {
+      let n = document.getElementById('crm-head-stats');
+      if (n) { setEl(n); return; }
+      const t = setTimeout(function () { setEl(document.getElementById('crm-head-stats')); }, 0);
+      return function () { clearTimeout(t); };
+    }, []);
+    if (!el) return p.inline ? h('div', { className: 'crm-hstats is-inline' }, p.children) : null;
+    return ReactDOM.createPortal(p.children, el);
+  }
+  function HeadStat(p) {
+    return h('div', { className: 'crm-hstat' }, [
+      h('span', { key: 'i', className: 'crm-hstat-ico' }, h(Icon, { name: p.icon || 'circle', size: 17, strokeWidth: 1.7 })),
+      h('div', { key: 't', className: 'crm-hstat-t' }, [
+        h('div', { key: 'v', className: 'crm-hstat-v' }, [
+          h('b', { key: 'b', className: 'ms7-num', style: p.color ? { color: p.color } : null }, p.value),
+          p.badge ? h('span', { key: 'g', className: 'crm-pill is-' + (p.tone || 'gray') }, p.badge) : null,
+        ]),
+        h('span', { key: 'l', className: 'crm-hstat-l' }, p.label),
+      ]),
+    ]);
+  }
   Object.assign(DS, {
     Icon: Icon,
     Button: Button,
@@ -987,6 +1012,8 @@
     Reveal: Reveal,
     Stagger: Stagger,
     CountUp: CountUp,
+    HeadSlot: HeadSlot,
+    HeadStat: HeadStat,
   });
   Button._ms7 = IconButton._ms7 = Badge._ms7 = Avatar._ms7 = 1;
   window.MS7Motion = { watch: watch, Reveal: Reveal, Stagger: Stagger, CountUp: CountUp };
@@ -1008,7 +1035,7 @@
   })();
   /* cursor personalizado (ponto + anel), só em dispositivos com mouse */
   (function () {
-    if (window.__ms7Cur || !window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
+    if (true || window.__ms7Cur || !window.matchMedia || !window.matchMedia('(hover: hover) and (pointer: fine)').matches) return;
     window.__ms7Cur = true;
     const root = document.documentElement; root.classList.add('ms7-cursor');
     const dot = document.createElement('div'); dot.className = 'ms7-cur ms7-cur-dot'; dot.setAttribute('aria-hidden', 'true');

@@ -1035,7 +1035,7 @@
     }, []);
     return (DB.Sync && DB.Sync.status) || 'local';
   }
-  function AppHeader({ title, subtitle, user, notifications, onNotificationsClick, actions, mobile, onSearch, theme, setTheme }) {
+  function AppHeader({ title, subtitle, user, notifications, onNotificationsClick, actions, mobile, onSearch, theme, setTheme, crm }) {
     const [foto, setFoto] = React.useState(function () {
       return localStorage.getItem(fotoKey(user.name)) || '';
     });
@@ -1076,6 +1076,31 @@
       e.target.value = '';
     }
     const syncLabel = { online: 'Sincronizado com o servidor', syncing: 'Sincronizando…', offline: 'Sem conexão com o servidor', local: 'Modo local' }[sync] || sync;
+    if (crm === 'title') {
+      return (
+        <div className="crm-head">
+          <h1 className="crm-h1 ms7-balance" key={typeof title === 'string' ? title : 'n'}>
+            {title}
+          </h1>
+          <div className="crm-hstats" id="crm-head-stats" />
+        </div>
+      );
+    }
+    const toolsOnly = crm === 'tools';
+    if (toolsOnly) {
+      return (
+        <div className="crm-tools">
+          <DS.IconButton icon="search" size={40} iconSize={18} label="Buscar (Ctrl+K)" onClick={onSearch} />
+          <DS.IconButton icon={theme === 'dark' ? 'sun' : 'moon'} size={40} iconSize={18} label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'} onClick={function () { setTheme(theme === 'dark' ? 'light' : 'dark'); }} />
+          <DS.IconButton icon="bell" size={40} iconSize={18} badge={notifications || null} label="Notificações" onClick={onNotificationsClick} />
+          <label title={(user.name || first) + ' · ' + user.role + ' · trocar foto'} className="ms7-user-pic crm-me">
+            <DS.Avatar src={foto || undefined} name={user.name} size={40} />
+            <span className={'ms7-user-sync ' + sync} title={syncLabel} />
+            <input type="file" accept="image/*" onChange={pick} style={{ display: 'none' }} />
+          </label>
+        </div>
+      );
+    }
     return (
       <header className={'ms7-head' + (stuck ? ' is-stuck' : '')}>
         <h1 key={typeof title === 'string' ? title : 'n'}>
@@ -1393,56 +1418,75 @@
         TITLES[pg]
       );
     return (
-      <div className={'ms7-shell' + (topNav ? ' is-top' : '')}>
+      <div className={'ms7-shell' + (mobile ? '' : ' is-crm')}>
         {mobile ? <MobileNav items={navT} footerItems={foot} activeId={pg} onNavigate={go} /> : null}
-        {topNav ? <TopNav items={navT} footerItems={foot} activeId={pg} onNavigate={go} /> : null}
-        {mobile || topNav ? null : (
-          <RailNav
+        {mobile ? null : (
+          <CrmTop
             items={navT}
-            footerItems={foot}
             activeId={pg}
             onNavigate={go}
-            open={!collapsed}
-            onToggle={function () {
-              setCollapsed(!collapsed);
-            }}
-            style={{ position: 'sticky', top: 0, height: '100vh', alignSelf: 'flex-start', zIndex: 60, borderRight: '1px solid var(--line)' }}
+            right={
+              <AppHeader
+                crm="tools"
+                title={title}
+                user={{ name: session.name, role: roleLabel }}
+                notifications={unread}
+                theme={theme}
+                setTheme={setTheme}
+                onSearch={function () {
+                  setSq(true);
+                }}
+                onNotificationsClick={function () {
+                  setNp(true);
+                }}
+              />
+            }
+          />
+        )}
+        <div className="crm-body">
+        {mobile ? null : (
+          <CrmRail
+            activeId={pg}
+            tools={[
+              { label: 'Buscar (Ctrl+K)', icon: 'search', onClick: function () { setSq(true); } },
+              { id: 'tarefas', label: 'Nova tarefa', icon: 'plus', onClick: function () { go('tarefas'); } },
+              { id: 'avisos', label: 'Avisos', icon: 'megaphone', onClick: function () { go('avisos'); } },
+              '-',
+            ]
+              .concat(
+                foot.map(function (f) {
+                  return { id: f.id, label: f.label, icon: f.icon, onClick: function () { go(f.id); } };
+                }),
+              )
+              .concat(['-', { label: theme === 'dark' ? 'Modo claro' : 'Modo escuro', icon: theme === 'dark' ? 'sun' : 'moon', onClick: function () { setTheme(theme === 'dark' ? 'light' : 'dark'); } }])}
           />
         )}
         <main className="ms7-main">
-          <AppHeader
-            title={title}
-            subtitle={SUBT[pg]}
-            user={{ name: session.name, role: roleLabel }}
-            mobile={mobile}
-            notifications={unread}
-            theme={theme}
-            setTheme={setTheme}
-            actions={
-              mobile ? null : (
-                <DS.IconButton
-                  icon={topNav ? 'panel-left' : 'panel-top'}
-                  size={38}
-                  iconSize={19}
-                  label={topNav ? 'Usar menu lateral' : 'Usar menu no topo'}
-                  onClick={function () {
-                    setNavMode(topNav ? 'lado' : 'topo');
-                  }}
-                />
-              )
-            }
-            onSearch={function () {
-              setSq(true);
-            }}
-            onNotificationsClick={function () {
-              setNp(true);
-            }}
-          />
+          {mobile ? (
+            <AppHeader
+              title={title}
+              subtitle={SUBT[pg]}
+              user={{ name: session.name, role: roleLabel }}
+              mobile={mobile}
+              notifications={unread}
+              theme={theme}
+              setTheme={setTheme}
+              onSearch={function () {
+                setSq(true);
+              }}
+              onNotificationsClick={function () {
+                setNp(true);
+              }}
+            />
+          ) : (
+            <AppHeader crm="title" title={pg === 'geral' ? 'Visão geral' : title} user={{ name: session.name, role: roleLabel }} />
+          )}
           {session.role === 'cliente' ? <TesteFaixa session={session} go={go} naPag={pg === 'assinaturas'} /> : null}
           <div className="ms7-page" key={pg} style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 16 : 24 }}>
             <S go={go} role={session.role} session={session} />
           </div>
         </main>
+        </div>
         <Toaster />
         <PushPreview />
         <TarefasWatcher opId={isOp ? session.opId : null} />

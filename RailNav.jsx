@@ -258,6 +258,94 @@
       </React.Fragment>
     );
   }
+
+  const CRM_CSS = [
+    /* barra superior: logo + nav em pílula + ações */
+    '.crm-top{position:sticky;top:0;z-index:50;display:grid;grid-template-columns:1fr auto 1fr;align-items:center;gap:16px;height:84px;padding:0 28px 0 34px}',
+    '.crm-top::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(30,31,32,.86),rgba(30,31,32,.55) 70%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent);opacity:0;transition:opacity 240ms}',
+    '.crm-top.is-stuck::before{opacity:1}',
+    '.crm-logo{display:flex;align-items:center;gap:11px;border:0;background:transparent;color:var(--text-primary);cursor:pointer;padding:0;justify-self:start}',
+    '.crm-logo .mk{width:38px;height:38px;border-radius:11px;background:var(--ms7-lime-500,#C7F25B);color:#1A2208;display:flex;align-items:center;justify-content:center;font-size:13px;letter-spacing:-.02em;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}',
+    '.crm-logo b{font-size:19px;font-weight:500;letter-spacing:-.02em}',
+    '.crm-nav{position:relative;display:flex;align-items:center;gap:2px;padding:5px;border-radius:999px;background:rgba(20,20,20,.42);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);max-width:100%;overflow-x:auto;scrollbar-width:none}.crm-nav::-webkit-scrollbar{display:none}',
+    '.crm-nav-ind{position:absolute;top:5px;height:calc(100% - 10px);border-radius:999px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:left 380ms var(--ease-standard),width 380ms var(--ease-standard),opacity 200ms;pointer-events:none}',
+    '.crm-nav-it{position:relative;z-index:1;height:38px;display:inline-flex;align-items:center;gap:7px;padding:0 15px;border:0;border-radius:999px;background:transparent;color:rgba(243,242,240,.78);font:500 13.5px var(--font-sans);letter-spacing:-.005em;white-space:nowrap;cursor:pointer;transition:color 200ms;flex-shrink:0}',
+    '.crm-nav-it:hover{color:#fff}.crm-nav-it.is-on{color:#fff}',
+    '.crm-nav-it .bdg{min-width:18px;height:18px;padding:0 5px;border-radius:9px;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:600;background:var(--ms7-lime-500,#C7F25B);color:#1A2208}',
+    '.crm-nav-it .ico{display:none}',
+    '@media(max-width:1340px){.crm-nav-it{padding:0 11px;font-size:13px}}',
+    '@media(max-width:1180px){.crm-nav-it .lbl{display:none}.crm-nav-it .ico{display:inline-flex}}',
+    '.crm-acts{display:flex;align-items:center;gap:10px;justify-self:end}',
+    /* trilho de ícones flutuante (esquerda) */
+    '.crm-rail{position:sticky;top:100px;align-self:flex-start;z-index:40;margin:16px 0 0 26px;width:52px;display:flex;flex-direction:column;align-items:center;gap:6px;padding:10px 0;border-radius:999px;background:rgba(20,20,20,.42);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px)}',
+    '.crm-rail-b{position:relative;width:38px;height:38px;border-radius:50%;border:0;background:transparent;color:rgba(243,242,240,.72);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background 180ms,color 180ms}',
+    '.crm-rail-b:hover{background:rgba(255,255,255,.09);color:#fff}.crm-rail-b.is-on{background:rgba(255,255,255,.14);color:#fff}',
+    '.crm-rail-sep{width:22px;height:1px;background:rgba(255,255,255,.1);margin:6px 0}',
+    '.crm-rail-b .tip{position:absolute;left:calc(100% + 12px);top:50%;transform:translateY(-50%) translateX(-4px);padding:6px 11px;border-radius:999px;background:rgba(30,29,28,.95);color:#F3F2F0;font:500 12.5px var(--font-sans);white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 160ms,transform 200ms;box-shadow:0 0 0 1px rgba(255,255,255,.1),0 12px 30px -12px rgba(0,0,0,.8)}',
+    '.crm-rail-b:hover .tip{opacity:1;transform:translateY(-50%)}',
+    /* tema claro: mesma estrutura em cinza claro */
+    'html:not([data-theme="dark"]) .crm-nav,html:not([data-theme="dark"]) .crm-rail{background:rgba(255,255,255,.7);box-shadow:inset 0 0 0 1px var(--line)}',
+    'html:not([data-theme="dark"]) .crm-nav-it{color:var(--text-secondary)}html:not([data-theme="dark"]) .crm-nav-it.is-on,html:not([data-theme="dark"]) .crm-nav-it:hover{color:var(--text-primary)}',
+    'html:not([data-theme="dark"]) .crm-nav-ind{background:var(--surface-card);box-shadow:0 0 0 1px var(--line)}',
+    'html:not([data-theme="dark"]) .crm-rail-b{color:var(--text-secondary)}html:not([data-theme="dark"]) .crm-rail-b:hover,html:not([data-theme="dark"]) .crm-rail-b.is-on{background:var(--surface-muted);color:var(--text-primary)}',
+    'html:not([data-theme="dark"]) .crm-top::before{background:linear-gradient(180deg,rgba(245,246,243,.9),transparent)}',
+  ].join('');
+  if (!document.getElementById('crm-nav-css')) { const st = document.createElement('style'); st.id = 'crm-nav-css'; st.textContent = CRM_CSS; document.head.appendChild(st); }
+
+  function CrmTop({ items, activeId, onNavigate, brand, right }) {
+    const ref = React.useRef(null);
+    const [ind, setInd] = React.useState({ left: 0, width: 0, on: false });
+    const [stuck, setStuck] = React.useState(false);
+    const measure = React.useCallback(function () {
+      const el = ref.current && ref.current.querySelector('.crm-nav-it.is-on');
+      setInd(el ? { left: el.offsetLeft, width: el.offsetWidth, on: true } : { left: 0, width: 0, on: false });
+    }, []);
+    React.useLayoutEffect(measure, [activeId, items, measure]);
+    React.useEffect(function () {
+      const f = function () { setStuck(window.scrollY > 6); };
+      f(); window.addEventListener('scroll', f, { passive: true }); window.addEventListener('resize', measure);
+      return function () { window.removeEventListener('scroll', f); window.removeEventListener('resize', measure); };
+    }, [measure]);
+    return (
+      <header className={'crm-top' + (stuck ? ' is-stuck' : '')}>
+        <button type="button" className="crm-logo" onClick={function () { onNavigate(items[0] ? items[0].id : 'geral'); }} aria-label="Início">
+          <span className="mk" aria-hidden="true"><span style={{ fontWeight: 400 }}>M</span><span style={{ fontWeight: 700 }}>S</span></span>
+          <b>{brand || 'ms control'}</b>
+        </button>
+        <nav className="crm-nav" ref={ref} aria-label="Menu principal">
+          <span className="crm-nav-ind" style={{ left: ind.left, width: ind.width, opacity: ind.on ? 1 : 0 }} aria-hidden="true" />
+          {items.map(function (it) {
+            const on = it.id === activeId;
+            return (
+              <button key={it.id} type="button" data-nav={it.id} className={'crm-nav-it' + (on ? ' is-on' : '')} aria-current={on ? 'page' : undefined} title={it.label} onClick={function () { onNavigate(it.id); }}>
+                <span className="ico"><DS.Icon name={it.icon} size={17} /></span>
+                <span className="lbl">{it.label}</span>
+                {it.badge ? <span className="bdg">{it.badge}</span> : null}
+              </button>
+            );
+          })}
+        </nav>
+        <div className="crm-acts">{right}</div>
+      </header>
+    );
+  }
+
+  function CrmRail({ tools, activeId }) {
+    return (
+      <aside className="crm-rail" aria-label="Atalhos">
+        {tools.map(function (t, i) {
+          if (t === '-') return <span key={'s' + i} className="crm-rail-sep" />;
+          return (
+            <button key={t.id || t.label} type="button" className={'crm-rail-b' + (t.id && t.id === activeId ? ' is-on' : '')} aria-label={t.label} onClick={t.onClick}>
+              <DS.Icon name={t.icon} size={18} strokeWidth={1.8} />
+              <span className="tip">{t.label}</span>
+            </button>
+          );
+        })}
+      </aside>
+    );
+  }
+
   function TopNav({ items, footerItems, activeId, onNavigate, brand }) {
     const listRef = React.useRef(null);
     const [ind, setInd] = React.useState({ left: 0, width: 0, on: false });
@@ -298,5 +386,7 @@
 
   window.RailNav = RailNav;
   window.TopNav = TopNav;
+  window.CrmTop = CrmTop;
+  window.CrmRail = CrmRail;
   window.MobileNav = MobileNav;
 })();

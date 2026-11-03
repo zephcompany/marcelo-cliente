@@ -325,211 +325,201 @@
     const num = function (v, size) {
       return { fontSize: size || 14, fontWeight: 600, color: col(v), whiteSpace: 'nowrap' };
     };
+    /* ---- direção CRM: curva suave (Catmull-Rom → Bézier) ---- */
+    const smooth = function (P) {
+      if (P.length < 3) return P.map(function (p, i) { return (i ? 'L' : 'M') + p[0].toFixed(1) + ' ' + p[1].toFixed(1); }).join(' ');
+      let d = 'M' + P[0][0].toFixed(1) + ' ' + P[0][1].toFixed(1);
+      for (let i = 0; i < P.length - 1; i++) {
+        const p0 = P[i - 1] || P[i], p1 = P[i], p2 = P[i + 1], p3 = P[i + 2] || p2;
+        const c1x = p1[0] + (p2[0] - p0[0]) / 6, c1y = p1[1] + (p2[1] - p0[1]) / 6;
+        const c2x = p2[0] - (p3[0] - p1[0]) / 6, c2y = p2[1] - (p3[1] - p1[1]) / 6;
+        d += ' C' + c1x.toFixed(1) + ' ' + c1y.toFixed(1) + ', ' + c2x.toFixed(1) + ' ' + c2y.toFixed(1) + ', ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+      }
+      return d;
+    };
+    const CW = 640, CH = 220, CP = 6;
+    const vMax = Math.max(0, Math.max.apply(null, vals.concat([0]))), vMin = Math.min(0, Math.min.apply(null, vals.concat([0])));
+    const span = Math.max(1, vMax - vMin);
+    const yOf = function (v) { return CP + ((vMax - v) / span) * (CH - 2 * CP); };
+    const cpts = vals.map(function (v, i) { return [vals.length > 1 ? (i * CW) / (vals.length - 1) : CW / 2, yOf(v)]; });
+    const cline = smooth(cpts);
+    const carea = cpts.length ? cline + ' L' + cpts[cpts.length - 1][0].toFixed(1) + ' ' + CH + ' L' + cpts[0][0].toFixed(1) + ' ' + CH + ' Z' : '';
+    const yMedia = yOf(media), yZero = yOf(0);
+    const ticks = [vMax, (vMax + vMin) / 2, vMin].map(function (v) { return [v, yOf(v)]; });
+    const kShort = function (v) { const a = Math.abs(v); return (v < 0 ? '-' : '') + 'R$ ' + (a >= 1000 ? (a / 1000).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + 'k' : Math.round(a)); };
+    const xl = ks.length ? [0, Math.floor((ks.length - 1) / 3), Math.floor(((ks.length - 1) * 2) / 3), ks.length - 1].filter(function (v, i, a) { return a.indexOf(v) === i; }) : [];
+    const dm = function (k) { return k.split('-').reverse().slice(0, 2).join('/'); };
+    const hot = at
+      .map(function (c) { return { c: c, k: DB.calc(c) }; })
+      .sort(function (a, b) { return Math.abs(b.k.lucro) - Math.abs(a.k.lucro); })
+      .slice(0, 4);
+    const opNome = function (id) { const o = (db.operadores || []).find(function (x) { return x.id === id; }); return o ? o.nome : ''; };
+    const tileTone = ['is-gray', 'is-gray', 'is-gray', 'is-gray'];
+    const abrir = function (c) {
+      try { localStorage.setItem('ms7op-open-coop', c.id); } catch (e) {}
+      window.ms7Go('geral');
+      setTimeout(function () { window.ms7Go('cooperacoes'); }, 30);
+    };
+    const compCol = ['var(--ms7-lime-500)', 'var(--ms7-sky, var(--ms7-blue))', 'var(--ms7-coral, var(--ms7-error))', 'var(--ms7-rose, var(--ms7-purple))'];
+    const IconBtn = function (p) {
+      return (
+        <button type="button" className="crm-ib" title={p.label} aria-label={p.label} onClick={p.onClick}>
+          <DS.Icon name={p.icon} size={16} strokeWidth={1.8} />
+        </button>
+      );
+    };
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 24, alignItems: 'stretch' }}>
-          <section className="ms7-card ms7-spot" style={{ flex: '2 1 520px', minWidth: 0, padding: 24, display: 'flex', flexDirection: 'column', gap: 14 }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-              <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600, lineHeight: 1.25, letterSpacing: '-0.015em' }}>Lucro líquido</h3>
-              <span style={{ flex: 1 }}></span>
-              <DS.Badge tone="gray" variant="soft">
-                {per}
-              </DS.Badge>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <div className="crm-row1">
+          <section className="ms7-card crm-card">
+            <div className="crm-card-h">
+              <span className="crm-card-t">Lucro por dia</span>
+              <div className="crm-card-a">
+                <IconBtn icon="arrow-up-right" label="Abrir análises" onClick={function () { window.ms7Go('analises'); }} />
+              </div>
             </div>
-            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px 14px', flexWrap: 'wrap' }}>
-              <DS.CountUp value={brlS(gC.lucro)} className="ms7d-hero-num" style={{ color: col(gC.lucro) }} />
-              <span style={sec}>{gC.coops + (gC.coops === 1 ? ' cooperação concluída' : ' cooperações concluídas') + ' · ROI ' + pct(gC.roi)}</span>
+            <div className="crm-big">
+              <DS.CountUp value={brlS(gC.lucro)} className="crm-big-v ms7-num" />
+              <span className="crm-big-s">
+                {'lucro das concluídas · '}
+                <b>{ks.length}</b>
+                {ks.length === 1 ? ' dia com resultado' : ' dias com resultado'}
+              </span>
             </div>
-            <div className="ms7-eyebrow" style={{ marginTop: 6 }}>
-              Resultado por dia
+            <div className="crm-legend">
+              <span><i style={{ background: 'var(--ms7-lime-500)' }} />Lucro do dia</span>
+              <span><i className="is-dash" />{'Média · ' + kShort(media)}</span>
+              <span><i style={{ background: 'var(--ms7-coral, var(--ms7-error))' }} />{'Melhor dia · ' + kShort(best)}</span>
             </div>
-            <div style={{ position: 'relative', flex: 1, minHeight: 170, display: 'flex', flexDirection: 'column' }}>
-              {vals.length ? (
-                <div className="ms7-chart ms7-chart-area" style={{ flex: 1, display: 'flex' }}>
-                  <svg
-                    viewBox={'0 0 ' + W + ' ' + H}
-                    preserveAspectRatio="none"
-                    style={{ width: '100%', height: '100%', minHeight: 170, display: 'block', flex: 1 }}
-                    onMouseLeave={function () {
-                      setHv(null);
-                    }}
-                  >
+            {vals.length ? (
+              <div className="crm-chart">
+                <div className="crm-chart-y">
+                  {ticks.map(function (t, i) {
+                    return <span key={i} style={{ top: (t[1] / CH) * 100 + '%' }}>{kShort(t[0])}</span>;
+                  })}
+                </div>
+                <div className="crm-chart-plot" onMouseLeave={function () { setHv(null); }}>
+                  <svg viewBox={'0 0 ' + CW + ' ' + CH} preserveAspectRatio="none" width="100%" height="100%" aria-label="Lucro por dia">
                     <defs>
-                      <linearGradient id="ms7fh" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0" stopColor={LINE} stopOpacity=".28"></stop>
-                        <stop offset="1" stopColor={LINE} stopOpacity="0"></stop>
+                      <linearGradient id="crmArea" x1="0" y1="0" x2="0" y2="1">
+                        <stop offset="0%" stopColor="#C7F25B" stopOpacity=".34" />
+                        <stop offset="100%" stopColor="#C7F25B" stopOpacity="0" />
                       </linearGradient>
                     </defs>
-                    <line x1="0" x2={W} y1={y0} y2={y0} stroke="var(--line-strong)" strokeDasharray="4 4"></line>
-                    <path d={area} fill="url(#ms7fh)"></path>
-                    <path d={line} fill="none" stroke={LINE} strokeWidth="2.25" strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke"></path>
-                    {pts.map(function (p, i) {
+                    {vMin < 0 ? <line x1="0" x2={CW} y1={yZero} y2={yZero} stroke="rgba(255,255,255,.12)" strokeWidth="1" vectorEffect="non-scaling-stroke" /> : null}
+                    <line className="crm-media" x1="0" x2={CW} y1={yMedia} y2={yMedia} stroke="rgba(243,242,240,.75)" strokeWidth="1.6" strokeDasharray="7 7" vectorEffect="non-scaling-stroke" />
+                    <path d={carea} fill="url(#crmArea)" />
+                    <path className="crm-line" d={cline} fill="none" stroke="var(--ms7-lime-500)" strokeWidth="2.6" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+                    {hv != null ? <line x1={cpts[hv][0]} x2={cpts[hv][0]} y1="0" y2={CH} stroke="rgba(255,255,255,.25)" strokeWidth="1" vectorEffect="non-scaling-stroke" /> : null}
+                    {cpts.map(function (p, i) {
                       return (
-                        <rect
-                          key={i}
-                          x={p[0] - W / Math.max(2, pts.length) / 2}
-                          y="0"
-                          width={W / Math.max(2, pts.length)}
-                          height={H}
-                          fill="transparent"
-                          onMouseEnter={function () {
-                            setHv(i);
-                          }}
-                        ></rect>
+                        <rect key={i} x={i ? (cpts[i - 1][0] + p[0]) / 2 : 0} y="0" width={((cpts[i + 1] ? cpts[i + 1][0] : CW) - (i ? cpts[i - 1][0] : 0)) / 2 + 0.5} height={CH} fill="transparent" onMouseEnter={function () { setHv(i); }} />
                       );
                     })}
-                    {hv != null ? <rect x={pts[hv][0] - 0.5} y="0" width="1" height={H} fill="var(--text-secondary)" opacity=".55"></rect> : null}
                   </svg>
-                </div>
-              ) : (
-                <Empty art="Chart" compact title="Nenhuma cooperação concluída neste período" sub="Quando uma cooperação é concluída, o lucro de cada dia aparece aqui." />
-              )}
-              {hv != null ? (
-                <span
-                  style={{
-                    position: 'absolute',
-                    left: (pts[hv][0] / W) * 100 + '%',
-                    top: (pts[hv][1] / H) * 100 + '%',
-                    width: 10,
-                    height: 10,
-                    marginLeft: -5,
-                    marginTop: -5,
-                    borderRadius: '50%',
-                    background: 'var(--surface-page)',
-                    border: '2px solid ' + LINE,
-                    boxShadow: '0 0 0 1px var(--surface-page)',
-                    pointerEvents: 'none',
-                  }}
-                ></span>
-              ) : null}
-              {hv != null ? (
-                <div className="ms7d-tip" style={{ left: Math.min(70, Math.max(0, (pts[hv][0] / W) * 100)) + '%' }}>
-                  <span className="ms7d-tip-d">{ks[hv].split('-').reverse().slice(0, 2).join('/')}</span>
-                  <span className="ms7-num" style={num(vals[hv], 14)}>
-                    {brlS(vals[hv])}
-                  </span>
-                </div>
-              ) : null}
-            </div>
-            <div className="ms7d-facts">
-              {[
-                ['Dias com resultado', String(vals.length), null],
-                ['Média por dia', brlS(media), media],
-                ['Melhor dia', brlS(best), best],
-              ].map(function (x) {
-                return (
-                  <div key={x[0]} className="ms7d-fact">
-                    <div className="ms7-eyebrow">{x[0]}</div>
-                    <div className="ms7-num ms7d-fact-v" style={{ color: x[2] == null ? 'var(--text-primary)' : col(x[2]) }}>
-                      {x[1]}
+                  {hv != null ? <span className="crm-dot" style={{ left: (cpts[hv][0] / CW) * 100 + '%', top: (cpts[hv][1] / CH) * 100 + '%' }} /> : null}
+                  {hv != null ? (
+                    <div className="crm-tip" style={{ left: Math.min(78, Math.max(0, (cpts[hv][0] / CW) * 100 - 6)) + '%' }}>
+                      <span>{dm(ks[hv])}</span>
+                      <b className="ms7-num" style={{ color: col(vals[hv]) }}>{brlS(vals[hv])}</b>
                     </div>
+                  ) : null}
+                </div>
+                <div className="crm-chart-x">
+                  {xl.map(function (i) {
+                    return <span key={i} style={{ left: (cpts[i][0] / CW) * 100 + '%' }}>{dm(ks[i])}</span>;
+                  })}
+                </div>
+              </div>
+            ) : (
+              <Empty art="Chart" compact title="Sem resultado no período" sub="Quando uma cooperação for concluída, o lucro do dia aparece aqui." />
+            )}
+          </section>
+
+          <section className="ms7-card crm-card">
+            <div className="crm-card-h">
+              <span className="crm-card-t">Cooperações em andamento</span>
+              <div className="crm-card-a">
+                <span className="crm-card-n">{at.length + ' ativas · ' + kShort(sm(at))}</span>
+                <IconBtn icon="plus" label="Nova cooperação" onClick={function () { window.ms7Go('cooperacoes'); }} />
+                <IconBtn icon="arrow-up-right" label="Ver cooperações" onClick={function () { window.ms7Go('cooperacoes'); }} />
+              </div>
+            </div>
+            {hot.length ? (
+              <div className="crm-deals">
+                {hot.map(function (x, i) {
+                  const c = x.c, k = x.k;
+                  const nome = opNome(c.opId);
+                  return (
+                    <button type="button" key={c.id} className={'ms7-tile crm-deal ' + tileTone[i]} onClick={function () { abrir(c); }}>
+                      <span className="crm-deal-top">
+                        <span>{c.inicio ? 'Início ' + dm(DB.dIso(c.inicio) || String(c.inicio)) : c.status}</span>
+                        <span className="crm-deal-more" aria-hidden="true"><DS.Icon name="more-horizontal" size={15} /></span>
+                      </span>
+                      <span className="crm-deal-n">{DB.coopNome(c)}</span>
+                      <span className="crm-deal-s">{[c.plataforma, c.rede].filter(Boolean).join(' · ') || c.status}</span>
+                      <span className="crm-deal-b">
+                        <span>
+                          <b className="ms7-num" style={{ color: col(k.lucro) }}>{brlS(k.lucro)}</b>
+                          <small>{(c.contas || []).length + ' contas · ' + c.status}</small>
+                        </span>
+                        {nome ? <DS.Avatar name={nome} size={30} /> : null}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <Empty art="Coop" compact title="Nenhuma cooperação ativa" sub="As cooperações em andamento aparecem aqui com o resultado parcial." />
+            )}
+            {fi.length ? (
+              <button type="button" className="crm-foot" onClick={function () { window.ms7Go('cooperacoes'); }}>
+                <span>{fi.length + (fi.length === 1 ? ' finalizada aguardando análise' : ' finalizadas aguardando análise')}</span>
+                <b className="ms7-num" style={{ color: col(sm(fi)) }}>{brlS(sm(fi))}</b>
+              </button>
+            ) : null}
+          </section>
+        </div>
+
+        <div className="crm-row2">
+          <section className="ms7-card crm-card">
+            <div className="crm-card-h">
+              <span className="crm-card-t">Composição do lucro</span>
+            </div>
+            <div className="crm-big is-sm">
+              <span className="crm-big-v ms7-num" style={{ color: col(gC.lucro) }}>{brlS(gC.lucro)}</span>
+              <span className="crm-big-s">lucro líquido no período</span>
+            </div>
+            <div className="crm-comp">
+              {comp.map(function (x, i) {
+                return (
+                  <div key={x[0]} className="crm-comp-r">
+                    <span className="crm-comp-l"><i style={{ background: compCol[i] }} />{x[0]}</span>
+                    <span className="ms7-num crm-comp-v">{brlS(x[1])}</span>
+                    <span className="crm-comp-bar"><i style={{ width: Math.max(2, (Math.abs(x[1]) / cmx) * 100) + '%', background: compCol[i] }} /></span>
                   </div>
                 );
               })}
             </div>
           </section>
-          <div style={{ flex: '1 1 300px', display: 'flex', flexDirection: 'column', gap: 24, minWidth: 0 }}>
-            <DS.Card
-              className="ms7-spot" title={ttl('🎯', 'Metas')}
-              padding={20}
-              action={
-                <DS.Button
-                  size="sm"
-                  variant="ghost"
-                  iconRight="arrow-right"
-                  onClick={function () {
-                    window.ms7Go('cooperacoes');
-                  }}
-                >
-                  Ver cooperações
-                </DS.Button>
-              }
-            >
-              <DS.CountUp
-                value={brlS(sm(at) + sm(fi))}
-                className="ms7-num"
-                style={{ display: 'block', fontSize: 28, fontWeight: 600, letterSpacing: '-0.03em', lineHeight: 1.1, color: col(sm(at) + sm(fi)) }}
-              />
-              <div style={{ marginTop: 12 }}>
-                {[
-                  ['Ativas (parcial)', at.length, sm(at)],
-                  ['Finalizadas', fi.length, sm(fi)],
-                ].map(function (x, i) {
-                  return (
-                    <div key={x[0]} style={{ display: 'flex', alignItems: 'center', gap: 10, padding: '9px 0', borderTop: i ? '1px solid var(--border-subtle)' : 'none' }}>
-                      <span style={Object.assign({ flex: 1 }, sec)}>{x[0]}</span>
-                      <DS.CountDot tone="muted">{x[1]}</DS.CountDot>
-                      <span className="ms7-num" style={num(x[2])}>
-                        {brlS(x[2])}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </DS.Card>
-            <DS.Card className="ms7-spot" title={ttl('📈', 'Resultados')} padding={20}>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
-                {comp.map(function (x) {
-                  return (
-                    <div key={x[0]}>
-                      <div style={{ display: 'flex', gap: 8, alignItems: 'baseline' }}>
-                        <span style={Object.assign({ flex: 1 }, sec)}>{x[0]}</span>
-                        <span className="ms7-num" style={num(x[1])}>
-                          {brlS(x[1])}
-                        </span>
-                      </div>
-                      <div className="ms7-bar" style={{ marginTop: 8 }}>
-                        <i style={{ width: Math.round((Math.abs(x[1]) / cmx) * 100) + '%', background: x[1] >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}></i>
-                      </div>
-                    </div>
-                  );
-                })}
-                <div style={{ display: 'flex', gap: 8, alignItems: 'baseline', paddingTop: 14, borderTop: '1px solid var(--line)' }}>
-                  <span style={{ flex: 1, fontSize: 14, fontWeight: 600 }}>Lucro líquido</span>
-                  <span className="ms7-num" style={Object.assign(num(gC.lucro, 16), { letterSpacing: '-0.02em' })}>
-                    {brlS(gC.lucro)}
-                  </span>
-                </div>
-              </div>
-            </DS.Card>
-          </div>
-        </div>
-        <Grid min={340}>
-          <DS.Card
-            className="ms7-spot" title={ttl('⚡', 'Sua próxima ação')}
-            action={
-              acoes.length ? (
-                <DS.Badge tone="gray" variant="soft">
-                  {acoes.length + (acoes.length === 1 ? ' pendência' : ' pendências')}
-                </DS.Badge>
-              ) : null
-            }
-          >
+
+          <section className="ms7-card crm-card">
+            <div className="crm-card-h">
+              <span className="crm-card-t">Sua próxima ação</span>
+              {acoes.length ? <span className="crm-pill is-coral">{acoes.length + (acoes.length === 1 ? ' pendência' : ' pendências')}</span> : null}
+            </div>
             {acoes.length ? (
-              <div className="ms7d-list">
+              <div className="crm-list">
                 {acoes.map(function (a) {
-                  const c = a[0] === 'shield-alert' ? 'var(--ms7-error)' : 'var(--ms7-green-900)';
                   return (
-                    <div key={a[1]} className="ms7d-row">
-                      <span className="ms7d-tile" style={{ background: tint(c), color: c }}>
-                        <DS.Icon name={a[0]} size={16} strokeWidth={2} />
-                      </span>
-                      <div className="ms7d-t" style={{ flex: 1, whiteSpace: 'normal' }}>
-                        {a[1]}
-                        <span className="ms7-num" style={{ marginLeft: 6, fontWeight: 500, color: 'var(--text-secondary)' }}>
-                          {'· ' + a[2]}
-                        </span>
-                      </div>
-                      <DS.Button
-                        size="sm"
-                        variant="primary"
-                        iconRight="arrow-right"
-                        onClick={function () {
-                          window.ms7Go(a[4]);
-                        }}
-                      >
+                    <div key={a[1]} className="crm-li">
+                      <span className="crm-li-ico"><DS.Icon name={a[0]} size={16} strokeWidth={1.8} /></span>
+                      <span className="crm-li-t">{a[1]}</span>
+                      <span className="crm-pill is-gray">{a[2]}</span>
+                      <button type="button" className="crm-li-b" onClick={function () { window.ms7Go(a[4]); }}>
                         {a[3]}
-                      </DS.Button>
+                        <DS.Icon name="arrow-up-right" size={14} />
+                      </button>
                     </div>
                   );
                 })}
@@ -537,27 +527,30 @@
             ) : (
               <Empty art="Tasks" compact title="Nada pendente agora" sub="Cooperações finalizadas, tarefas do dia e contas bloqueadas aparecem aqui." />
             )}
-          </DS.Card>
-          <DS.Card className="ms7-spot" title={ttl('🧾', 'Últimas remessas')}>
+          </section>
+
+          <section className="ms7-card crm-card">
+            <div className="crm-card-h">
+              <span className="crm-card-t">Últimas remessas</span>
+              <IconBtn icon="bell" label="Notificações" onClick={function () { const b = document.querySelector('[aria-label="Notificações"]'); if (b) b.click(); }} />
+            </div>
             {rem.length ? (
-              <div className="ms7d-list">
+              <div className="crm-list">
                 {rem.map(function (n) {
                   const b = String(n.body || '').split('\n');
-                  const r =
-                    b.find(function (x) {
-                      return /^Resultado/.test(x);
-                    }) || '';
+                  const r = b.find(function (x) { return /^Resultado/.test(x); }) || '';
+                  const quem = (b[0] || '').replace(/^Operador:\s*/, '');
                   return (
-                    <div key={n.id} className={'ms7d-row' + (r ? ' has-val' : '')}>
-                      <DS.Avatar name={(b[0] || '').replace(/^Operador:\s*/, '') || '?'} size={34} />
-                      <div style={{ flex: 1, minWidth: 0 }}>
-                        <div className="ms7d-t">{n.title}</div>
-                        <div className="ms7d-s">{[(b[0] || '').replace(/^Operador:\s*/, ''), b[1], n.at].filter(Boolean).join(' · ')}</div>
-                      </div>
+                    <div key={n.id} className="crm-li">
+                      <DS.Avatar name={quem || '?'} size={34} />
+                      <span className="crm-li-t">
+                        {n.title}
+                        <small>{[quem, n.at].filter(Boolean).join(' · ')}</small>
+                      </span>
                       {r ? (
-                        <span className="ms7-num ms7d-val" style={{ color: /-R\$/.test(r) ? 'var(--ms7-error)' : 'var(--ms7-green)' }}>
-                          {r.replace(/^Resultado:\s*/, '')}
-                        </span>
+                        <b className="ms7-num crm-li-v" style={{ color: /-R\$|PREJU/i.test(r) ? 'var(--ms7-coral, var(--ms7-error))' : 'var(--ms7-lime-500)' }}>
+                          {r.replace(/^Resultado:\s*/, '').replace(/^(LUCRO|PREJUÍZO) de /i, '')}
+                        </b>
                       ) : null}
                     </div>
                   );
@@ -566,8 +559,8 @@
             ) : (
               <Empty art="Inbox" compact title="Sem remessas ainda" sub="Os ciclos enviados pelos operadores aparecem aqui." />
             )}
-          </DS.Card>
-        </Grid>
+          </section>
+        </div>
       </div>
     );
   }
@@ -625,8 +618,24 @@
           },
           { icon: 'percent', label: 'Comissão (concluídas)', value: MS7.brl(gC.com), tone: 'yellow' },
         ];
+    const pctB = g.n ? ((g.bloq / g.n) * 100).toLocaleString('pt-BR', { maximumFractionDigits: 1 }) + '%' : null;
     return (
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+        <DS.HeadSlot>
+          {isOp ? (
+            <React.Fragment>
+              <DS.HeadStat icon="percent" value={MS7.brlK(g.com)} label="Minha comissão no período" />
+              <DS.HeadStat icon="trending-up" value={MS7.brlK(g.res)} label="Resultado das contas" color={g.res < 0 ? 'var(--ms7-coral)' : null} />
+              <DS.HeadStat icon="users" value={String(g.n)} label="Contas no período" badge={g.bloq ? g.bloq + ' bloq.' : null} tone="coral" />
+            </React.Fragment>
+          ) : (
+            <React.Fragment>
+              <DS.HeadStat icon="trophy" value={MS7.brlK(gC.lucro)} label={gC.lucro >= 0 ? 'Lucro das concluídas' : 'Prejuízo das concluídas'} badge={'ROI ' + pct(gC.roi)} tone={gC.roi >= 0 ? 'lime' : 'coral'} />
+              <DS.HeadStat icon="briefcase" value={String(nAt)} label="Cooperações abertas no período" />
+              <DS.HeadStat icon="shield-alert" value={g.bloq + ' de ' + g.n} label="Contas bloqueadas" badge={pctB} tone="coral" />
+            </React.Fragment>
+          )}
+        </DS.HeadSlot>
         <PeriodBar value={per} onChange={setPer}>
           {!isOp ? (
             <Select
