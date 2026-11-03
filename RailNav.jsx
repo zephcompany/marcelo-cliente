@@ -265,7 +265,7 @@
     '.crm-top::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(30,31,32,.86),rgba(30,31,32,.55) 70%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);-webkit-mask-image:linear-gradient(#000 70%,transparent);mask-image:linear-gradient(#000 70%,transparent);opacity:0;transition:opacity 240ms}',
     '.crm-top.is-stuck::before{opacity:1}',
     '.crm-logo{display:flex;align-items:center;gap:11px;border:0;background:transparent;color:var(--text-primary);cursor:pointer;padding:0;justify-self:start}',
-    '.crm-logo .mk{width:38px;height:38px;border-radius:11px;background:var(--ms7-lime-500,#C7F25B);color:#1A2208;display:flex;align-items:center;justify-content:center;font-size:13px;letter-spacing:-.02em;box-shadow:inset 0 1px 0 rgba(255,255,255,.5)}',
+    '.crm-logo .mk{width:42px;height:42px;display:block;flex:none;filter:drop-shadow(0 8px 18px rgba(0,0,0,.35))}',
     '.crm-logo b{font-size:19px;font-weight:500;letter-spacing:-.02em}',
     '.crm-nav{position:relative;display:flex;align-items:center;gap:2px;padding:5px;border-radius:999px;background:rgba(20,20,20,.42);box-shadow:inset 0 0 0 1px rgba(255,255,255,.07);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);max-width:100%;overflow-x:auto;scrollbar-width:none}.crm-nav::-webkit-scrollbar{display:none}',
     '.crm-nav-ind{position:absolute;top:5px;height:calc(100% - 10px);border-radius:999px;background:rgba(255,255,255,.13);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);transition:left 380ms var(--ease-standard),width 380ms var(--ease-standard),opacity 200ms;pointer-events:none}',
@@ -309,7 +309,14 @@
     return (
       <header className={'crm-top' + (stuck ? ' is-stuck' : '')}>
         <button type="button" className="crm-logo" onClick={function () { onNavigate(items[0] ? items[0].id : 'geral'); }} aria-label="Início">
-          <span className="mk" aria-hidden="true"><span style={{ fontWeight: 400 }}>M</span><span style={{ fontWeight: 700 }}>S</span></span>
+          <span className="mk" aria-hidden="true">
+            <svg viewBox="0 0 188 188" width="100%" height="100%">
+              <path d="M94 12 165 53v82L94 176 23 135V53Z" fill="#0b0b0b" stroke="#3a3a3a" strokeWidth="9" strokeLinejoin="round" />
+              <path d="M48 118v8l46 26 46-26v-8Z" fill="#4E86BD" /><path d="M94 92l46 26-46 26-46-26Z" fill="#84BCF2" />
+              <path d="M48 95v8l46 26 46-26v-8Z" fill="#C25E44" /><path d="M94 69l46 26-46 26-46-26Z" fill="#F2896B" />
+              <path d="M48 70v9l46 26 46-26v-9Z" fill="#8DB52C" /><path d="M94 44l46 26-46 26-46-26Z" fill="#C7F25B" />
+            </svg>
+          </span>
           <b>{brand || 'ms control'}</b>
         </button>
         <nav className="crm-nav" ref={ref} aria-label="Menu principal">
