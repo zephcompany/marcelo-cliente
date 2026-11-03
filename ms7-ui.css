@@ -898,3 +898,7 @@ html[data-theme="dark"] .ms7-login-side::before, html[data-theme="dark"] .ms7-lo
 .ms7-prev-toast { top: -80px !important; right: -40px !important; }
 .ms7-prev-ring { bottom: -98px !important; right: -30px !important; }
 @media (max-width: 900px) { html[data-theme="dark"] .ms7-login-side { margin: 0; border-radius: 0; } }
+
+/* logo MS no login */
+.ms7-login-brand .mark { width: 46px !important; height: 46px !important; background: none !important; box-shadow: none !important; border-radius: 0 !important; filter: drop-shadow(0 10px 20px rgba(0,0,0,.35)); }
+.ms7-login-brand .mark svg { display: block; width: 100%; height: 100%; }

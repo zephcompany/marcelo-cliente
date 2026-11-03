@@ -292,6 +292,22 @@
   ].join('');
   if (!document.getElementById('crm-nav-css')) { const st = document.createElement('style'); st.id = 'crm-nav-css'; st.textContent = CRM_CSS; document.head.appendChild(st); }
 
+  /* Logo MS (monograma no hexágono) — o mesmo da intro de carregamento */
+  function MSLogo(props) {
+    const id = React.useMemo(function () { return 'msr' + Math.random().toString(36).slice(2, 8); }, []);
+    const ls = ['M54 117V72l18 25', 'M72 97l18-25v45', 'M135 79.5c-2.6-5-7.7-7.5-13.5-7.5-8 0-14 4.3-14 10.6 0 13.8 28 8.2 28 22.6 0 7-6.4 11.8-14.8 11.8-6.8 0-12-2.8-14.7-8.2'];
+    return (
+      <svg viewBox="0 0 188 188" width={(props && props.size) || '100%'} height={(props && props.size) || '100%'} role="img" aria-label="MS Control">
+        <defs><linearGradient id={id} x1="0" y1="0" x2="1" y2="1"><stop offset="0" stopColor="#5a5a58" /><stop offset=".45" stopColor="#1a1918" /><stop offset="1" stopColor="#3c3b39" /></linearGradient></defs>
+        <path d="M94 12 165 53v82L94 176 23 135V53Z" fill="#141312" stroke={'url(#' + id + ')'} strokeWidth="9" strokeLinejoin="round" />
+        <g fill="none" strokeLinecap="round" strokeLinejoin="round" strokeWidth="11">
+          <g stroke="#6F8C1F" transform="translate(0,4)">{ls.map(function (d, i) { return <path key={i} d={d} />; })}</g>
+          <g stroke="#C7F25B">{ls.map(function (d, i) { return <path key={i} d={d} />; })}</g>
+        </g>
+      </svg>
+    );
+  }
+  window.MSLogo = MSLogo;
   function CrmTop({ items, activeId, onNavigate, brand, right }) {
     const ref = React.useRef(null);
     const [ind, setInd] = React.useState({ left: 0, width: 0, on: false });
@@ -309,14 +325,7 @@
     return (
       <header className={'crm-top' + (stuck ? ' is-stuck' : '')}>
         <button type="button" className="crm-logo" onClick={function () { onNavigate(items[0] ? items[0].id : 'geral'); }} aria-label="Início">
-          <span className="mk" aria-hidden="true">
-            <svg viewBox="0 0 188 188" width="100%" height="100%">
-              <path d="M94 12 165 53v82L94 176 23 135V53Z" fill="#0b0b0b" stroke="#3a3a3a" strokeWidth="9" strokeLinejoin="round" />
-              <path d="M48 118v8l46 26 46-26v-8Z" fill="#4E86BD" /><path d="M94 92l46 26-46 26-46-26Z" fill="#84BCF2" />
-              <path d="M48 95v8l46 26 46-26v-8Z" fill="#C25E44" /><path d="M94 69l46 26-46 26-46-26Z" fill="#F2896B" />
-              <path d="M48 70v9l46 26 46-26v-9Z" fill="#8DB52C" /><path d="M94 44l46 26-46 26-46-26Z" fill="#C7F25B" />
-            </svg>
-          </span>
+          <span className="mk" aria-hidden="true"><MSLogo /></span>
           <b>{brand || 'ms control'}</b>
         </button>
         <nav className="crm-nav" ref={ref} aria-label="Menu principal">

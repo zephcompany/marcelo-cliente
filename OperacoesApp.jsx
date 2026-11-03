@@ -605,8 +605,7 @@
           <div className="ms7-login-box">
             <div className="ms7-login-brand">
               <span className="mark" aria-hidden="true">
-                <span style={{ fontWeight: 400 }}>M</span>
-                <span style={{ fontWeight: 700 }}>S</span>
+                {window.MSLogo ? <window.MSLogo /> : 'MS'}
               </span>
               <span className="nm">
                 <b>MS Control</b>
