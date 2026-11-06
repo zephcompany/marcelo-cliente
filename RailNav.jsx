@@ -115,7 +115,7 @@
         }}
       >
         <span className="ico">
-          <DS.Icon name={it.icon} size={19} strokeWidth={on ? 2.1 : 1.75} />
+          <MSIcon name={it.icon} size={22} />
         </span>
         <span className="lbl">{it.label}</span>
         {it.badge ? <span className="bdg">{it.badge}</span> : null}
@@ -203,9 +203,9 @@
       return (
         <button key={it.id} type="button" className={'ms7-mnav-tab' + (on ? ' is-on' : '')} onClick={onClick}>
           <span className="pill">
-            <DS.Icon name={it.icon} size={19} strokeWidth={on ? 2.1 : 1.75} />
+            <MSIcon name={it.icon} size={22} />
           </span>
-          <span style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 2px' }}>{it.label}</span>
+          <span className="lb" style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.label}</span>
           {it.badge ? <span className="bdg">{it.badge}</span> : null}
         </button>
       );
@@ -236,7 +236,9 @@
                       onNavigate(it.id);
                     }}
                   >
-                    <DS.Icon name={it.icon} size={21} />
+                    <span className="tile">
+                      <MSIcon name={it.icon} size={24} />
+                    </span>
                     {it.label}
                   </button>
                 );
@@ -292,6 +294,17 @@
   ].join('');
   if (!document.getElementById('crm-nav-css')) { const st = document.createElement('style'); st.id = 'crm-nav-css'; st.textContent = CRM_CSS; document.head.appendChild(st); }
 
+  /* Ícones próprios do MS Control: dois tons (camada translúcida + forma cheia), mais encorpados que os de linha */
+  const MS_ICONS = {"layout-dashboard":{"a":"<rect x=\"13\" y=\"3\" width=\"8\" height=\"7\" rx=\"2.6\"/><rect x=\"3\" y=\"14\" width=\"8\" height=\"7\" rx=\"2.6\"/>","b":"<rect x=\"3\" y=\"3\" width=\"8\" height=\"9\" rx=\"2.6\"/><rect x=\"13\" y=\"12\" width=\"8\" height=\"9\" rx=\"2.6\"/>"},"square-check":{"a":"<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5.5\"/>","b":"<path d=\"M8 12.3l2.9 2.9L16.4 9\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.7\"/>"},"briefcase":{"a":"<rect x=\"2.5\" y=\"7\" width=\"19\" height=\"13.5\" rx=\"4\"/>","b":"<path d=\"M8.5 7V5.6A2.6 2.6 0 0 1 11.1 3h1.8a2.6 2.6 0 0 1 2.6 2.6V7\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-width=\"2.2\"/><rect x=\"2.5\" y=\"11\" width=\"19\" height=\"2.6\"/><rect x=\"9.6\" y=\"10\" width=\"4.8\" height=\"5\" rx=\"1.6\"/>"},"package":{"a":"<path d=\"M3.6 7.6 12 12v9.6l-7.4-4.1A2 2 0 0 1 3.6 15.8z\"/><path d=\"M20.4 7.6 12 12v9.6l7.4-4.1a2 2 0 0 0 1-1.7z\" opacity=\".55\"/>","b":"<path d=\"M11 2.6a2 2 0 0 1 2 0l7.4 4.1a1 1 0 0 1 0 1.8L12 13 3.6 8.5a1 1 0 0 1 0-1.8z\"/>"},"layout-grid":{"a":"<rect x=\"3\" y=\"3\" width=\"8\" height=\"8\" rx=\"2.6\"/><rect x=\"3\" y=\"13\" width=\"8\" height=\"8\" rx=\"2.6\"/><rect x=\"13\" y=\"13\" width=\"8\" height=\"8\" rx=\"2.6\"/>","b":"<path d=\"M17 2.6l1.1 2.3 2.3 1.1-2.3 1.1L17 9.4l-1.1-2.3L13.6 6l2.3-1.1z\" stroke=\"currentColor\" stroke-width=\"1.4\" stroke-linejoin=\"round\"/>"},"target":{"a":"<circle cx=\"11\" cy=\"13\" r=\"9\"/>","b":"<circle cx=\"11\" cy=\"13\" r=\"5.2\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"/><circle cx=\"11\" cy=\"13\" r=\"1.9\"/><path d=\"M11 13 19.5 4.5\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.2\"/><path d=\"M17.2 3.2 21 3l-.2 3.8-2.4.3z\"/>"},"clock":{"a":"<circle cx=\"12\" cy=\"12\" r=\"9.5\"/>","b":"<path d=\"M12 6.8V12l3.6 2.2\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.6\"/>"},"graduation-cap":{"a":"<path d=\"M5.5 11.4v4.2c0 1.6 2.9 3.4 6.5 3.4s6.5-1.8 6.5-3.4v-4.2L12 14.6z\"/>","b":"<path d=\"M11.1 3.6a2 2 0 0 1 1.8 0l8.6 4.3a.8.8 0 0 1 0 1.4l-8.6 4.3a2 2 0 0 1-1.8 0L2.5 9.3a.8.8 0 0 1 0-1.4z\"/><path d=\"M20.6 9v5.6\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>"},"chart-column":{"a":"<rect x=\"3\" y=\"11\" width=\"5\" height=\"10\" rx=\"2\"/><rect x=\"9.5\" y=\"7\" width=\"5\" height=\"14\" rx=\"2\"/>","b":"<rect x=\"16\" y=\"3\" width=\"5\" height=\"18\" rx=\"2\"/>"},"wallet":{"a":"<path d=\"M5 3.5h10.5a2 2 0 0 1 2 2V7H5.5a1.5 1.5 0 0 1 0-3z\"/>","b":"<path d=\"M3 6.5A2.5 2.5 0 0 0 5.5 9H19a2 2 0 0 1 2 2v7.5a2.5 2.5 0 0 1-2.5 2.5h-13A3.5 3.5 0 0 1 2 17.5V6.5zm13.2 7.3a1.7 1.7 0 1 0 0 3.4 1.7 1.7 0 0 0 0-3.4z\" fill-rule=\"evenodd\"/>"},"megaphone":{"a":"<path d=\"M6.5 15.5h3.2l1.3 4.6a1.6 1.6 0 0 1-1.6 2H8.7a1.6 1.6 0 0 1-1.5-1.1z\"/><path d=\"M20 9.2a2.8 2.8 0 0 1 0 5.2z\"/>","b":"<path d=\"M18.4 3.4a1 1 0 0 1 1.6.8v15.4a1 1 0 0 1-1.6.8L13 16H6a4 4 0 0 1 0-8h7z\"/>"},"sliders-horizontal":{"a":"<rect x=\"2.5\" y=\"5.5\" width=\"19\" height=\"3.6\" rx=\"1.8\"/><rect x=\"2.5\" y=\"14.9\" width=\"19\" height=\"3.6\" rx=\"1.8\"/>","b":"<circle cx=\"15.5\" cy=\"7.3\" r=\"3.6\"/><circle cx=\"8.5\" cy=\"16.7\" r=\"3.6\"/>"},"globe":{"a":"<circle cx=\"12\" cy=\"12\" r=\"9.5\"/>","b":"<path d=\"M12 2.5c2.6 2.7 3.9 5.9 3.9 9.5s-1.3 6.8-3.9 9.5c-2.6-2.7-3.9-5.9-3.9-9.5S9.4 5.2 12 2.5zM2.8 9.6h18.4M2.8 14.4h18.4\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/>"},"credit-card":{"a":"<rect x=\"2\" y=\"4.5\" width=\"20\" height=\"15\" rx=\"4\"/>","b":"<rect x=\"2\" y=\"8\" width=\"20\" height=\"3.4\"/><rect x=\"5\" y=\"14.4\" width=\"6\" height=\"2.4\" rx=\"1.2\"/>"},"settings":{"a":"<circle cx=\"12\" cy=\"12\" r=\"3.4\"/>","b":"<path fill-rule=\"evenodd\" d=\"M10.3 2.4h3.4l.6 2.6c.7.3 1.3.6 1.9 1.1l2.5-.8 1.7 2.9-2 1.8a7 7 0 0 1 0 2.2l2 1.8-1.7 2.9-2.5-.8c-.6.5-1.2.8-1.9 1.1l-.6 2.6h-3.4l-.6-2.6c-.7-.3-1.3-.6-1.9-1.1l-2.5.8-1.7-2.9 2-1.8a7 7 0 0 1 0-2.2l-2-1.8 1.7-2.9 2.5.8c.6-.5 1.2-.8 1.9-1.1zM12 8.2a3.8 3.8 0 1 0 0 7.6 3.8 3.8 0 0 0 0-7.6z\"/>"},"log-out":{"a":"<path d=\"M4 5.5A2.5 2.5 0 0 1 6.5 3H12v18H6.5A2.5 2.5 0 0 1 4 18.5z\"/>","b":"<path d=\"M9.5 12h11M16.8 7.8 21 12l-4.2 4.2\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.6\"/>"},"search":{"a":"<circle cx=\"10.5\" cy=\"10.5\" r=\"7.5\"/>","b":"<circle cx=\"10.5\" cy=\"10.5\" r=\"7\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.4\"/><path d=\"m16 16 4.8 4.8\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"3\"/>"},"plus":{"a":"<rect x=\"3\" y=\"3\" width=\"18\" height=\"18\" rx=\"5.5\"/>","b":"<path d=\"M12 7.5v9M7.5 12h9\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.7\"/>"},"bell":{"a":"<path d=\"M9.3 19.5h5.4a2.7 2.7 0 0 1-5.4 0z\"/>","b":"<path d=\"M12 2.5a6.5 6.5 0 0 1 6.5 6.5v3.8l1.6 2.7a1 1 0 0 1-.9 1.5H4.8a1 1 0 0 1-.9-1.5l1.6-2.7V9A6.5 6.5 0 0 1 12 2.5z\"/>"},"sun":{"a":"<path d=\"M12 1.8v2.6M12 19.6v2.6M4.8 4.8l1.8 1.8M17.4 17.4l1.8 1.8M1.8 12h2.6M19.6 12h2.6M4.8 19.2l1.8-1.8M17.4 6.6l1.8-1.8\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.4\" opacity=\"1\"/>","b":"<circle cx=\"12\" cy=\"12\" r=\"5\"/>"},"moon":{"a":"<circle cx=\"18\" cy=\"5\" r=\"1.4\"/><circle cx=\"20.5\" cy=\"10\" r=\".9\"/>","b":"<path d=\"M15.4 3.4A8.8 8.8 0 1 0 20.6 15 7 7 0 0 1 15.4 3.4z\"/>"},"user":{"a":"<path d=\"M3.5 20.5a8.5 6.5 0 0 1 17 0 1 1 0 0 1-1 1h-15a1 1 0 0 1-1-1z\"/>","b":"<circle cx=\"12\" cy=\"7.5\" r=\"4.6\"/>"},"users":{"a":"<circle cx=\"17.5\" cy=\"8\" r=\"3.3\"/><path d=\"M15 13.6c3.6-.6 7 1.4 7 5.4a.9.9 0 0 1-.9.9h-4.3\"/>","b":"<circle cx=\"9\" cy=\"7.6\" r=\"4.2\"/><path d=\"M1.5 19.8c0-3.9 3.4-6.3 7.5-6.3s7.5 2.4 7.5 6.3a.9.9 0 0 1-.9.9H2.4a.9.9 0 0 1-.9-.9z\"/>"},"clipboard":{"a":"<rect x=\"4\" y=\"4\" width=\"16\" height=\"18\" rx=\"4\"/>","b":"<rect x=\"8\" y=\"2\" width=\"8\" height=\"4.4\" rx=\"1.6\"/><path d=\"M8.2 12.5l2.6 2.6 5-5\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.5\"/>"},"trophy":{"a":"<path d=\"M6 5H3.5a1 1 0 0 0-1 1.1C2.9 9.4 4.6 11.4 7.5 12M18 5h2.5a1 1 0 0 1 1 1.1c-.4 3.3-2.1 5.3-5 5.9\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\"/><rect x=\"7.5\" y=\"19\" width=\"9\" height=\"2.6\" rx=\"1.3\"/>","b":"<path d=\"M6 3.5A1 1 0 0 1 7 2.5h10a1 1 0 0 1 1 1V8a6 6 0 0 1-4.6 5.8V17h1.6v2H9v-2h1.6v-3.2A6 6 0 0 1 6 8z\"/>"},"shield-alert":{"a":"<path d=\"M12 2.2 20 5.3v6.2c0 5-3.4 8.8-8 10.3-4.6-1.5-8-5.3-8-10.3V5.3z\"/>","b":"<path d=\"M12 7.5v5\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.6\"/><circle cx=\"12\" cy=\"16.3\" r=\"1.6\"/>"},"trending-up":{"a":"<path d=\"M3 20h18\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.4\"/><path d=\"M3 17 9 11l4 4 8-8v10H3z\" opacity=\".7\"/>","b":"<path d=\"M3 15.5 9 9.5l4 4 7.5-7.5\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.6\"/><path d=\"M15.5 4.8H21v5.5z\"/>"},"percent":{"a":"<rect x=\"2.5\" y=\"2.5\" width=\"19\" height=\"19\" rx=\"6\"/>","b":"<path d=\"M16.5 7.5l-9 9\" fill=\"none\" stroke=\"currentColor\" stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2.6\"/><circle cx=\"8.3\" cy=\"8.3\" r=\"2.1\"/><circle cx=\"15.7\" cy=\"15.7\" r=\"2.1\"/>"}};
+  function MSIcon(props) {
+    const ic = MS_ICONS[props.name];
+    const size = props.size || 20;
+    if (!ic) return <DS.Icon name={props.name} size={size} strokeWidth={2} />;
+    return (
+      <svg className="ms7-ico2" width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true" dangerouslySetInnerHTML={{ __html: '<g opacity=".38">' + ic.a + '</g>' + ic.b }} />
+    );
+  }
+  window.MSIcon = MSIcon;
   /* Logo MS (monograma no hexágono) — o mesmo da intro de carregamento */
   function MSLogo(props) {
     const id = React.useMemo(function () { return 'msr' + Math.random().toString(36).slice(2, 8); }, []);
@@ -334,7 +347,7 @@
             const on = it.id === activeId;
             return (
               <button key={it.id} type="button" data-nav={it.id} className={'crm-nav-it' + (on ? ' is-on' : '')} aria-current={on ? 'page' : undefined} title={it.label} onClick={function () { onNavigate(it.id); }}>
-                <span className="ico"><DS.Icon name={it.icon} size={17} /></span>
+                <span className="ico"><MSIcon name={it.icon} size={19} /></span>
                 <span className="lbl">{it.label}</span>
                 {it.badge ? <span className="bdg">{it.badge}</span> : null}
               </button>
@@ -353,7 +366,7 @@
           if (t === '-') return <span key={'s' + i} className="crm-rail-sep" />;
           return (
             <button key={t.id || t.label} type="button" className={'crm-rail-b' + (t.id && t.id === activeId ? ' is-on' : '')} aria-label={t.label} onClick={t.onClick}>
-              <DS.Icon name={t.icon} size={18} strokeWidth={1.8} />
+              <MSIcon name={t.icon} size={20} />
               <span className="tip">{t.label}</span>
             </button>
           );
@@ -377,7 +390,7 @@
       const on = activeId === it.id;
       return (
         <button key={it.id} type="button" data-nav={it.id} className={'ms7-top-item' + (on ? ' is-on' : '')} aria-current={on ? 'page' : undefined} title={it.label} onClick={function () { onNavigate(it.id); }}>
-          <DS.Icon name={it.icon} size={17} strokeWidth={on ? 2.1 : 1.75} />
+          <MSIcon name={it.icon} size={20} />
           <span className="lbl">{it.label}</span>
           {it.badge ? <span className="bdg">{it.badge}</span> : null}
         </button>

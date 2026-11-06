@@ -1089,9 +1089,9 @@
     if (toolsOnly) {
       return (
         <div className="crm-tools">
-          <DS.IconButton icon="search" size={40} iconSize={18} label="Buscar (Ctrl+K)" onClick={onSearch} />
-          <DS.IconButton icon={theme === 'dark' ? 'sun' : 'moon'} size={40} iconSize={18} label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'} onClick={function () { setTheme(theme === 'dark' ? 'light' : 'dark'); }} />
-          <DS.IconButton icon="bell" size={40} iconSize={18} badge={notifications || null} label="Notificações" onClick={onNotificationsClick} />
+          <DS.IconButton duo icon="search" size={40} iconSize={18} label="Buscar (Ctrl+K)" onClick={onSearch} />
+          <DS.IconButton duo icon={theme === 'dark' ? 'sun' : 'moon'} size={40} iconSize={18} label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'} onClick={function () { setTheme(theme === 'dark' ? 'light' : 'dark'); }} />
+          <DS.IconButton duo icon="bell" size={40} iconSize={18} badge={notifications || null} label="Notificações" onClick={onNotificationsClick} />
           <label title={(user.name || first) + ' · ' + user.role + ' · trocar foto'} className="ms7-user-pic crm-me">
             <DS.Avatar src={foto || undefined} name={user.name} size={40} />
             <span className={'ms7-user-sync ' + sync} title={syncLabel} />
@@ -1108,7 +1108,7 @@
         </h1>
         <div className="ms7-head-tools">
           {mobile ? (
-            <DS.IconButton icon="search" size={38} iconSize={19} label="Buscar" onClick={onSearch} />
+            <DS.IconButton duo icon="search" size={38} iconSize={19} label="Buscar" onClick={onSearch} />
           ) : (
             <button type="button" className="ms7-search-btn" onClick={onSearch} aria-label="Buscar (Ctrl+K)">
               <DS.Icon name="search" size={16} strokeWidth={2} />
@@ -1117,8 +1117,8 @@
             </button>
           )}
           {actions}
-          <DS.IconButton icon={theme === 'dark' ? 'sun' : 'moon'} size={38} iconSize={19} label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'} onClick={function () { setTheme(theme === 'dark' ? 'light' : 'dark'); }} />
-          <DS.IconButton icon="bell" size={38} iconSize={19} badge={notifications || null} label="Notificações" onClick={onNotificationsClick} />
+          <DS.IconButton duo icon={theme === 'dark' ? 'sun' : 'moon'} size={38} iconSize={19} label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'} onClick={function () { setTheme(theme === 'dark' ? 'light' : 'dark'); }} />
+          <DS.IconButton duo icon="bell" size={38} iconSize={19} badge={notifications || null} label="Notificações" onClick={onNotificationsClick} />
           <div className="ms7-user">
             <label title="Trocar foto" className="ms7-user-pic">
               <DS.Avatar src={foto || undefined} name={user.name} size={mobile ? 34 : 38} />

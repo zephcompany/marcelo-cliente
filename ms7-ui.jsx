@@ -178,7 +178,7 @@
     const { icon, variant, size, iconSize, badge, label, onClick, style, className } = p;
     const rest = {};
     Object.keys(p).forEach(function (k) {
-      if (['icon', 'variant', 'size', 'iconSize', 'badge', 'label', 'onClick', 'style', 'className'].indexOf(k) < 0) rest[k] = p[k];
+      if (['icon', 'variant', 'size', 'iconSize', 'badge', 'label', 'onClick', 'style', 'className', 'duo'].indexOf(k) < 0) rest[k] = p[k];
     });
     const sz = size || 36;
     return h(
@@ -194,7 +194,7 @@
         },
         rest,
       ),
-      h(Icon, { name: icon, size: iconSize || Math.round(sz * 0.52), strokeWidth: 1.9 }),
+      p.duo && window.MSIcon ? h(window.MSIcon, { name: icon, size: (iconSize || Math.round(sz * 0.52)) + 2 }) : h(Icon, { name: icon, size: iconSize || Math.round(sz * 0.52), strokeWidth: 1.9 }),
       badge ? h('span', { className: 'ms7-ibtn-badge' }, badge) : null,
     );
   }
@@ -977,7 +977,7 @@
   }
   function HeadStat(p) {
     return h('div', { className: 'crm-hstat' }, [
-      h('span', { key: 'i', className: 'crm-hstat-ico' }, h(Icon, { name: p.icon || 'circle', size: 17, strokeWidth: 1.7 })),
+      h('span', { key: 'i', className: 'crm-hstat-ico' }, window.MSIcon ? h(window.MSIcon, { name: p.icon || 'circle', size: 19 }) : h(Icon, { name: p.icon || 'circle', size: 17, strokeWidth: 1.7 })),
       h('div', { key: 't', className: 'crm-hstat-t' }, [
         h('div', { key: 'v', className: 'crm-hstat-v' }, [
           h('b', { key: 'b', className: 'ms7-num', style: p.color ? { color: p.color } : null }, p.value),

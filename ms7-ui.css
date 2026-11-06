@@ -902,3 +902,20 @@ html[data-theme="dark"] .ms7-login-side::before, html[data-theme="dark"] .ms7-lo
 /* logo MS no login */
 .ms7-login-brand .mark { width: 46px !important; height: 46px !important; background: none !important; box-shadow: none !important; border-radius: 0 !important; filter: drop-shadow(0 10px 20px rgba(0,0,0,.35)); }
 .ms7-login-brand .mark svg { display: block; width: 100%; height: 100%; }
+
+/* ícones próprios (dois tons) — nov/2026 */
+.ms7-ico2 { display: block; flex: none; }
+html[data-theme="dark"] .ms7-ico2 > g { color: #C7F25B; opacity: .9 !important; }
+html[data-theme="dark"] .is-on .ms7-ico2 > g, html[data-theme="dark"] .ms7-ibtn .ms7-ico2 > g { color: inherit; opacity: .38 !important; }
+html[data-theme="light"] .ms7-ico2 > g { color: #7FA61F; opacity: .9 !important; }
+html[data-theme="light"] .is-on .ms7-ico2 > g, html[data-theme="light"] .ms7-ibtn .ms7-ico2 > g { color: inherit; opacity: .38 !important; }
+.ms7-mnav { padding-left: 4px !important; padding-right: 4px !important; }
+.ms7-mnav-tab { letter-spacing: -.015em; }
+.ms7-mnav-tab .lb { padding: 0 1px; }
+.ms7-mnav-grid button { height: 98px !important; gap: 9px !important; }
+.ms7-mnav-grid .tile { width: 50px; height: 50px; border-radius: 16px; display: grid; place-items: center; background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.035)); box-shadow: inset 0 0 0 1px rgba(255,255,255,.07), inset 0 1px 0 rgba(255,255,255,.1), 0 8px 18px -10px rgba(0,0,0,.6); transition: transform 240ms cubic-bezier(.2,1.3,.4,1); }
+.ms7-mnav-grid button:active .tile { transform: scale(.92); }
+.ms7-mnav-grid button.is-on .tile { background: rgba(0,0,0,.12); box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+html[data-theme="light"] .ms7-mnav-grid .tile { background: linear-gradient(180deg, #fff, #F1F0EC); box-shadow: inset 0 0 0 1px rgba(0,0,0,.06), 0 6px 14px -10px rgba(0,0,0,.25); }
+.ms7-mnav-tab .lb { max-width: none !important; overflow: visible !important; text-overflow: clip !important; }
+@media (max-width: 360px) { .ms7-mnav-tab .lb { font-size: 9.5px; } }
