@@ -905,10 +905,6 @@ html[data-theme="dark"] .ms7-login-side::before, html[data-theme="dark"] .ms7-lo
 
 /* ícones próprios (dois tons) — nov/2026 */
 .ms7-ico2 { display: block; flex: none; }
-html[data-theme="dark"] .ms7-ico2 > g { color: #C7F25B; opacity: .9 !important; }
-html[data-theme="dark"] .is-on .ms7-ico2 > g, html[data-theme="dark"] .ms7-ibtn .ms7-ico2 > g { color: inherit; opacity: .38 !important; }
-html[data-theme="light"] .ms7-ico2 > g { color: #7FA61F; opacity: .9 !important; }
-html[data-theme="light"] .is-on .ms7-ico2 > g, html[data-theme="light"] .ms7-ibtn .ms7-ico2 > g { color: inherit; opacity: .38 !important; }
 .ms7-mnav { padding-left: 4px !important; padding-right: 4px !important; }
 .ms7-mnav-tab { letter-spacing: -.015em; }
 .ms7-mnav-tab .lb { padding: 0 1px; }
