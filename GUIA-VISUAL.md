@@ -1,3 +1,5 @@
+> **Guia atual: `skill/ms-control-crm-glass/SKILL.md`** (direção "CRM glass", nov/2026). Ela vale sobre este arquivo onde houver conflito; o texto abaixo é da direção anterior (Black Glass) e fica só como histórico.
+
 > **Atualização (nov/2026) — direção "CRM glass"** (referência em vídeo enviada pelo Marcelo): no desktop o app fica numa moldura arredondada sobre fundo quente desfocado; menu principal em **pílula no topo** (`CrmTop`), **trilho de ícones flutuante** à esquerda (`CrmRail`: busca, nova tarefa, avisos, rodapé, tema); título de página grande e leve (`.crm-h1`) com **estatísticas em linha** ao lado (`<DS.HeadSlot><DS.HeadStat icon value label badge tone/></DS.HeadSlot>`); cards de vidro escuro (raio 22), **tiles internos cinza-vidro** (`.ms7-tile`), botões/abas/campos em pílula, acentos lima `#C7F25B` / coral `#F2896B` / azul `#84BCF2`. Saíram: grade de fundo, aurora, luz no cursor, borda animada, cursor personalizado e emojis (escondidos no tema escuro). Celular continua com a barra inferior. O resto deste guia vale onde não conflitar.
 
 # Guia visual · MS Control "Black Glass" (Zeph)

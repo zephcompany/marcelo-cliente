@@ -62,3 +62,6 @@ DATA_DIR=./server/data ADMIN_EMAIL=admin@ms7.com ADMIN_PASSWORD=12345678 node se
 - Login dividido com prévia animada do produto (KPIs contando, gráfico, ciclo fechado, meta).
 - Transição de página, entrada em cascata, reveal no scroll, números que contam, gráficos que crescem, hover sutil nos cards (sem glow).
 - Estados vazios com assets animados que mostram o que a função faz antes de usar.
+
+## Estilo visual
+Para criar ou ajustar telas, siga a skill `skill/ms-control-crm-glass/SKILL.md` (direção "CRM glass": moldura, menu em pílula, trilho de ícones, cards de vidro, tiles, preloader com o logo MS).
