@@ -178,7 +178,7 @@
     const { icon, variant, size, iconSize, badge, label, onClick, style, className } = p;
     const rest = {};
     Object.keys(p).forEach(function (k) {
-      if (['icon', 'variant', 'size', 'iconSize', 'badge', 'label', 'onClick', 'style', 'className', 'duo'].indexOf(k) < 0) rest[k] = p[k];
+      if (['icon', 'variant', 'size', 'iconSize', 'badge', 'label', 'onClick', 'style', 'className'].indexOf(k) < 0) rest[k] = p[k];
     });
     const sz = size || 36;
     return h(
@@ -194,7 +194,7 @@
         },
         rest,
       ),
-      p.duo && window.MSIcon ? h(window.MSIcon, { name: icon, size: (iconSize || Math.round(sz * 0.52)) + 2 }) : h(Icon, { name: icon, size: iconSize || Math.round(sz * 0.52), strokeWidth: 1.9 }),
+      h(Icon, { name: icon, size: iconSize || Math.round(sz * 0.52), strokeWidth: 1.9 }),
       badge ? h('span', { className: 'ms7-ibtn-badge' }, badge) : null,
     );
   }
@@ -589,8 +589,8 @@
       on
         ? h(
             'svg',
-            { width: 13, height: 13, viewBox: '3 4 18 16', fill: 'var(--text-inverse)' },
-            h('path', { d: 'M10 18H8v-2h2zm-2-2H6v-2h2zm4-2v2h-2v-2zm-6 0H4v-2h2zm8 0h-2v-2h2zm2-2h-2v-2h2zm2-2h-2V8h2zm2-2h-2V6h2z' }),
+            { width: 12, height: 12, viewBox: '0 0 24 24', fill: 'none', stroke: 'var(--text-inverse)', strokeWidth: 3.2, strokeLinecap: 'round', strokeLinejoin: 'round' },
+            h('path', { d: 'M4 12.5l5 5L20 6.5' }),
           )
         : null,
     );
@@ -977,7 +977,7 @@
   }
   function HeadStat(p) {
     return h('div', { className: 'crm-hstat' }, [
-      h('span', { key: 'i', className: 'crm-hstat-ico' }, window.MSIcon ? h(window.MSIcon, { name: p.icon || 'circle', size: 19 }) : h(Icon, { name: p.icon || 'circle', size: 17, strokeWidth: 1.7 })),
+      h('span', { key: 'i', className: 'crm-hstat-ico' }, h(Icon, { name: p.icon || 'circle', size: 17, strokeWidth: 1.7 })),
       h('div', { key: 't', className: 'crm-hstat-t' }, [
         h('div', { key: 'v', className: 'crm-hstat-v' }, [
           h('b', { key: 'b', className: 'ms7-num', style: p.color ? { color: p.color } : null }, p.value),

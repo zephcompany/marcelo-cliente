@@ -127,8 +127,8 @@
         aria-label={on ? 'Desmarcar' : 'Marcar como feita'}
       >
         {on ? (
-          <svg width="13" height="13" viewBox="3 4 18 16" fill="currentColor">
-            <path d="M10 18H8v-2h2zm-2-2H6v-2h2zm4-2v2h-2v-2zm-6 0H4v-2h2zm8 0h-2v-2h2zm2-2h-2v-2h2zm2-2h-2V8h2zm2-2h-2V6h2z" />
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 12.5l5 5L20 6.5" />
           </svg>
         ) : null}
       </button>

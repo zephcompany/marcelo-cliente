@@ -115,7 +115,7 @@
         }}
       >
         <span className="ico">
-          <MSIcon name={it.icon} size={22} />
+          <DS.Icon name={it.icon} size={19} strokeWidth={on ? 2.1 : 1.75} />
         </span>
         <span className="lbl">{it.label}</span>
         {it.badge ? <span className="bdg">{it.badge}</span> : null}
@@ -203,9 +203,9 @@
       return (
         <button key={it.id} type="button" className={'ms7-mnav-tab' + (on ? ' is-on' : '')} onClick={onClick}>
           <span className="pill">
-            <MSIcon name={it.icon} size={22} />
+            <DS.Icon name={it.icon} size={19} strokeWidth={on ? 2.1 : 1.75} />
           </span>
-          <span className="lb" style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{it.label}</span>
+          <span style={{ maxWidth: '100%', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', padding: '0 2px' }}>{it.label}</span>
           {it.badge ? <span className="bdg">{it.badge}</span> : null}
         </button>
       );
@@ -236,9 +236,7 @@
                       onNavigate(it.id);
                     }}
                   >
-                    <span className="tile">
-                      <MSIcon name={it.icon} size={24} />
-                    </span>
+                    <DS.Icon name={it.icon} size={21} />
                     {it.label}
                   </button>
                 );
@@ -294,17 +292,6 @@
   ].join('');
   if (!document.getElementById('crm-nav-css')) { const st = document.createElement('style'); st.id = 'crm-nav-css'; st.textContent = CRM_CSS; document.head.appendChild(st); }
 
-  /* Ícones: todos vêm do DS.Icon, que agora desenha a versão pixel (ms7-pixel-icons.js) */
-  const MS_ICONS = {};
-  function MSIcon(props) {
-    const ic = MS_ICONS[props.name];
-    const size = props.size || 20;
-    if (!ic) return <DS.Icon name={props.name} size={size} strokeWidth={2} />;
-    return (
-      <svg className="ms7-ico2" width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" dangerouslySetInnerHTML={{ __html: ic }} />
-    );
-  }
-  window.MSIcon = MSIcon;
   /* Logo MS (monograma no hexágono) — o mesmo da intro de carregamento */
   function MSLogo(props) {
     const id = React.useMemo(function () { return 'msr' + Math.random().toString(36).slice(2, 8); }, []);
@@ -347,7 +334,7 @@
             const on = it.id === activeId;
             return (
               <button key={it.id} type="button" data-nav={it.id} className={'crm-nav-it' + (on ? ' is-on' : '')} aria-current={on ? 'page' : undefined} title={it.label} onClick={function () { onNavigate(it.id); }}>
-                <span className="ico"><MSIcon name={it.icon} size={19} /></span>
+                <span className="ico"><DS.Icon name={it.icon} size={17} /></span>
                 <span className="lbl">{it.label}</span>
                 {it.badge ? <span className="bdg">{it.badge}</span> : null}
               </button>
@@ -366,7 +353,7 @@
           if (t === '-') return <span key={'s' + i} className="crm-rail-sep" />;
           return (
             <button key={t.id || t.label} type="button" className={'crm-rail-b' + (t.id && t.id === activeId ? ' is-on' : '')} aria-label={t.label} onClick={t.onClick}>
-              <MSIcon name={t.icon} size={20} />
+              <DS.Icon name={t.icon} size={18} strokeWidth={1.8} />
               <span className="tip">{t.label}</span>
             </button>
           );
@@ -390,7 +377,7 @@
       const on = activeId === it.id;
       return (
         <button key={it.id} type="button" data-nav={it.id} className={'ms7-top-item' + (on ? ' is-on' : '')} aria-current={on ? 'page' : undefined} title={it.label} onClick={function () { onNavigate(it.id); }}>
-          <MSIcon name={it.icon} size={20} />
+          <DS.Icon name={it.icon} size={17} strokeWidth={on ? 2.1 : 1.75} />
           <span className="lbl">{it.label}</span>
           {it.badge ? <span className="bdg">{it.badge}</span> : null}
         </button>
