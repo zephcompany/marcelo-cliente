@@ -117,23 +117,10 @@
     };
     return (f.pixGrupos || []).filter(function (gid) {
       const x = (db.coops || []).some(function (o) {
-        return (
-          (o.status === 'Ativa' || o.status === 'Em andamento' || o.status === 'Finalizada') &&
-          DB.platNorm(o.plataforma) === P &&
-          outro(o.opId) &&
-          (o.pixGrupos || []).indexOf(gid) >= 0
-        );
+        return (o.status === 'Ativa' || o.status === 'Em andamento' || o.status === 'Finalizada') && DB.platNorm(o.plataforma) === P && outro(o.opId) && (o.pixGrupos || []).indexOf(gid) >= 0;
       });
       const y = (metas || []).some(function (o) {
-        return (
-          o &&
-          o.id !== selfId &&
-          !o.coopId &&
-          !o.concluida &&
-          DB.platNorm(o.plataforma) === P &&
-          outro(o.opId) &&
-          (o.pixGrupos || []).indexOf(gid) >= 0
-        );
+        return o && o.id !== selfId && !o.coopId && !o.concluida && DB.platNorm(o.plataforma) === P && outro(o.opId) && (o.pixGrupos || []).indexOf(gid) >= 0;
       });
       return !x && !y;
     });
@@ -278,11 +265,7 @@
             autoFocus
           />
           <span style={{ fontSize: 13, fontWeight: 600, color: n > falta + 0.009 ? 'var(--ms7-orange)' : 'var(--text-secondary)' }}>
-            {n >= falta - 0.009
-              ? n > falta + 0.009
-                ? 'Passa ' + MS7.brl(n - falta) + ' do que falta'
-                : 'Quita tudo'
-              : 'Depois disso ainda falta ' + MS7.brl(falta - n)}
+            {n >= falta - 0.009 ? (n > falta + 0.009 ? 'Passa ' + MS7.brl(n - falta) + ' do que falta' : 'Quita tudo') : 'Depois disso ainda falta ' + MS7.brl(falta - n)}
           </span>
         </div>
       </DS.Modal>
@@ -294,8 +277,44 @@
     const [reg, setReg] = React.useState(null);
     const [hist, setHist] = React.useState('');
     const [sub, setSub] = React.useState('env');
+    const isoD = function (d) {
+      return d.toLocaleDateString('sv-SE');
+    };
+    const hj = isoD(new Date());
+    const [per, setPer] = React.useState('hoje');
+    const [pde, setPde] = React.useState(hj);
+    const [pate, setPate] = React.useState(hj);
+    const rng = (function () {
+      const d = new Date();
+      if (per === 'hoje') return [hj, hj];
+      if (per === 'semana') {
+        const x = new Date(d);
+        x.setDate(x.getDate() - ((x.getDay() + 6) % 7));
+        return [isoD(x), hj];
+      }
+      if (per === 'mes') return [hj.slice(0, 8) + '01', hj];
+      if (per === 'data') return [pde, pate];
+      return null;
+    })();
+    const inP = function (ts) {
+      if (!rng) return true;
+      if (!ts) return false;
+      const s = isoD(new Date(ts));
+      return s >= rng[0] && s <= rng[1];
+    };
+    const fdt = function (s) {
+      return s.split('-').reverse().join('/');
+    };
+    const perTxt = !rng ? 'Todas as datas' : rng[0] === rng[1] ? fdt(rng[0]) : fdt(rng[0]) + ' até ' + fdt(rng[1]);
     const [led0, setLed] = usePersist('envios', []);
-    const led = Array.isArray(led0) ? led0 : [];
+    const ledC = Array.isArray(led0) ? led0 : [];
+    const [ledB0, setLedB] = usePersist('envios-bau', []);
+    const ledB = Array.isArray(ledB0) ? ledB0 : [];
+    const led = ledC.concat(
+      ledB.map(function (e) {
+        return Object.assign({}, e, { _b: 1 });
+      }),
+    );
     React.useEffect(
       function () {
         const have = {};
@@ -330,16 +349,41 @@
       return Math.round(v * 100) / 100;
     };
     const linha = function (x) {
-      return [x.m.plataforma || x.m.nome, x.m.coopId ? (DB.coop(x.m.coopId) || {}).linkN : x.m.linkN].filter(Boolean).join(' · ');
+      return [x.m.plataforma || x.m.nome, x.m.id && String(x.m.id).indexOf('bau:') === 0 ? null : x.m.coopId ? (DB.coop(x.m.coopId) || {}).linkN : x.m.linkN].filter(Boolean).join(' · ');
     };
+    const baus = (db.coops || [])
+      .filter(function (c) {
+        return c.tipo === 'bau' && c.status !== 'Lixeira';
+      })
+      .map(function (c) {
+        const V = DB.contasValidas(c);
+        const dep = r2(
+          V.reduce(function (a, k) {
+            return a + (+k.deposito || 0) + (+k.redeposito || 0);
+          }, 0),
+        );
+        const feitas = V.filter(function (k) {
+          return String(k.usuario || '').trim();
+        }).length;
+        const com = r2(c.proprio || !c.opId ? 0 : feitas * 1.5);
+        const tt = Date.parse(c.inicio || '') || (+String(c.id).replace(/\D/g, '') > 1e12 ? +String(c.id).replace(/\D/g, '') : 0);
+        return {
+          m: { id: 'bau:' + c.id, opId: c.opId || '', plataforma: 'Baú · ' + DB.coopNome(c), linkN: c.linkN, criada: tt },
+          e: { rows: V, dep: dep, nR: 0, nS: feitas, com: com, comTxt: feitas + ' contas × R$ 1,50', total: r2(dep + com), env: 0, falta: r2(dep + com), red: null },
+        };
+      })
+      .filter(function (x) {
+        return x.e.total > 0;
+      });
     const all = L.filter(function (x) {
       return x && rowsDe(x).length;
     })
-      .sort(function (a, b) {
-        return (a.criada || 0) - (b.criada || 0);
-      })
       .map(function (x) {
         return { m: x, e: envioDe(x) };
+      })
+      .concat(baus)
+      .sort(function (a, b) {
+        return (a.m.criada || 0) - (b.m.criada || 0);
       });
     const porOp = {};
     all.forEach(function (x) {
@@ -379,21 +423,26 @@
       .filter(function (k) {
         if (op && k !== op) return false;
         const g = porOp[k];
-        if (st === 'pend') return g.falta > 0 || g.credito > 0;
-        if (st === 'ok')
-          return (
-            g.l.some(function (x) {
-              return x.e.falta <= 0;
-            }) || g.led.length
-          );
-        return true;
+        const vl = g.l.filter(function (x) {
+          return inP(x.m.criada) && (st === 'todos' || (st === 'pend' ? x.e.falta > 0 : x.e.falta <= 0));
+        });
+        const vled = g.led.filter(function (e) {
+          return inP(e.em);
+        });
+        if (st === 'pend') return vl.length > 0;
+        return vl.length > 0 || vled.length > 0;
       })
       .sort(function (a, b) {
         return (a ? DB.opName(a) : 'zz').localeCompare(b ? DB.opName(b) : 'zz', 'pt-BR');
       });
     const visL = function (g) {
       return g.l.filter(function (x) {
-        return st === 'todos' || (st === 'pend' ? x.e.falta > 0 : x.e.falta <= 0);
+        return inP(x.m.criada) && (st === 'todos' || (st === 'pend' ? x.e.falta > 0 : x.e.falta <= 0));
+      });
+    };
+    const ledP = function (g) {
+      return g.led.filter(function (e) {
+        return inP(e.em);
       });
     };
     const sm = function (l, k) {
@@ -428,10 +477,7 @@
               (x.e.env ? '\nJá enviado: ' + MS7.brl(x.e.env) + '\nFalta: ' + MS7.brl(x.e.falta) : '')
             );
           })
-          .join('\n\n') +
-        (g && l.length > 1
-          ? '\n\nTOTAL: ' + MS7.brl(sm(l, 'total')) + ' · já enviado ' + MS7.brl(sm(l, 'env')) + ' · falta ' + MS7.brl(sm(l, 'falta'))
-          : '')
+          .join('\n\n') + (g && l.length > 1 ? '\n\nTOTAL: ' + MS7.brl(sm(l, 'total')) + ' · já enviado ' + MS7.brl(sm(l, 'env')) + ' · falta ' + MS7.brl(sm(l, 'falta')) : '')
       );
     };
     function registrar(k, valor, ref) {
@@ -469,7 +515,7 @@
     }
     function apagar(e) {
       if (!confirm('Apagar o envio de ' + MS7.brl(e.v) + ' de ' + new Date(e.em).toLocaleDateString('pt-BR') + '?')) return;
-      setLed(function (cur) {
+      (e._b ? setLedB : setLed)(function (cur) {
         return (Array.isArray(cur) ? cur : []).filter(function (y) {
           return y.id !== e.id;
         });
@@ -486,6 +532,106 @@
         return x.e.falta > 0;
       }).length;
     });
+    const pT = { devido: 0, enviado: 0, falta: 0, n: 0, outros: 0, outrosV: 0 };
+    Object.keys(porOp).forEach(function (k) {
+      if (op && k !== op) return;
+      const g = porOp[k];
+      g.l.forEach(function (x) {
+        if (inP(x.m.criada)) {
+          pT.devido += x.e.total;
+          pT.falta += x.e.falta;
+          if (x.e.falta > 0) pT.n++;
+        } else if (x.e.falta > 0) {
+          pT.outros++;
+          pT.outrosV += x.e.falta;
+        }
+      });
+      g.led.forEach(function (e) {
+        if (inP(e.em) && e.tipo !== 'dev') pT.enviado += +e.v || 0;
+      });
+    });
+    const PERBAR = (
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', padding: '10px 12px', borderRadius: 12, background: 'var(--surface-card)', boxShadow: 'var(--shadow-card)' }}>
+        <DS.Icon name="calendar" size={16} color="var(--text-secondary)" />
+        {[
+          ['hoje', 'Hoje'],
+          ['semana', 'Esta semana'],
+          ['mes', 'Este mês'],
+          ['todos', 'Todos'],
+          ['data', 'Escolher data'],
+        ].map(function (p) {
+          const on = per === p[0];
+          return (
+            <button
+              key={p[0]}
+              type="button"
+              onClick={function () {
+                setPer(p[0]);
+              }}
+              style={{
+                height: 32,
+                padding: '0 12px',
+                borderRadius: 8,
+                border: '1px solid ' + (on ? 'var(--text-primary)' : 'var(--border-default)'),
+                background: on ? 'var(--text-primary)' : 'transparent',
+                color: on ? 'var(--surface-card)' : 'var(--text-primary)',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                fontWeight: 700,
+                cursor: 'pointer',
+              }}
+            >
+              {p[1]}
+            </button>
+          );
+        })}
+        {per === 'data' ? (
+          <React.Fragment>
+            <input
+              type="date"
+              value={pde}
+              max={pate}
+              onChange={function (e) {
+                if (e.target.value) setPde(e.target.value);
+              }}
+              style={{
+                height: 32,
+                padding: '0 8px',
+                borderRadius: 8,
+                border: '1px solid var(--border-default)',
+                background: 'var(--surface-card)',
+                color: 'var(--text-primary)',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            />
+            <span style={{ fontSize: 13, color: 'var(--text-secondary)' }}>até</span>
+            <input
+              type="date"
+              value={pate}
+              min={pde}
+              onChange={function (e) {
+                if (e.target.value) setPate(e.target.value);
+              }}
+              style={{
+                height: 32,
+                padding: '0 8px',
+                borderRadius: 8,
+                border: '1px solid var(--border-default)',
+                background: 'var(--surface-card)',
+                color: 'var(--text-primary)',
+                fontFamily: 'inherit',
+                fontSize: 13,
+                fontWeight: 600,
+              }}
+            />
+          </React.Fragment>
+        ) : (
+          <span style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)', marginLeft: 4 }}>{perTxt}</span>
+        )}
+      </div>
+    );
     const num = { fontVariantNumeric: 'tabular-nums', textAlign: 'right', whiteSpace: 'nowrap' };
     const td = function (x) {
       return Object.assign({}, num, x || {});
@@ -517,12 +663,12 @@
         };
       })
       .filter(function (d) {
-        return (!op || d.k === op) && (d.reds.length || d.recebido > 0 || (d.falta > 0 && d.reds.length));
+        return (!op || d.k === op) && (d.reds.length || d.recebido > 0 || d.falta > 0);
       });
     const dvTot = {
       falta: r2(
         DV.reduce(function (a, d) {
-          return a + (d.reds.length ? d.falta : 0);
+          return a + d.falta;
         }, 0),
       ),
       rec: r2(
@@ -531,7 +677,7 @@
         }, 0),
       ),
       n: DV.reduce(function (a, d) {
-        return a + d.reds.length;
+        return a + (d.reds.length || (d.falta > 0 ? 1 : 0));
       }, 0),
     };
     const SUBT = (
@@ -580,11 +726,7 @@
                     <div style={{ flex: 1, minWidth: 160 }}>
                       <div className="ms7m-op-name">{nome}</div>
                       <div className="ms7m-op-sub">
-                        {'Enviado ' +
-                          MS7.brl(d.g.enviado + d.recebido) +
-                          ' · devido depois da redução ' +
-                          MS7.brl(d.g.devido) +
-                          (d.recebido ? ' · já devolveu ' + MS7.brl(d.recebido) : '')}
+                        {'Enviado ' + MS7.brl(d.g.enviado + d.recebido) + ' · devido depois da redução ' + MS7.brl(d.g.devido) + (d.recebido ? ' · já devolveu ' + MS7.brl(d.recebido) : '')}
                       </div>
                     </div>
                     {d.falta > 0 ? (
@@ -644,9 +786,13 @@
                       {d.hist.map(function (e) {
                         return (
                           <div key={e.id} className="ms7m-hist-row">
-                            <span className="ms7-num" style={{ color: 'var(--text-secondary)', width: 90 }}>{new Date(e.em).toLocaleDateString('pt-BR')}</span>
+                            <span className="ms7-num" style={{ color: 'var(--text-secondary)', width: 90 }}>
+                              {new Date(e.em).toLocaleDateString('pt-BR')}
+                            </span>
                             <span style={{ flex: 1 }}>Devolução recebida</span>
-                            <span className="ms7-num" style={{ fontWeight: 600, color: 'var(--ms7-green)' }}>{MS7.brl(-e.v)}</span>
+                            <span className="ms7-num" style={{ fontWeight: 600, color: 'var(--ms7-green)' }}>
+                              {MS7.brl(-e.v)}
+                            </span>
                             <DS.IconButton
                               icon="trash-2"
                               size={26}
@@ -691,14 +837,37 @@
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
         {SUBT}
+        {PERBAR}
         <KpiRow
           items={[
-            { icon: 'send', label: 'Total p/ envio', value: MS7.brl(r2(tot.devido)), tone: 'blue' },
-            { icon: 'circle-check', label: 'Já enviado', value: MS7.brl(r2(tot.enviado)), tone: 'green' },
-            { icon: 'clock', label: 'Falta enviar', value: MS7.brl(r2(tot.falta)), tone: 'orange' },
-            { icon: 'list', label: 'Listas pendentes', value: tot.n, tone: 'yellow' },
+            { icon: 'send', label: 'Total p/ envio', value: MS7.brl(r2(pT.devido)), tone: 'blue' },
+            { icon: 'circle-check', label: 'Enviado no período', value: MS7.brl(r2(pT.enviado)), tone: 'green' },
+            { icon: 'clock', label: 'Falta enviar', value: MS7.brl(r2(pT.falta)), tone: 'orange' },
+            { icon: 'list', label: 'Listas pendentes', value: pT.n, tone: 'yellow' },
           ]}
         />
+        {rng && pT.outros ? (
+          <button
+            type="button"
+            onClick={function () {
+              setPer('todos');
+            }}
+            style={{
+              alignSelf: 'flex-start',
+              marginTop: -10,
+              border: 0,
+              background: 'transparent',
+              padding: 0,
+              color: 'var(--ms7-orange)',
+              fontFamily: 'inherit',
+              fontSize: 13,
+              fontWeight: 700,
+              cursor: 'pointer',
+            }}
+          >
+            {'+ ' + pT.outros + (pT.outros === 1 ? ' lista pendente' : ' listas pendentes') + ' de outros dias · ' + MS7.brl(r2(pT.outrosV)) + ' · ver todas'}
+          </button>
+        ) : null}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <DS.Tabs
             variant="chips"
@@ -737,9 +906,7 @@
                   <DS.Avatar name={nome} size={36} />
                   <div style={{ flex: 1, minWidth: 160 }}>
                     <div className="ms7m-op-name">{nome}</div>
-                    <div className="ms7m-op-sub">
-                      {'Total ' + MS7.brl(g.devido) + ' · enviado ' + MS7.brl(g.enviado)}
-                    </div>
+                    <div className="ms7m-op-sub">{'Total ' + MS7.brl(g.devido) + ' · enviado ' + MS7.brl(g.enviado)}</div>
                   </div>
                   {g.falta > 0 ? (
                     <span className="ms7m-op-val ms7-num" style={{ color: 'var(--ms7-orange)' }}>
@@ -751,11 +918,9 @@
                     </DS.Badge>
                   )}
                   {g.credito > 0 ? (
-                    g.l.some(function (x) {
-                      return x.e.red;
-                    }) ? (
+                    true ? (
                       <React.Fragment>
-                        <span title="A meta foi reduzida (contas não feitas). O operador tem que devolver o depósito e a comissão dessas contas." style={{ display: 'inline-flex' }}>
+                        <span title={g.l.some(function (x) { return x.e.red; }) ? 'A meta foi reduzida (contas não feitas). O operador tem que devolver o depósito e a comissão dessas contas.' : 'Você enviou mais do que as listas dele somam (sobrou na conta dele ou a lista foi apagada). Ele tem que devolver.'} style={{ display: 'inline-flex' }}>
                           <DS.Badge tone="orange">{'Devolver ' + MS7.brl(g.credito)}</DS.Badge>
                         </span>
                         <DS.Button
@@ -813,7 +978,7 @@
                       setHist(aberto ? '' : k);
                     }}
                   >
-                    {'Envios (' + g.led.length + ')'}
+                    {'Envios (' + ledP(g).length + ')'}
                   </DS.Button>
                   <DS.Button
                     size="sm"
@@ -828,14 +993,16 @@
                 </div>
                 {aberto ? (
                   <div className="ms7m-hist">
-                    {g.led.length ? (
-                      g.led.map(function (e) {
+                    {ledP(g).length ? (
+                      ledP(g).map(function (e) {
                         return (
                           <div key={e.id} className="ms7m-hist-row">
                             <span className="ms7-num" style={{ width: 120, color: 'var(--text-secondary)' }}>
                               {new Date(e.em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            <span className="ms7-num" style={{ width: 110, fontWeight: 600 }}>{MS7.brl(e.v)}</span>
+                            <span className="ms7-num" style={{ width: 110, fontWeight: 600 }}>
+                              {MS7.brl(e.v)}
+                            </span>
                             <span
                               style={{
                                 flex: 1,
@@ -861,7 +1028,7 @@
                         );
                       })
                     ) : (
-                      <Empty art="Wallet" compact title="Nenhum envio anotado" sub={'Os envios registrados para este operador aparecem\u00a0aqui.'} />
+                      <Empty art="Wallet" compact title={'Nenhum envio anotado em ' + perTxt.toLowerCase()} sub={'Os envios registrados para este operador aparecem\u00a0aqui.'} />
                     )}
                   </div>
                 ) : null}
@@ -888,9 +1055,7 @@
                                 {linha(x)}
                                 {x.e.red ? (
                                   <div style={{ marginTop: 3, fontSize: 12, fontWeight: 500, color: 'var(--ms7-orange)', whiteSpace: 'normal' }}>
-                                    {(x.e.red.reduz
-                                      ? 'Reduzida ' + x.e.red.de + ' → ' + x.e.red.para + ' contas · '
-                                      : 'Depósitos mudaram na cooperação · ') +
+                                    {(x.e.red.reduz ? 'Reduzida ' + x.e.red.de + ' → ' + x.e.red.para + ' contas · ' : 'Depósitos mudaram na cooperação · ') +
                                       (x.e.red.total >= 0 ? 'abate ' : 'soma ') +
                                       MS7.brl(Math.abs(x.e.red.total)) +
                                       ' (depósito ' +
@@ -907,12 +1072,8 @@
                                 {x.e.com == null ? '—' : MS7.brl(x.e.com)}
                               </td>
                               <td style={td({ fontWeight: 600 })}>{MS7.brl(x.e.total)}</td>
-                              <td style={td({ color: x.e.env ? 'var(--ms7-green)' : 'var(--text-secondary)' })}>
-                                {x.e.env ? MS7.brl(x.e.env) : '—'}
-                              </td>
-                              <td style={td({ fontWeight: 600, color: x.e.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
-                                {x.e.falta > 0 ? MS7.brl(x.e.falta) : 'OK'}
-                              </td>
+                              <td style={td({ color: x.e.env ? 'var(--ms7-green)' : 'var(--text-secondary)' })}>{x.e.env ? MS7.brl(x.e.env) : '—'}</td>
+                              <td style={td({ fontWeight: 600, color: x.e.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>{x.e.falta > 0 ? MS7.brl(x.e.falta) : 'OK'}</td>
                               <td style={{ padding: '6px 0 6px 8px', width: 72, whiteSpace: 'nowrap', textAlign: 'right' }}>
                                 <DS.IconButton
                                   icon="copy"
@@ -1036,13 +1197,7 @@
     const id = c.id;
     if ((f.pixGrupos || []).length) DB.A.setPixGrupos(id, f.pixGrupos);
     if (rows.length) {
-      if (!eu && f.comTipo === 'rolo')
-        DB.A.importarTelegram(
-          id,
-          rows,
-          parseFloat(String(f.comR || '2').replace(',', '.')) || 2,
-          parseFloat(String(f.comS || '1,5').replace(',', '.')) || 1.5,
-        );
+      if (!eu && f.comTipo === 'rolo') DB.A.importarTelegram(id, rows, parseFloat(String(f.comR || '2').replace(',', '.')) || 2, parseFloat(String(f.comS || '1,5').replace(',', '.')) || 1.5);
       else {
         const cc = DB.get().coops.find(function (x) {
           return x.id === id;
@@ -1092,13 +1247,7 @@
       rows.forEach(function (r) {
         ns[r.n] = 1;
       });
-      if (!eu && x.comTipo === 'rolo')
-        DB.A.importarTelegram(
-          c.id,
-          rows,
-          parseFloat(String(x.comR || '2').replace(',', '.')) || 2,
-          parseFloat(String(x.comS || '1,5').replace(',', '.')) || 1.5,
-        );
+      if (!eu && x.comTipo === 'rolo') DB.A.importarTelegram(c.id, rows, parseFloat(String(x.comR || '2').replace(',', '.')) || 2, parseFloat(String(x.comS || '1,5').replace(',', '.')) || 1.5);
       else {
         const cc = DB.coop(c.id);
         rows.forEach(function (r) {
@@ -1108,8 +1257,7 @@
       }
       const cc2 = DB.coop(c.id);
       (cc2 ? cc2.contas : []).forEach(function (k, i) {
-        if (!ns[i + 1] && (+k.deposito || 0) && !String(k.usuario || '').trim() && !(+k.saque || 0))
-          DB.A.saveConta(c.id, Object.assign({}, k, { deposito: 0, rolo: false }), true);
+        if (!ns[i + 1] && (+k.deposito || 0) && !String(k.usuario || '').trim() && !(+k.saque || 0)) DB.A.saveConta(c.id, Object.assign({}, k, { deposito: 0, rolo: false }), true);
       });
     }
     if (JSON.stringify(x.pixGrupos || []) !== JSON.stringify(c.pixGrupos || [])) DB.A.setPixGrupos(c.id, x.pixGrupos || []);
@@ -1233,10 +1381,7 @@
       })
       .slice()
       .sort(function (x, y) {
-        return (
-          String(x.nome || '').localeCompare(String(y.nome || ''), 'pt-BR', { numeric: true }) ||
-          String(x.pagamento || '').localeCompare(String(y.pagamento || ''), 'pt-BR')
-        );
+        return String(x.nome || '').localeCompare(String(y.nome || ''), 'pt-BR', { numeric: true }) || String(x.pagamento || '').localeCompare(String(y.pagamento || ''), 'pt-BR');
       });
     const gpN = f.plataforma && window.PIXV ? window.PIXV.gp(db, f.plataforma) || f.plataforma : '';
     const disp = function (g) {
@@ -1266,15 +1411,7 @@
       });
       if (x) return [DB.opName(x.opId), x.plataforma, x.linkN].filter(Boolean).join(' · ');
       const y = (todas || []).find(function (o) {
-        return (
-          o &&
-          o.id !== (m && m.id) &&
-          !o.coopId &&
-          !o.concluida &&
-          outroOp(o.opId) &&
-          DB.platNorm(o.plataforma) === P &&
-          (o.pixGrupos || []).indexOf(gid) >= 0
-        );
+        return o && o.id !== (m && m.id) && !o.coopId && !o.concluida && outroOp(o.opId) && DB.platNorm(o.plataforma) === P && (o.pixGrupos || []).indexOf(gid) >= 0;
       });
       return y ? [y.opId && y.opId !== '__eu' ? DB.opName(y.opId) : '', y.plataforma, 'meta não enviada'].filter(Boolean).join(' · ') : '';
     };
@@ -1316,11 +1453,7 @@
         open
         onClose={soXm(onCancel)}
         title={enviada ? 'Editar meta' : m && m.id ? 'Editar meta' : 'Nova meta'}
-        subtitle={
-          enviada
-            ? 'Já enviada: a cooperação ' + m.coopId + ' foi criada. Mudanças aqui ficam só na\u00a0meta.'
-            : 'Monte tudo e, no fim, escolha para quem\u00a0enviar.'
-        }
+        subtitle={enviada ? 'Já enviada: a cooperação ' + m.coopId + ' foi criada. Mudanças aqui ficam só na\u00a0meta.' : 'Monte tudo e, no fim, escolha para quem\u00a0enviar.'}
         size="lg"
         footer={
           <React.Fragment>
@@ -1541,7 +1674,9 @@
                   return base ? (
                     <span className="ms7-hint">
                       {'Apostas válidas alvo: ' + MS7.brl(base) + ' × ' + f.rollover + ' = '}
-                      <span className="ms7-num" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>{MS7.brl(base * mult)}</span>
+                      <span className="ms7-num" style={{ color: 'var(--text-primary)', fontWeight: 600 }}>
+                        {MS7.brl(base * mult)}
+                      </span>
                     </span>
                   ) : null;
                 })()
@@ -1551,20 +1686,14 @@
             4,
             'Chaves PIX',
             f.pixGrupos.length - presos.length
-              ? f.pixGrupos.length -
-                  presos.length +
-                  (f.pixGrupos.length - presos.length === 1 ? ' grupo · ' : ' grupos · ') +
-                  totCh +
-                  ' chaves disponíveis'
+              ? f.pixGrupos.length - presos.length + (f.pixGrupos.length - presos.length === 1 ? ' grupo · ' : ' grupos · ') + totCh + ' chaves disponíveis'
               : f.plataforma
                 ? 'nenhum grupo'
                 : 'digite a plataforma primeiro',
           )}
           {f.plataforma ? (
             <div style={{ gridColumn: '1 / -1', marginTop: -6, fontSize: 12.5, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
-              {'Grupos que já estão com outro operador na ' +
-                f.plataforma +
-                ' aparecem apagados e não podem ser escolhidos. O mesmo operador pode usar os mesmos grupos em Link 1, Link 2…'}
+              {'Grupos que já estão com outro operador na ' + f.plataforma + ' aparecem apagados e não podem ser escolhidos. O mesmo operador pode usar os mesmos grupos em Link 1, Link 2…'}
             </div>
           ) : null}
           <div
@@ -2111,9 +2240,7 @@
     }).length;
     const vis = all
       .filter(function (x) {
-        return (
-          (!op || (op === '__nao' ? !x.m.coopId && !!x.m.plataforma : x.m.opId === op)) && (f === 'todas' || (f === 'pend' ? !x.p.done : x.p.done))
-        );
+        return (!op || (op === '__nao' ? !x.m.coopId && !!x.m.plataforma : x.m.opId === op)) && (f === 'todas' || (f === 'pend' ? !x.p.done : x.p.done));
       })
       .sort(function (a, b) {
         return a.p.done !== b.p.done ? (a.p.done ? 1 : -1) : b.p.pct - a.p.pct;
@@ -2160,27 +2287,20 @@
       });
       salvar(function (l) {
         return l.map(function (x) {
-          return feitos[x.id]
-            ? Object.assign({}, x, feitos[x.id], { nome: x.nomeCoop || [x.plataforma, feitos[x.id].linkN].filter(Boolean).join(' · ') })
-            : x;
+          return feitos[x.id] ? Object.assign({}, x, feitos[x.id], { nome: x.nomeCoop || [x.plataforma, feitos[x.id].linkN].filter(Boolean).join(' · ') }) : x;
         });
       });
       const n = Object.keys(feitos).length;
       setSel({});
       setOpL('');
-      toast(
-        n +
-          (n === 1 ? ' meta enviada' : ' metas enviadas') +
-          ' para ' +
-          (opL === '__eu' ? 'você' : DB.opName(opL)) +
-          (tirou ? ' · ' + tirou + ' grupo(s) de chaves em uso tirados' : ''),
-      );
+      toast(n + (n === 1 ? ' meta enviada' : ' metas enviadas') + ' para ' + (opL === '__eu' ? 'você' : DB.opName(opL)) + (tirou ? ' · ' + tirou + ' grupo(s) de chaves em uso tirados' : ''));
     }
     const [aba, setAba] = usePersist('metas-aba', 'metas');
     const ABAS = [
       { id: 'metas', label: 'Metas' },
       { id: 'envios', label: 'Envios (pagamentos)' },
     ];
+    const [envT, setEnvT] = usePersist('metas-env-tipo', 'coop');
     if (!ro && !bau && aba === 'envios')
       return (
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -2352,17 +2472,7 @@
                   onDel={function () {
                     const cc = m.coopId ? DB.coop(m.coopId) : null;
                     const vai = cc && cc.status !== 'Lixeira';
-                    if (
-                      confirm(
-                        vai
-                          ? 'Apagar esta meta?\n\n' +
-                              (bau ? 'O baú' : 'A cooperação') +
-                              ' ligado a ela (' +
-                              DB.coopNome(cc) +
-                              ') também vai para a Lixeira.'
-                          : 'Apagar esta meta?',
-                      )
-                    ) {
+                    if (confirm(vai ? 'Apagar esta meta?\n\n' + (bau ? 'O baú' : 'A cooperação') + ' ligado a ela (' + DB.coopNome(cc) + ') também vai para a Lixeira.' : 'Apagar esta meta?')) {
                       if (vai) DB.A.setStatus(cc.id, 'Lixeira');
                       salvar(function (l) {
                         return l.filter(function (y) {
@@ -2376,9 +2486,7 @@
                     const fim = !(x.p.done && m.feitaEm);
                     salvar(function (l) {
                       return l.map(function (y) {
-                        return y.id === m.id
-                          ? Object.assign({}, y, { feitaEm: fim ? Date.now() : null, iniciadaEm: y.iniciadaEm || (fim ? Date.now() : null) })
-                          : y;
+                        return y.id === m.id ? Object.assign({}, y, { feitaEm: fim ? Date.now() : null, iniciadaEm: y.iniciadaEm || (fim ? Date.now() : null) }) : y;
                       });
                     });
                     toast(fim ? 'Meta finalizada' : 'Meta reaberta');

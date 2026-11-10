@@ -126,8 +126,8 @@
     ].join('');
     document.head.appendChild(s);
   })();
-  const ST_TONE = { Ativa: 'blue', 'Em andamento': 'turquoise', Finalizada: 'purple', 'Concluída': 'green', Lixeira: 'gray' };
-  const ST_ICON = { 'Em andamento': 'play', 'Concluída': 'circle-check', Finalizada: 'flag', Ativa: 'circle-dot', Lixeira: 'trash-2' };
+  const ST_TONE = { Ativa: 'blue', 'Em andamento': 'turquoise', Finalizada: 'purple', Concluída: 'green', Lixeira: 'gray' };
+  const ST_ICON = { 'Em andamento': 'play', Concluída: 'circle-check', Finalizada: 'flag', Ativa: 'circle-dot', Lixeira: 'trash-2' };
   function soX(fn) {
     return function (e) {
       if (e && e.currentTarget && e.currentTarget.tagName === 'BUTTON') fn();
@@ -138,12 +138,7 @@
     if (c.pixGrupos && c.pixGrupos.length) return c.pixGrupos;
     const s = [];
     (dbx.coops || []).forEach(function (o) {
-      if (
-        o.id !== c.id &&
-        o.opId === c.opId &&
-        ['Ativa', 'Em andamento'].indexOf(o.status) >= 0 &&
-        DB.platNorm(o.plataforma) === DB.platNorm(c.plataforma)
-      )
+      if (o.id !== c.id && o.opId === c.opId && ['Ativa', 'Em andamento'].indexOf(o.status) >= 0 && DB.platNorm(o.plataforma) === DB.platNorm(c.plataforma))
         (o.pixGrupos || []).forEach(function (id) {
           if (s.indexOf(id) < 0) s.push(id);
         });
@@ -282,9 +277,7 @@
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <div style={{ flex: 1, minWidth: 0 }}>
                     <div className="ms7c-gname">{x.g.pagamento || x.g.nome}</div>
-                    <div className="ms7c-hint">
-                      {(x.g.pagamento ? x.g.nome + ' · ' : '') + x.ks.length + (x.ks.length === 1 ? ' chave' : ' chaves')}
-                    </div>
+                    <div className="ms7c-hint">{(x.g.pagamento ? x.g.nome + ' · ' : '') + x.ks.length + (x.ks.length === 1 ? ' chave' : ' chaves')}</div>
                   </div>
                   <Button
                     size="sm"
@@ -309,9 +302,7 @@
               </div>
             );
           })}
-          {!tot ? (
-            <Empty art="Keys" compact title="Nenhuma chave disponível para esta cooperação" sub={'Escolha os grupos de chaves PIX dentro da cooperação.'} />
-          ) : null}
+          {!tot ? <Empty art="Keys" compact title="Nenhuma chave disponível para esta cooperação" sub={'Escolha os grupos de chaves PIX dentro da cooperação.'} /> : null}
         </div>
       </Modal>
     );
@@ -571,89 +562,89 @@
             </span>
           ) : null}
           <div className="ms7c-acts">
-          {c.status !== 'Lixeira' ? (
-            <IconButton
-              icon="key-round"
-              label="Copiar chaves PIX por grupo"
-              size={34}
-              iconSize={16}
-              onClick={function () {
-                setChv(true);
-              }}
-            />
-          ) : null}
-          {canAdmin && c.status !== 'Lixeira' ? (
-            <IconButton
-              icon="pencil"
-              label="Editar (plataforma, operador, salário…)"
-              size={34}
-              iconSize={16}
-              onClick={function () {
-                setEd(true);
-              }}
-            />
-          ) : null}
-          {canAdmin && c.status !== 'Lixeira' && DB.A.pendentesDe(c.id).length ? (
-            <IconButton
-              icon="arrow-right-left"
-              label="Passar as contas que faltam para outro operador"
-              size={34}
-              iconSize={16}
-              onClick={function () {
-                setTr(true);
-              }}
-            />
-          ) : null}
-          {tr ? (
-            <TransferirModal
-              c={c}
-              onClose={function () {
-                setTr(false);
-              }}
-            />
-          ) : null}
-          {canAdmin && c.status !== 'Lixeira' ? (
-            <IconButton
-              icon="trash-2"
-              label="Mover para lixeira"
-              size={34}
-              iconSize={16}
-              onClick={function () {
-                DB.A.setStatus(c.id, 'Lixeira');
-              }}
-            />
-          ) : null}
-          {outros.map(function (x) {
-            return (
-              <DS.Button
-                key={x[1]}
-                size="sm"
-                variant="secondary"
-                iconLeft={x[0]}
+            {c.status !== 'Lixeira' ? (
+              <IconButton
+                icon="key-round"
+                label="Copiar chaves PIX por grupo"
+                size={34}
+                iconSize={16}
                 onClick={function () {
-                  DB.A.setStatus(c.id, x[2]);
+                  setChv(true);
+                }}
+              />
+            ) : null}
+            {canAdmin && c.status !== 'Lixeira' ? (
+              <IconButton
+                icon="pencil"
+                label="Editar (plataforma, operador, salário…)"
+                size={34}
+                iconSize={16}
+                onClick={function () {
+                  setEd(true);
+                }}
+              />
+            ) : null}
+            {canAdmin && c.status !== 'Lixeira' && DB.A.pendentesDe(c.id).length ? (
+              <IconButton
+                icon="arrow-right-left"
+                label="Passar as contas que faltam para outro operador"
+                size={34}
+                iconSize={16}
+                onClick={function () {
+                  setTr(true);
+                }}
+              />
+            ) : null}
+            {tr ? (
+              <TransferirModal
+                c={c}
+                onClose={function () {
+                  setTr(false);
+                }}
+              />
+            ) : null}
+            {canAdmin && c.status !== 'Lixeira' ? (
+              <IconButton
+                icon="trash-2"
+                label="Mover para lixeira"
+                size={34}
+                iconSize={16}
+                onClick={function () {
+                  DB.A.setStatus(c.id, 'Lixeira');
+                }}
+              />
+            ) : null}
+            {outros.map(function (x) {
+              return (
+                <DS.Button
+                  key={x[1]}
+                  size="sm"
+                  variant="secondary"
+                  iconLeft={x[0]}
+                  onClick={function () {
+                    DB.A.setStatus(c.id, x[2]);
+                  }}
+                >
+                  {x[1]}
+                </DS.Button>
+              );
+            })}
+            {fin ? (
+              <DS.Button
+                size="sm"
+                variant="outline"
+                className="ms7c-fin"
+                iconLeft={fin[0]}
+                onClick={function () {
+                  DB.A.setStatus(c.id, fin[2]);
                 }}
               >
-                {x[1]}
+                {fin[1]}
               </DS.Button>
-            );
-          })}
-          {fin ? (
-            <DS.Button
-              size="sm"
-              variant="outline"
-              className="ms7c-fin"
-              iconLeft={fin[0]}
-              onClick={function () {
-                DB.A.setStatus(c.id, fin[2]);
-              }}
-            >
-              {fin[1]}
+            ) : null}
+            <DS.Button size="sm" variant="outline" iconRight="arrow-right" onClick={onOpen}>
+              Abrir
             </DS.Button>
-          ) : null}
-          <DS.Button size="sm" variant="outline" iconRight="arrow-right" onClick={onOpen}>
-            Abrir
-          </DS.Button>
           </div>
           {chv ? (
             <ChavesModal
@@ -909,8 +900,7 @@
           ? 'Ex.: resultado de R$ 4.000 → comissão de ' + MS7.brl((4000 * (parseFloat(f.comValor) || 0)) / 100)
           : f.comTipo === 'conta'
             ? 'Ex.: 10 contas → comissão de ' + MS7.brl(10 * (parseFloat(f.comValor) || 0))
-            : 'Valor total que o operador recebe por esta cooperação (todas as contas): ' +
-              MS7.brl(parseFloat(String(f.comValor).replace(',', '.')) || 0);
+            : 'Valor total que o operador recebe por esta cooperação (todas as contas): ' + MS7.brl(parseFloat(String(f.comValor).replace(',', '.')) || 0);
     return (
       <Modal
         open={open}
@@ -942,14 +932,7 @@
                     return;
                   }
                   guardaPlat(f.plataforma);
-                  DB.A.createCoop(
-                    Object.assign(
-                      {},
-                      f,
-                      { tipo: bau ? 'bau' : 'coop' },
-                      meu || f.opId === '__eu' ? { proprio: true, opId: '', comTipo: 'fixo', comValor: '0', comConta: '' } : {},
-                    ),
-                  );
+                  DB.A.createCoop(Object.assign({}, f, { tipo: bau ? 'bau' : 'coop' }, meu || f.opId === '__eu' ? { proprio: true, opId: '', comTipo: 'fixo', comValor: '0', comConta: '' } : {}));
                   close();
                 }}
               >
@@ -1041,9 +1024,7 @@
                   setPlat(e.target.value);
                 }}
                 hint={
-                  redeDe(f.plataforma)
-                    ? 'Rede escolhida sozinha: ' + redeDe(f.plataforma) + ' (usada antes nesta plataforma)'
-                    : 'Primeira vez: escolha a rede. Nas próximas ela\u00a0vem\u00a0sozinha.'
+                  redeDe(f.plataforma) ? 'Rede escolhida sozinha: ' + redeDe(f.plataforma) + ' (usada antes nesta plataforma)' : 'Primeira vez: escolha a rede. Nas próximas ela\u00a0vem\u00a0sozinha.'
                 }
               />
               {platRec.length ? (
@@ -1095,14 +1076,7 @@
         ) : null}
         {step === 3 ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
-            <Input
-              label="Salário"
-              prefix="R$"
-              placeholder="0,00"
-              value={f.salario || ''}
-              onChange={u('salario')}
-              hint={'Opcional (R$ 0,00 para comissão\u00a0pura)'}
-            />
+            <Input label="Salário" prefix="R$" placeholder="0,00" value={f.salario || ''} onChange={u('salario')} hint={'Opcional (R$ 0,00 para comissão\u00a0pura)'} />
             <div style={{ border: '1px solid var(--line)', borderRadius: 12, padding: 16, display: 'flex', flexDirection: 'column', gap: 14 }}>
               <Input label="Média de depósito" prefix="R$" placeholder="0,00" value={f.mediaDep || ''} onChange={u('mediaDep')} />
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -1128,19 +1102,12 @@
                 </div>
                 {f.rollover && f.mediaDep ? (
                   <span className="ms7c-hint">
-                    {'Cada conta precisa apostar ' +
-                      MS7.brl((parseFloat(String(f.mediaDep).replace(',', '.')) || 0) * (parseFloat(f.rollover) || 0)) +
-                      ' em apostas válidas'}
+                    {'Cada conta precisa apostar ' + apN((parseFloat(String(f.mediaDep).replace(',', '.')) || 0) * (parseFloat(f.rollover) || 0)) + ' em apostas válidas'}
                   </span>
                 ) : null}
               </div>
             </div>
-            <Input
-              label="Descrição das apostas (opcional)"
-              placeholder="Ex: Apostas válidas entre 2x e 10x"
-              value={f.descricao || ''}
-              onChange={u('descricao')}
-            />
+            <Input label="Descrição das apostas (opcional)" placeholder="Ex: Apostas válidas entre 2x e 10x" value={f.descricao || ''} onChange={u('descricao')} />
           </div>
         ) : null}
       </Modal>
@@ -1199,20 +1166,16 @@
         </div>
         <div className="ms7c-mini" style={{ marginTop: 14, fontSize: 13.5, fontWeight: 500 }}>
           {'Resultado da conta: '}
-          <span className="ms7-num" style={{ fontWeight: 600, color: res >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>{MS7.brl(res)}</span>
+          <span className="ms7-num" style={{ fontWeight: 600, color: res >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)' }}>
+            {MS7.brl(res)}
+          </span>
           {f.status === 'Bloqueado' ? <span style={{ color: 'var(--ms7-error)' }}> · vai gerar alerta de conta bloqueada</span> : null}
         </div>
       </Modal>
     );
   }
-  const ST_COL = {
-    Aguardando: 'var(--text-secondary)',
-    'À sacar': 'var(--ms7-orange)',
-    Sacado: 'var(--ms7-green)',
-    'Não sacado': 'var(--ms7-error)',
-    Bloqueado: 'var(--ms7-error)',
-  };
-  function Cell({ value, onCommit, placeholder, align, bold, money, secret, ro }) {
+  const ST_COL = { Aguardando: 'var(--text-secondary)', 'À sacar': 'var(--ms7-orange)', Sacado: 'var(--ms7-green)', 'Não sacado': 'var(--ms7-error)', Bloqueado: 'var(--ms7-error)' };
+  function Cell({ value, onCommit, placeholder, align, bold, money, secret, ro, check }) {
     const [v, setV] = React.useState(value == null ? '' : String(value));
     const [show, setShow] = React.useState(false);
     const [f, setF] = React.useState(false);
@@ -1225,11 +1188,38 @@
     function commit() {
       setF(false);
       if (ro) return;
-      if (String(value == null ? '' : value) !== v) onCommit(v);
+      if (String(value == null ? '' : value) !== v) {
+        if (onCommit(v) === false) setV(value == null ? '' : String(value));
+      }
     }
+    const erro = check && String(v).trim() && String(value == null ? '' : value) !== v ? check(v) : null;
     const shown = money && !f ? (+String(v).replace(',', '.') ? MS7.brl(+String(v).replace(',', '.')) : '') : v;
     return (
-      <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+      <div style={{ position: 'relative', display: 'flex', alignItems: 'center', borderRadius: 8, boxShadow: erro ? '0 0 0 2px var(--ms7-error)' : 'none' }}>
+        {erro ? (
+          <div
+            role="alert"
+            style={{
+              position: 'absolute',
+              left: 0,
+              top: 'calc(100% + 4px)',
+              zIndex: 30,
+              minWidth: 220,
+              maxWidth: 300,
+              padding: '8px 10px',
+              borderRadius: 8,
+              background: 'var(--ms7-error)',
+              color: '#fff',
+              fontSize: 12,
+              fontWeight: 700,
+              lineHeight: 1.35,
+              boxShadow: '0 8px 20px -8px rgba(0,0,0,.5)',
+              whiteSpace: 'normal',
+            }}
+          >
+            {'⚠ Usuário repetido: ' + erro}
+          </div>
+        ) : null}
         <input
           value={shown}
           readOnly={!!ro}
@@ -1271,13 +1261,7 @@
                 inp.select && inp.select();
               }, 0);
           }}
-          className={
-            'ms7c-cell' +
-            (ro ? ' is-ro' : '') +
-            (bold ? ' is-b' : '') +
-            ((align || 'left') === 'right' ? ' is-r' : '') +
-            (money && !+String(v).replace(',', '.') ? ' is-muted' : '')
-          }
+          className={'ms7c-cell' + (ro ? ' is-ro' : '') + (bold ? ' is-b' : '') + ((align || 'left') === 'right' ? ' is-r' : '') + (money && !+String(v).replace(',', '.') ? ' is-muted' : '')}
           style={secret ? { paddingRight: 30 } : undefined}
         />
         {secret && v ? (
@@ -1358,6 +1342,47 @@
               );
             })}
           </div>
+          {(function () {
+            const vo = DB.contasValidas(c);
+            const i0 = vo.findIndex(function (k) {
+              return pend.some(function (p) {
+                return p.id && p.id === k.id;
+              });
+            });
+            const ini = (+c.contaInicio || 1) + (i0 >= 0 ? i0 : vo.length);
+            const ap =
+              vo.reduce(function (a, k) {
+                return a + (+k.aposta || 0);
+              }, 0) + (+c.apostaAnterior || 0);
+            return (
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 4,
+                  padding: '10px 12px',
+                  borderRadius: 10,
+                  background: 'var(--surface-muted, var(--ms7-gray-100))',
+                  fontSize: 13,
+                  fontWeight: 600,
+                }}
+              >
+                <span>
+                  {'O novo operador começa na conta '}
+                  <b>{ini}</b>
+                  {' e vai até a '}
+                  <b>{ini + pend.length - 1}</b>
+                </span>
+                {ap ? (
+                  <span>
+                    {'Aposta válida já feita: '}
+                    <b>{apN(ap)}</b>
+                    {' (entra na conta da meta)'}
+                  </span>
+                ) : null}
+              </div>
+            );
+          })()}
           <DS.Select
             label="Novo operador"
             value={op}
@@ -1383,7 +1408,9 @@
             />
           ) : null}
           <div className="ms7c-hint" style={{ fontSize: 13 }}>
-            {'Cria uma cooperação nova com a mesma plataforma, conta mãe, link, comissão e os depósitos das contas que faltam. A cooperação atual fica com as contas feitas, e a devolução recalcula sozinha. Escolha os grupos de chaves PIX na\u00a0cooperação\u00a0nova.'}
+            {
+              'Cria uma cooperação nova com a mesma plataforma, conta mãe, link, comissão e os depósitos das contas que faltam. A cooperação atual fica com as contas feitas, e a devolução recalcula sozinha. Escolha os grupos de chaves PIX na\u00a0cooperação\u00a0nova.'
+            }
           </div>
         </div>
       </DS.Modal>
@@ -1393,53 +1420,49 @@
     const col = color || 'var(--text-secondary)';
     return (
       <div className="ms7c-selw">
-      <select
-        value={value || ''}
-        onChange={function (e) {
-          onChange(e.target.value);
-        }}
-        className="ms7c-sel"
-        style={
-          pill
-            ? {
-                borderColor: 'color-mix(in oklab, ' + col + ' 28%, var(--line))',
-                background: 'color-mix(in oklab, ' + col + ' 10%, var(--surface-card))',
-                color: 'color-mix(in oklab, ' + col + ' 88%, var(--text-primary))',
-              }
-            : color
-              ? { color: color }
-              : undefined
-        }
-      >
-        {options.map(function (o) {
-          if (o && o.group)
+        <select
+          value={value || ''}
+          onChange={function (e) {
+            onChange(e.target.value);
+          }}
+          className="ms7c-sel"
+          style={
+            pill
+              ? {
+                  borderColor: 'color-mix(in oklab, ' + col + ' 28%, var(--line))',
+                  background: 'color-mix(in oklab, ' + col + ' 10%, var(--surface-card))',
+                  color: 'color-mix(in oklab, ' + col + ' 88%, var(--text-primary))',
+                }
+              : color
+                ? { color: color }
+                : undefined
+          }
+        >
+          {options.map(function (o) {
+            if (o && o.group)
+              return (
+                <optgroup key={'g' + o.group} label={'■ ' + String(o.group).toUpperCase()} style={{ color: 'var(--ms7-green-ink)', fontWeight: 600, background: 'var(--ms7-lime-100)' }}>
+                  {o.items.map(function (it) {
+                    return (
+                      <option key={it.value} value={it.value}>
+                        {it.label}
+                      </option>
+                    );
+                  })}
+                </optgroup>
+              );
+            const ov = typeof o === 'string' ? o : o.value;
+            const ol = typeof o === 'string' ? o : o.label;
             return (
-              <optgroup
-                key={'g' + o.group}
-                label={'■ ' + String(o.group).toUpperCase()}
-                style={{ color: 'var(--ms7-green-ink)', fontWeight: 600, background: 'var(--ms7-lime-100)' }}
-              >
-                {o.items.map(function (it) {
-                  return (
-                    <option key={it.value} value={it.value}>
-                      {it.label}
-                    </option>
-                  );
-                })}
-              </optgroup>
+              <option key={ov} value={ov}>
+                {ol}
+              </option>
             );
-          const ov = typeof o === 'string' ? o : o.value;
-          const ol = typeof o === 'string' ? o : o.label;
-          return (
-            <option key={ov} value={ov}>
-              {ol}
-            </option>
-          );
-        })}
-      </select>
-      <span className="ms7c-chev">
-        <DS.Icon name="chevron-down" size={14} strokeWidth={2} />
-      </span>
+          })}
+        </select>
+        <span className="ms7c-chev">
+          <DS.Icon name="chevron-down" size={14} strokeWidth={2} />
+        </span>
       </div>
     );
   }
@@ -1502,6 +1525,9 @@
       ) || 0
     );
   }
+  function apN(v) {
+    return (+v || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
   function num(v) {
     return parseFloat(String(v).replace(/\./g, '').replace(',', '.')) || 0;
   }
@@ -1509,8 +1535,7 @@
     React.useEffect(
       function () {
         const cc = DB.coop(c.id);
-        if (cc && cc.depositantes && cc.contas.length === 0 && cc.status !== 'Concluída' && cc.status !== 'Lixeira')
-          DB.A.gerarLinhas(cc.id, cc.depositantes);
+        if (cc && cc.depositantes && cc.contas.length === 0 && cc.status !== 'Concluída' && cc.status !== 'Lixeira') DB.A.gerarLinhas(cc.id, cc.depositantes);
       },
       [c.id],
     );
@@ -1727,32 +1752,91 @@
         });
       else window.prompt('Copie as chaves:', txt);
     }
+    const [rep, setRep] = React.useState(null);
+    const avisoRep = function (x) {
+      setRep(x);
+      try {
+        const A = new (window.AudioContext || window.webkitAudioContext)();
+        const o = A.createOscillator(),
+          g = A.createGain();
+        o.type = 'square';
+        o.frequency.value = 330;
+        g.gain.value = 0.08;
+        o.connect(g);
+        g.connect(A.destination);
+        o.start();
+        o.stop(A.currentTime + 0.18);
+      } catch (e) {}
+    };
     const used = {};
     c.contas.forEach(function (r) {
       if (r.pix) used[r.pix] = (used[r.pix] || 0) + 1;
     });
+    function ondeRep(rep) {
+      const ln = (+rep.coop.contaInicio || 1) + rep.linha - 1;
+      return rep.coop.id === c.id ? 'já está nesta cooperação, conta ' + ln : 'já está em ' + DB.coopNome(rep.coop) + ' de ' + DB.opName(rep.coop.opId) + ', conta ' + ln;
+    }
+    function usuarioRepetido(u, exceto) {
+      u = String(u || '')
+        .trim()
+        .toLowerCase();
+      if (!u) return null;
+      const pn = DB.platNorm(c.plataforma);
+      for (const o of DB.get().coops) {
+        if (o.status === 'Lixeira' || DB.platNorm(o.plataforma) !== pn) continue;
+        for (const k of o.contas || []) {
+          if (k.id === exceto && o.id === c.id) continue;
+          if (
+            String(k.usuario || '')
+              .trim()
+              .toLowerCase() === u
+          )
+            return { coop: o, conta: k, linha: o.contas.indexOf(k) + 1 };
+        }
+      }
+      return null;
+    }
     function set(r, k, v) {
+      if (k === 'usuario') {
+        const rep = usuarioRepetido(v, r.id);
+        if (rep) {
+          const onde = rep.coop.id === c.id ? 'nesta cooperação (linha ' + rep.linha + ')' : 'em ' + DB.coopNome(rep.coop) + ' de ' + DB.opName(rep.coop.opId) + ' (linha ' + rep.linha + ')';
+          avisoRep({ u: String(v).trim(), onde: onde, plat: c.plataforma });
+          return false;
+        }
+      }
       const n = Object.assign({}, r);
       n[k] = k === 'deposito' || k === 'redeposito' || k === 'saque' || k === 'bau' || k === 'aposta' ? num(v) : v;
       DB.A.saveConta(c.id, n, k !== 'status');
     }
     function add() {
       if (!nu.trim()) return;
-      DB.A.saveConta(
-        c.id,
-        { usuario: nu.trim(), senha: '', senhaSaque: '', deposito: 0, redeposito: 0, saque: 0, bau: 0, status: 'Aguardando', pix: '', obs: '' },
-        true,
-      );
+      const rep = usuarioRepetido(nu, null);
+      if (rep) {
+        avisoRep({
+          u: nu.trim(),
+          onde: rep.coop.id === c.id ? 'nesta cooperação (linha ' + rep.linha + ')' : 'em ' + DB.coopNome(rep.coop) + ' de ' + DB.opName(rep.coop.opId) + ' (linha ' + rep.linha + ')',
+          plat: c.plataforma,
+        });
+        return;
+      }
+      DB.A.saveConta(c.id, { usuario: nu.trim(), senha: '', senhaSaque: '', deposito: 0, redeposito: 0, saque: 0, bau: 0, status: 'Aguardando', pix: '', obs: '' }, true);
       setNu('');
     }
-    const OP_COLS = ['usuario', 'deposito', 'saque', 'aposta', 'pix', 'status'];
+    const BAU_COLS = ['usuario', 'deposito', 'redeposito', 'saque', 'pix', 'res', 'status', 'obs'];
+    const ehBau = c.tipo === 'bau';
+    const OP_COLS = ehBau ? BAU_COLS : ['usuario', 'deposito', 'saque', 'aposta', 'pix', 'status'];
+    const bauHide = COLS_DEF.reduce(function (a, x) {
+      if (BAU_COLS.indexOf(x.id) < 0) a[x.id] = 1;
+      return a;
+    }, {});
     const hideOp =
       c.colsHide ||
       COLS_DEF.reduce(function (a, x) {
         if (OP_COLS.indexOf(x.id) < 0) a[x.id] = 1;
         return a;
       }, {});
-    const hideAt = c.colsHide || hide;
+    const hideAt = c.colsHide || (ehBau ? bauHide : hide);
     const cols = COLS_DEF.filter(function (x) {
       return canAdmin ? !hideAt[x.id] : !hideOp[x.id];
     });
@@ -1772,9 +1856,12 @@
       },
       { deposito: 0, redeposito: 0, saque: 0, bau: 0, aposta: 0, res: 0 },
     );
-    const apAlvo = alvoAposta(c, DB.contasValidas(c));
-    const apFalta = Math.max(0, apAlvo - tot.aposta);
-    const apPct = apAlvo ? Math.min(100, Math.round((tot.aposta / apAlvo) * 100)) : 0;
+    const apAnt = +c.apostaAnterior || 0;
+    tot.apostaTot = tot.aposta + apAnt;
+    const apAlvo = c.apostaAlvo || alvoAposta(c, DB.contasValidas(c));
+    const apFalta = Math.max(0, apAlvo - tot.apostaTot);
+    const apPct = apAlvo ? Math.min(100, Math.round((tot.apostaTot / apAlvo) * 100)) : 0;
+    const nIni = +c.contaInicio || 1;
     const th = {
       height: 38,
       padding: '0 10px',
@@ -1885,8 +1972,12 @@
             value={r.usuario}
             bold
             placeholder="usuário"
+            check={function (v) {
+              const rp = usuarioRepetido(v, r.id);
+              return rp ? ondeRep(rp) : null;
+            }}
             onCommit={function (v) {
-              set(r, 'usuario', v);
+              return set(r, 'usuario', v);
             }}
           />
         );
@@ -1906,9 +1997,9 @@
           <Cell
             value={r[col.id] || ''}
             ro={col.id === 'deposito' && !superAdm}
-            money
+            money={col.id !== 'aposta'}
             align="right"
-            placeholder="R$ 0,00"
+            placeholder={col.id === 'aposta' ? '0,00' : 'R$ 0,00'}
             onCommit={function (v) {
               set(r, col.id, v);
             }}
@@ -1951,13 +2042,7 @@
               <CellSelect
                 value={r.pix || ''}
                 options={pixOptsFor(r)}
-                color={
-                  !r.pix
-                    ? 'var(--text-secondary)'
-                    : keyInfo[r.pix] && PIXV.st(keyInfo[r.pix].k, gpc).status === 'bloqueada'
-                      ? 'var(--ms7-error)'
-                      : undefined
-                }
+                color={!r.pix ? 'var(--text-secondary)' : keyInfo[r.pix] && PIXV.st(keyInfo[r.pix].k, gpc).status === 'bloqueada' ? 'var(--ms7-error)' : undefined}
                 onChange={function (v) {
                   DB.A.pixAtribuir(c.id, r.id, v);
                 }}
@@ -1974,6 +2059,47 @@
     }
     return (
       <div ref={wrapRef} className="ms7-card" style={{ overflow: 'hidden' }}>
+        {rep ? (
+          <DS.Modal
+            open
+            onClose={function () {
+              setRep(null);
+            }}
+            title="Usuário repetido"
+            size="sm"
+            footer={
+              <DS.Button
+                variant="brand"
+                onClick={function () {
+                  setRep(null);
+                }}
+              >
+                Entendi, vou trocar
+              </DS.Button>
+            }
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+              <div
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 12,
+                  padding: '12px 14px',
+                  borderRadius: 12,
+                  background: 'color-mix(in oklab, var(--ms7-error) 14%, transparent)',
+                  border: '1px solid color-mix(in oklab, var(--ms7-error) 45%, transparent)',
+                }}
+              >
+                <DS.Icon name="triangle-alert" size={22} color="var(--ms7-error)" />
+                <div>
+                  <div style={{ fontSize: 16, fontWeight: 600, fontFamily: 'var(--font-mono)' }}>{rep.u}</div>
+                  <div style={{ fontSize: 13, fontWeight: 600, color: 'var(--text-secondary)' }}>{'já foi usado na ' + rep.plat + ' ' + rep.onde}</div>
+                </div>
+              </div>
+              <div style={{ fontSize: 14, lineHeight: 1.5 }}>Não dá para ter o mesmo usuário em duas contas da mesma plataforma. Confira o usuário e digite o certo.</div>
+            </div>
+          </DS.Modal>
+        ) : null}
         <div
           style={{
             display: 'flex',
@@ -2030,7 +2156,11 @@
               }}
               placeholder="Buscar usuário ou valor"
             />
-            {bq ? <span className="ms7c-n" style={{ whiteSpace: 'nowrap' }}>{achados}</span> : null}
+            {bq ? (
+              <span className="ms7c-n" style={{ whiteSpace: 'nowrap' }}>
+                {achados}
+              </span>
+            ) : null}
             {bq ? (
               <IconButton
                 icon="x"
@@ -2147,7 +2277,7 @@
             Adicionar conta
           </Button>
         </div>
-        {apAlvo || tot.aposta ? (
+        {apAlvo || tot.apostaTot ? (
           <div
             style={{
               display: 'flex',
@@ -2163,8 +2293,9 @@
               Aposta válida
             </span>
             <span className="ms7-num" style={{ fontSize: 14, fontWeight: 600 }}>
-              {MS7.brl(tot.aposta) + (apAlvo ? ' de ' + MS7.brl(apAlvo) : '')}
+              {apN(tot.apostaTot) + (apAlvo ? ' de ' + apN(apAlvo) : '')}
             </span>
+            {apAnt ? <span className="ms7c-hint">{'inclui ' + apN(apAnt) + ' já feito por ' + (c.apostaDe || 'outro operador')}</span> : null}
             {apAlvo ? (
               <div className="ms7-bar" style={{ flex: '1 1 160px', minWidth: 120 }}>
                 <i style={{ width: apPct + '%', background: apFalta ? 'var(--ms7-green)' : 'var(--ms7-lime-500)', transition: 'width .4s' }} />
@@ -2174,7 +2305,7 @@
             )}
             {apAlvo ? (
               <b className="ms7-num" style={{ fontSize: 14, fontWeight: 600, color: apFalta ? 'var(--ms7-orange)' : 'var(--ms7-green)' }}>
-                {apFalta ? 'Falta ' + MS7.brl(apFalta) : 'Meta batida'}
+                {apFalta ? 'Falta ' + apN(apFalta) : 'Meta batida'}
               </b>
             ) : (
               <span className="ms7c-hint">Coloque o rollover (ex.: 10000 ou 3x) no lápis da cooperação para ver quanto falta</span>
@@ -2257,7 +2388,7 @@
                 >
                   <div style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
                     <span className="ms7c-n" style={{ width: 34, flexShrink: 0, display: 'inline-flex', alignItems: 'center', gap: 3, paddingLeft: 2 }}>
-                      {i + 1}
+                      {nIni + i}
                       {r.rolo ? (
                         <span className="ms7c-r" style={{ width: 15, height: 15, fontSize: 9 }}>
                           R
@@ -2269,8 +2400,12 @@
                         value={r.usuario}
                         bold
                         placeholder="usuário"
+                        check={function (v) {
+                          const rp = usuarioRepetido(v, r.id);
+                          return rp ? ondeRep(rp) : null;
+                        }}
                         onCommit={function (v) {
-                          set(r, 'usuario', v);
+                          return set(r, 'usuario', v);
                         }}
                       />
                     </div>
@@ -2298,7 +2433,7 @@
                           <Cell
                             value={r[x[0]] || ''}
                             ro={x[0] === 'deposito' && !superAdm}
-                            money
+                            money={x[0] !== 'aposta'}
                             placeholder="0,00"
                             onCommit={function (v) {
                               set(r, x[0], v);
@@ -2382,7 +2517,9 @@
               ].map(function (x) {
                 return (
                   <div key={x[0]} style={{ minWidth: 0 }}>
-                    <div className="ms7c-blk-k" style={{ padding: 0 }}>{x[0]}</div>
+                    <div className="ms7c-blk-k" style={{ padding: 0 }}>
+                      {x[0]}
+                    </div>
                     <b
                       className="ms7-num"
                       style={{
@@ -2391,7 +2528,7 @@
                         color: x[0] === 'Resultado' ? (x[1] >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)') : 'var(--text-primary)',
                       }}
                     >
-                      {MS7.brl(x[1])}
+                      {x[0] === 'Aposta' ? apN(x[1]) : MS7.brl(x[1])}
                     </b>
                   </div>
                 );
@@ -2496,7 +2633,7 @@
                       </td>
                       <td className="ms7c-n" style={Object.assign({}, td, { padding: '0 10px' })}>
                         <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                          {i + 1}
+                          {nIni + i}
                           {r.rolo ? (
                             <span className="ms7c-r" title="Conta de rolo">
                               R
@@ -2562,7 +2699,7 @@
                           color: x.id === 'res' ? (v >= 0 ? 'var(--ms7-green)' : 'var(--ms7-error)') : 'var(--text-primary)',
                         }}
                       >
-                        {i === 0 ? 'Total' : v != null ? MS7.brl(v) : ''}
+                        {i === 0 ? 'Total' : v != null ? (x.id === 'aposta' ? apN(v) : MS7.brl(v)) : ''}
                       </td>
                     );
                   })}
@@ -2613,12 +2750,21 @@
           const n = Math.min(keys.length, alvo.length);
           function aplicar() {
             if (!n) return;
-            for (let i = 0; i < n; i++) DB.A.pixAtribuir(c.id, alvo[i].id, keys[i].v);
+            let ok = 0,
+              rej = 0;
+            for (let i = 0; i < n; i++) {
+              if (DB.A.pixAtribuir(c.id, alvo[i].id, keys[i].v) === false) rej++;
+              else ok++;
+            }
             setColar(false);
             setCtxt('');
             setTimeout(function () {
-              toast(n + (n === 1 ? ' chave vinculada' : ' chaves vinculadas') + ' às contas com saque');
-            }, 50);
+              toast(
+                ok +
+                  (ok === 1 ? ' chave vinculada' : ' chaves vinculadas') +
+                  (rej ? ' · ' + rej + (rej === 1 ? ' recusada (já usada nesta plataforma)' : ' recusadas (já usadas nesta plataforma)') : ''),
+              );
+            }, 400);
           }
           return (
             <Modal
@@ -2660,13 +2806,7 @@
                       (alvo.length === 1 ? ' conta com saque e sem chave: ' : ' contas com saque e sem chave: ') +
                       alvo
                         .map(function (r, i) {
-                          return (
-                            i +
-                            1 +
-                            '. ' +
-                            (r.usuario || 'sem usuário') +
-                            (keys[i] ? ' → ' + keys[i].v + (keys[i].ok ? ' ✓' : ' (não está nos grupos)') : '')
-                          );
+                          return i + 1 + '. ' + (r.usuario || 'sem usuário') + (keys[i] ? ' → ' + keys[i].v + (keys[i].ok ? ' ✓' : ' (não está nos grupos)') : '');
                         })
                         .join(' · ')
                     : 'Nenhuma conta com saque está sem chave. Preencha o saque primeiro.'}
@@ -2704,9 +2844,7 @@
                     setBlocoCh(false);
                   }}
                   title={L.length + (L.length === 1 ? ' chave PIX disponível' : ' chaves PIX disponíveis')}
-                  subtitle={
-                    'Plataforma ' + gpc + ' · separadas por grupo, uma por linha. Chave usada nesta plataforma some daqui para todos os operadores.'
-                  }
+                  subtitle={'Plataforma ' + gpc + ' · separadas por grupo, uma por linha. Chave usada nesta plataforma some daqui para todos os operadores.'}
                   footer={
                     <React.Fragment>
                       <DS.Button
@@ -2731,9 +2869,7 @@
                           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                             <div style={{ flex: 1, minWidth: 0 }}>
                               <div className="ms7c-gname">{x.g.pagamento || x.g.nome}</div>
-                              <div className="ms7c-hint">
-                                {(x.g.pagamento ? x.g.nome + ' · ' : '') + x.ks.length + (x.ks.length === 1 ? ' chave' : ' chaves')}
-                              </div>
+                              <div className="ms7c-hint">{(x.g.pagamento ? x.g.nome + ' · ' : '') + x.ks.length + (x.ks.length === 1 ? ' chave' : ' chaves')}</div>
                             </div>
                             <DS.Button
                               size="sm"
@@ -2758,9 +2894,7 @@
                         </div>
                       );
                     })}
-                    {!L.length ? (
-                      <Empty art="Keys" compact title="Sem chaves livres" sub={'Nenhuma chave disponível nos grupos desta cooperação.'} />
-                    ) : null}
+                    {!L.length ? <Empty art="Keys" compact title="Sem chaves livres" sub={'Nenhuma chave disponível nos grupos desta cooperação.'} /> : null}
                   </div>
                 </Modal>
               );
@@ -2893,19 +3027,7 @@
                   {rows.length ? (
                     <React.Fragment>
                       <div className="ms7c-hint ms7-num" style={{ fontSize: 13 }}>
-                        {rows.length +
-                          ' contas · ' +
-                          nr +
-                          ' com R × ' +
-                          MS7.brl(vr) +
-                          ' = ' +
-                          MS7.brl(nr * vr) +
-                          ' · ' +
-                          ns +
-                          ' sem R × ' +
-                          MS7.brl(vs) +
-                          ' = ' +
-                          MS7.brl(ns * vs)}
+                        {rows.length + ' contas · ' + nr + ' com R × ' + MS7.brl(vr) + ' = ' + MS7.brl(nr * vr) + ' · ' + ns + ' sem R × ' + MS7.brl(vs) + ' = ' + MS7.brl(ns * vs)}
                       </div>
                       <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
                         {kp('Total depósito', MS7.brl(dep))}
@@ -2916,9 +3038,15 @@
                         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
                           <thead>
                             <tr>
-                              <th className="ms7c-th" style={Object.assign({}, th, { width: 60 })}>#</th>
-                              <th className="ms7c-th" style={Object.assign({}, th, { textAlign: 'right' })}>Valor</th>
-                              <th className="ms7c-th" style={Object.assign({}, th, { width: 70, textAlign: 'center' })}>R</th>
+                              <th className="ms7c-th" style={Object.assign({}, th, { width: 60 })}>
+                                #
+                              </th>
+                              <th className="ms7c-th" style={Object.assign({}, th, { textAlign: 'right' })}>
+                                Valor
+                              </th>
+                              <th className="ms7c-th" style={Object.assign({}, th, { width: 70, textAlign: 'center' })}>
+                                R
+                              </th>
                             </tr>
                           </thead>
                           <tbody>
@@ -3117,14 +3245,7 @@
                         label={'Tirar ' + g.nome + (g.pagamento ? ' · ' + g.pagamento : '') + ' desta cooperação'}
                         onClick={function () {
                           const nome = g.nome + (g.pagamento ? ' · ' + g.pagamento : '');
-                          if (
-                            !confirm(
-                              'Tirar o grupo ' +
-                                nome +
-                                ' desta cooperação? O operador deixa de ver essas chaves aqui. As chaves já usadas continuam usadas.',
-                            )
-                          )
-                            return;
+                          if (!confirm('Tirar o grupo ' + nome + ' desta cooperação? O operador deixa de ver essas chaves aqui. As chaves já usadas continuam usadas.')) return;
                           DB.A.setPixGrupos(
                             c.id,
                             (c.pixGrupos || []).filter(function (x) {
@@ -3197,12 +3318,12 @@
         >
           <div className="ms7c-sum">
             <div style={{ display: 'flex', alignItems: 'baseline', gap: 10, flexWrap: 'wrap' }}>
-              <b className="ms7-num" style={{ fontSize: 30, lineHeight: 1, fontWeight: 600, letterSpacing: '-0.03em' }}>{totDisp}</b>
+              <b className="ms7-num" style={{ fontSize: 30, lineHeight: 1, fontWeight: 600, letterSpacing: '-0.03em' }}>
+                {totDisp}
+              </b>
               <b style={{ fontSize: 15, fontWeight: 600 }}>{totDisp === 1 ? 'chave disponível para enviar' : 'chaves disponíveis para enviar'}</b>
               <span style={{ flex: 1 }}></span>
-              <span style={{ fontSize: 13, fontWeight: 600 }}>
-                {selG.length + (selG.length === 1 ? ' grupo selecionado' : ' grupos selecionados')}
-              </span>
+              <span style={{ fontSize: 13, fontWeight: 600 }}>{selG.length + (selG.length === 1 ? ' grupo selecionado' : ' grupos selecionados')}</span>
             </div>
             {titList.length ? (
               <div
@@ -3229,9 +3350,7 @@
               <span style={{ fontSize: 13, fontWeight: 500 }}>Marque os grupos abaixo para ver o total.</span>
             )}
             {totAll > totDisp ? (
-              <span style={{ fontSize: 12.5, fontWeight: 500, opacity: 0.85 }}>
-                {totAll - totDisp + ' chaves desses grupos já estão em uso ou bloqueadas e não entram na conta.'}
-              </span>
+              <span style={{ fontSize: 12.5, fontWeight: 500, opacity: 0.85 }}>{totAll - totDisp + ' chaves desses grupos já estão em uso ou bloqueadas e não entram na conta.'}</span>
             ) : null}
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -3244,10 +3363,7 @@
                 return (
                   <div key={g.id} className={'ms7c-lote' + (on ? ' is-on' : '')} style={{ opacity: trav ? 0.55 : 1 }}>
                     {trav ? (
-                      <span
-                        title="Reservado para outra cooperação"
-                        style={{ width: 20, display: 'flex', justifyContent: 'center', color: 'var(--text-secondary)' }}
-                      >
+                      <span title="Reservado para outra cooperação" style={{ width: 20, display: 'flex', justifyContent: 'center', color: 'var(--text-secondary)' }}>
                         <DS.Icon name="lock" size={16} />
                       </span>
                     ) : (
@@ -3266,9 +3382,7 @@
                     )}
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <b style={{ fontSize: 14, fontWeight: 600 }}>{g.nome}</b>
-                      {g.pagamento ? (
-                        <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)' }}>{' · ' + g.pagamento}</span>
-                      ) : null}
+                      {g.pagamento ? <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)' }}>{' · ' + g.pagamento}</span> : null}
                       <div className="ms7-num" style={{ fontSize: 12.5, fontWeight: 500, color: s.disp ? 'var(--ms7-green)' : 'var(--text-secondary)' }}>
                         {s.disp + ' de ' + s.total + ' chaves livres para usar'}
                       </div>
@@ -3388,7 +3502,9 @@
         }
       >
         <div style={grid}>
-          <div className="ms7-eyebrow" style={sec}>Informações</div>
+          <div className="ms7-eyebrow" style={sec}>
+            Informações
+          </div>
           <div style={{ gridColumn: '1 / -1' }}>
             <Input label="Nome da cooperação" value={f.cliente} onChange={u('cliente')} />
           </div>
@@ -3396,7 +3512,9 @@
           <Select label="Rede" value={f.rede} onChange={u('rede')} options={rds} />
           <Input label="Plataforma" placeholder="Ex.: Azul 777" value={f.plataforma} onChange={u('plataforma')} />
           <Input label="Link" placeholder="Ex.: Link 1" value={f.linkN || ''} onChange={u('linkN')} />
-          <div className="ms7-eyebrow" style={sec}>Comissão</div>
+          <div className="ms7-eyebrow" style={sec}>
+            Comissão
+          </div>
           <Select
             label="Tipo"
             value={f.comTipo}
@@ -3411,22 +3529,24 @@
             <Input label="Por conta com R (R$)" value={f.comR} onChange={u('comR')} />
           ) : (
             <Input
-              label={
-                f.comTipo === 'pct' ? 'Porcentagem do lucro (%)' : f.comTipo === 'conta' ? 'Valor por conta (R$)' : 'Valor fixo da cooperação (R$)'
-              }
+              label={f.comTipo === 'pct' ? 'Porcentagem do lucro (%)' : f.comTipo === 'conta' ? 'Valor por conta (R$)' : 'Valor fixo da cooperação (R$)'}
               value={f.comValor}
               onChange={u('comValor')}
             />
           )}
           {f.comTipo === 'rolo' ? <Input label="Por conta sem R (R$)" value={f.comS} onChange={u('comS')} /> : null}
           {f.comTipo === 'misto' ? <Input label="Mais por conta (R$)" value={f.comConta} onChange={u('comConta')} /> : null}
-          <div className="ms7-eyebrow" style={sec}>Conta mãe</div>
+          <div className="ms7-eyebrow" style={sec}>
+            Conta mãe
+          </div>
           <div style={{ gridColumn: '1 / -1' }}>
             <Input label="Link" value={f.link} onChange={u('link')} />
           </div>
           <Input label="Usuário" value={f.muser} onChange={u('muser')} />
           <Input label="Senha" value={f.msenha} onChange={u('msenha')} />
-          <div className="ms7-eyebrow" style={sec}>Metas</div>
+          <div className="ms7-eyebrow" style={sec}>
+            Metas
+          </div>
           <Input label="Média de depósito (R$)" value={f.mediaDep} onChange={u('mediaDep')} />
           <Input label="Rollover" value={f.rollover} onChange={u('rollover')} placeholder="Ex.: 10x" />
           <Input label="Salário (R$)" value={f.salario} onChange={u('salario')} />
@@ -3447,7 +3567,10 @@
   function CoopDetail({ id, onClose, session }) {
     const { Button, Badge, IconButton } = DS;
     DB.useDB();
-    const c = DB.coop(id);
+    const cRef = React.useRef(null);
+    const c0 = DB.coop(id);
+    if (c0) cRef.current = c0;
+    const c = c0 || cRef.current;
     const [edOpen, setEdOpen] = React.useState(false);
     const [trOpen, setTrOpen] = React.useState(false);
     const [verSen, setVerSen] = React.useState(false);
@@ -3487,7 +3610,7 @@
     if (cm.senha) info.push([cm.tipo && cm.tipo !== 'Senha' ? cm.tipo : 'Senha', cm.senha, 'lock', 1]);
     const meta = [];
     if (restante != null) meta.push(['Montante restante', MS7.brl(restante)]);
-    if (alvo) meta.push(['Apostas válidas alvo (' + c.rollover + ')', MS7.brl(alvo), 1]);
+    if (alvo) meta.push(['Apostas válidas alvo (' + c.rollover + ')', apN(alvo), 1]);
     if (c.mediaDep) meta.push(['Média de depósito', MS7.brl(c.mediaDep)]);
     if (c.salario) meta.push(['Salário', MS7.brl(c.salario)]);
     const acts =
@@ -3520,9 +3643,7 @@
                 {c.status}
               </Badge>
             </div>
-            <div style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>
-              {[c.plataforma, c.linkN, c.rede, DB.opName(c.opId)].filter(Boolean).join(' · ')}
-            </div>
+            <div style={{ fontSize: 13.5, fontWeight: 500, color: 'var(--text-secondary)', marginTop: 4 }}>{[c.plataforma, c.linkN, c.rede, DB.opName(c.opId)].filter(Boolean).join(' · ')}</div>
             {c.linkDiv ? (
               <a
                 href={/^https?:/i.test(c.linkDiv) ? c.linkDiv : 'https://' + c.linkDiv}
@@ -3545,181 +3666,167 @@
             ) : null}
           </div>
           <div className="ms7c-head-acts">
-          {canAdmin && c.status !== 'Lixeira' ? (
+            {canAdmin && c.status !== 'Lixeira' ? (
+              <Button
+                size="sm"
+                variant="outline"
+                iconLeft="pencil"
+                onClick={function () {
+                  setEdOpen(true);
+                }}
+              >
+                Editar
+              </Button>
+            ) : null}
+            {canAdmin ? (
+              <EditCoop
+                c={c}
+                open={edOpen}
+                onClose={function () {
+                  setEdOpen(false);
+                }}
+              />
+            ) : null}
+            {canAdmin && c.status !== 'Lixeira' && DB.A.pendentesDe(c.id).length ? (
+              <Button
+                size="sm"
+                variant="outline"
+                iconLeft="arrow-right-left"
+                onClick={function () {
+                  setTrOpen(true);
+                }}
+              >
+                {'Passar ' + DB.A.pendentesDe(c.id).length + ' contas'}
+              </Button>
+            ) : null}
+            {trOpen ? (
+              <TransferirModal
+                c={c}
+                onClose={function () {
+                  setTrOpen(false);
+                }}
+              />
+            ) : null}
             <Button
               size="sm"
               variant="outline"
-              iconLeft="pencil"
+              iconLeft="download"
               onClick={function () {
-                setEdOpen(true);
+                exportCSV(
+                  'contas-' + c.id,
+                  [
+                    {
+                      label: 'Usuário',
+                      get: function (r) {
+                        return r.usuario;
+                      },
+                    },
+                    {
+                      label: 'Depósito',
+                      get: function (r) {
+                        return r.deposito;
+                      },
+                    },
+                    {
+                      label: 'Re-depósito',
+                      get: function (r) {
+                        return r.redeposito;
+                      },
+                    },
+                    {
+                      label: 'Saque',
+                      get: function (r) {
+                        return r.saque;
+                      },
+                    },
+                    {
+                      label: 'Baú',
+                      get: function (r) {
+                        return r.bau || 0;
+                      },
+                    },
+                    { label: 'Resultado', get: DB.contaRes },
+                    {
+                      label: 'Status',
+                      get: function (r) {
+                        return r.status;
+                      },
+                    },
+                    {
+                      label: 'Chave PIX',
+                      get: function (r) {
+                        return r.pix || '';
+                      },
+                    },
+                  ],
+                  c.contas,
+                );
               }}
             >
-              Editar
+              CSV
             </Button>
-          ) : null}
-          {canAdmin ? (
-            <EditCoop
-              c={c}
-              open={edOpen}
-              onClose={function () {
-                setEdOpen(false);
-              }}
-            />
-          ) : null}
-          {canAdmin && c.status !== 'Lixeira' && DB.A.pendentesDe(c.id).length ? (
-            <Button
-              size="sm"
-              variant="outline"
-              iconLeft="arrow-right-left"
-              onClick={function () {
-                setTrOpen(true);
-              }}
-            >
-              {'Passar ' + DB.A.pendentesDe(c.id).length + ' contas'}
-            </Button>
-          ) : null}
-          {trOpen ? (
-            <TransferirModal
-              c={c}
-              onClose={function () {
-                setTrOpen(false);
-              }}
-            />
-          ) : null}
-          <Button
-            size="sm"
-            variant="outline"
-            iconLeft="download"
-            onClick={function () {
-              exportCSV(
-                'contas-' + c.id,
-                [
-                  {
-                    label: 'Usuário',
-                    get: function (r) {
-                      return r.usuario;
-                    },
-                  },
-                  {
-                    label: 'Depósito',
-                    get: function (r) {
-                      return r.deposito;
-                    },
-                  },
-                  {
-                    label: 'Re-depósito',
-                    get: function (r) {
-                      return r.redeposito;
-                    },
-                  },
-                  {
-                    label: 'Saque',
-                    get: function (r) {
-                      return r.saque;
-                    },
-                  },
-                  {
-                    label: 'Baú',
-                    get: function (r) {
-                      return r.bau || 0;
-                    },
-                  },
-                  { label: 'Resultado', get: DB.contaRes },
-                  {
-                    label: 'Status',
-                    get: function (r) {
-                      return r.status;
-                    },
-                  },
-                  {
-                    label: 'Chave PIX',
-                    get: function (r) {
-                      return r.pix || '';
-                    },
-                  },
-                ],
-                c.contas,
-              );
-            }}
-          >
-            CSV
-          </Button>
-          <div
-            className="ms7c-cycle"
-            title="Toda conta nova com usuário entra no ciclo. Depois de 5 min sem mexer, o admin recebe: quantas contas, o depósito de todas e o saque das que tiveram."
-          >
-            <DS.Icon name="bell-ring" size={14} />
-            <span>
-              {(function () {
-                const fe = function (k) {
-                  return (
-                    String(k.usuario || '').trim() &&
-                    ((k.status === 'Sacado' && (+k.saque || 0) > 0) || k.status === 'Bloqueado' || k.status === 'Não sacado')
-                  );
-                };
-                const pf = c.contas.filter(function (k) {
-                  return !k.ciclo && fe(k);
-                }).length;
-                const p =
-                  pf ||
-                  c.contas.filter(function (k) {
-                    return !k.ciclo && String(k.usuario || '').trim();
+            <div className="ms7c-cycle" title="Toda conta nova com usuário entra no ciclo. Depois de 5 min sem mexer, o admin recebe: quantas contas, o depósito de todas e o saque das que tiveram.">
+              <DS.Icon name="bell-ring" size={14} />
+              <span>
+                {(function () {
+                  const fe = function (k) {
+                    return String(k.usuario || '').trim() && ((k.status === 'Sacado' && (+k.saque || 0) > 0) || k.status === 'Bloqueado' || k.status === 'Não sacado');
+                  };
+                  const pf = c.contas.filter(function (k) {
+                    return !k.ciclo && fe(k);
                   }).length;
-                return !p
-                  ? 'Envia ao admin 5 min depois que você parar de mexer'
-                  : 'Ciclo ' +
-                      ((c.ciclos || 0) + 1) +
-                      ': ' +
-                      p +
-                      (p === 1 ? ' conta registrada' : ' contas registradas') +
-                      ' · envia 5 min depois da última mudança';
-              })()}
-            </span>
-          </div>
-          {(function () {
-            const fe = function (k) {
-              return (
-                String(k.usuario || '').trim() &&
-                ((k.status === 'Sacado' && (+k.saque || 0) > 0) || k.status === 'Bloqueado' || k.status === 'Não sacado')
-              );
-            };
-            const pf = c.contas.filter(function (k) {
-              return !k.ciclo && fe(k);
-            }).length;
-            const p =
-              pf ||
-              c.contas.filter(function (k) {
-                return !k.ciclo && String(k.usuario || '').trim();
+                  const p =
+                    pf ||
+                    c.contas.filter(function (k) {
+                      return !k.ciclo && String(k.usuario || '').trim();
+                    }).length;
+                  return !p
+                    ? 'Envia ao admin 5 min depois que você parar de mexer'
+                    : 'Ciclo ' + ((c.ciclos || 0) + 1) + ': ' + p + (p === 1 ? ' conta registrada' : ' contas registradas') + ' · envia 5 min depois da última mudança';
+                })()}
+              </span>
+            </div>
+            {(function () {
+              const fe = function (k) {
+                return String(k.usuario || '').trim() && ((k.status === 'Sacado' && (+k.saque || 0) > 0) || k.status === 'Bloqueado' || k.status === 'Não sacado');
+              };
+              const pf = c.contas.filter(function (k) {
+                return !k.ciclo && fe(k);
               }).length;
-            return (
-              <Button
-                size="sm"
-                variant={canAdmin ? 'outline' : 'brand'}
-                iconLeft="send"
-                disabled={!p}
-                onClick={function () {
-                  if (confirm('Enviar ' + p + (p === 1 ? ' conta' : ' contas') + ' para o admin agora?')) DB.A.fecharCiclo(c.id);
-                }}
-              >
-                {p ? 'Enviar ' + p + (p === 1 ? ' conta' : ' contas') + ' ao admin' : 'Nenhuma conta nova'}
-              </Button>
-            );
-          })()}
-          {acts.map(function (a) {
-            return (
-              <Button
-                key={a[1]}
-                size="sm"
-                variant={a[2] === 'Concluída' || a[2] === 'Finalizada' ? 'brand' : 'secondary'}
-                iconLeft={a[0]}
-                onClick={function () {
-                  DB.A.setStatus(c.id, a[2]);
-                }}
-              >
-                {a[1]}
-              </Button>
-            );
-          })}
+              const p =
+                pf ||
+                c.contas.filter(function (k) {
+                  return !k.ciclo && String(k.usuario || '').trim();
+                }).length;
+              return (
+                <Button
+                  size="sm"
+                  variant={canAdmin ? 'outline' : 'brand'}
+                  iconLeft="send"
+                  disabled={!p}
+                  onClick={function () {
+                    if (confirm('Enviar ' + p + (p === 1 ? ' conta' : ' contas') + ' para o admin agora?')) DB.A.fecharCiclo(c.id);
+                  }}
+                >
+                  {p ? 'Enviar ' + p + (p === 1 ? ' conta' : ' contas') + ' ao admin' : 'Nenhuma conta nova'}
+                </Button>
+              );
+            })()}
+            {acts.map(function (a) {
+              return (
+                <Button
+                  key={a[1]}
+                  size="sm"
+                  variant={a[2] === 'Concluída' || a[2] === 'Finalizada' ? 'brand' : 'secondary'}
+                  iconLeft={a[0]}
+                  onClick={function () {
+                    DB.A.setStatus(c.id, a[2]);
+                  }}
+                >
+                  {a[1]}
+                </Button>
+              );
+            })}
           </div>
         </div>
         {c.descricao ? (
@@ -3799,12 +3906,12 @@
             const KI = {
               Contas: ['users', 'black'],
               'Fora da conta': ['user-minus', 'orange'],
-              'Depósito': ['arrow-down-to-line', 'blue'],
+              Depósito: ['arrow-down-to-line', 'blue'],
               'Re-depósito': ['circle-dollar-sign', 'blue'],
               Saque: ['arrow-up-from-line', 'blue'],
               'Depósito × Saque': ['arrow-left-right', 'black'],
               'Saque não contado': ['clock', 'orange'],
-              'Salário': ['wallet', 'green'],
+              Salário: ['wallet', 'green'],
               'Comissão do operador': ['percent', 'purple'],
               'Lucro final': ['trending-up', 'green'],
               'Prejuízo final': ['trending-down', 'error'],
@@ -3826,19 +3933,19 @@
         <p className="ms7c-rule" style={{ margin: '-8px 0 0' }}>
           <DS.Icon name="calculator" size={14} />
           <span>
-          {'Conta do resultado: saque ' +
-            MS7.brl(k.saq) +
-            (k.bau ? ' + baú ' + MS7.brl(k.saq - k.saq + (k.ds - (k.saq - k.dep - k.red))) : '') +
-            (k.sal ? ' + salário ' + MS7.brl(k.sal) : '') +
-            ' − depósito ' +
-            MS7.brl(k.dep + k.red) +
-            ' − comissão ' +
-            MS7.brl(k.com) +
-            ' (' +
-            DB.comText(c) +
-            ') = ' +
-            MS7.brl(k.lucro) +
-            (k.pend ? ' · ' + MS7.brl(k.pend) + ' de saque fora da conta (contas que não estão como Sacado)' : '')}
+            {'Conta do resultado: saque ' +
+              MS7.brl(k.saq) +
+              (k.bau ? ' + baú ' + MS7.brl(k.saq - k.saq + (k.ds - (k.saq - k.dep - k.red))) : '') +
+              (k.sal ? ' + salário ' + MS7.brl(k.sal) : '') +
+              ' − depósito ' +
+              MS7.brl(k.dep + k.red) +
+              ' − comissão ' +
+              MS7.brl(k.com) +
+              ' (' +
+              DB.comText(c) +
+              ') = ' +
+              MS7.brl(k.lucro) +
+              (k.pend ? ' · ' + MS7.brl(k.pend) + ' de saque fora da conta (contas que não estão como Sacado)' : '')}
           </span>
         </p>
         <LotesPix c={c} canAdmin={canAdmin} />
@@ -3857,11 +3964,24 @@
     const [q, setQ] = React.useState('');
     const [per, setPer] = usePersist(pk + '-per', 'Todos');
     const [wiz, setWiz] = React.useState(false);
-    const [open, setOpen] = React.useState(function () {
+    const OK = 'ms7op-aberta-' + pk;
+    const [open, setOpen0] = React.useState(function () {
       const x = localStorage.getItem('ms7op-open-coop');
       localStorage.removeItem('ms7op-open-coop');
-      return x;
+      if (x) return x;
+      try {
+        return sessionStorage.getItem(OK) || null;
+      } catch (e) {
+        return null;
+      }
     });
+    const setOpen = function (v) {
+      try {
+        if (v) sessionStorage.setItem(OK, v);
+        else sessionStorage.removeItem(OK);
+      } catch (e) {}
+      setOpen0(v);
+    };
     const [dt, setDt] = usePersist(pk + '-dt', 'Todos');
     const [de0, setDe0] = usePersist(pk + '-de', '');
     const [ate0, setAte0] = usePersist(pk + '-ate', '');
@@ -3890,11 +4010,7 @@
       [hoje],
     );
     const dataDe = function (c) {
-      return c.status === 'Concluída'
-        ? DB.comData(c)
-        : c.status === 'Finalizada' || c.status === 'Lixeira'
-          ? DB.dIso(c.finalizadaEm) || DB.dIso(c.fim) || DB.dIni(c)
-          : DB.dIni(c);
+      return c.status === 'Concluída' ? DB.comData(c) : c.status === 'Finalizada' || c.status === 'Lixeira' ? DB.dIso(c.finalizadaEm) || DB.dIso(c.fim) || DB.dIni(c) : DB.dIni(c);
     };
     const naData = function (c) {
       if (!rng) return true;
@@ -3935,21 +4051,7 @@
           return m.link + ' ' + m.nome;
         })
         .join(' ');
-      return [
-        c.cliente,
-        c.plataforma,
-        c.linkN,
-        c.rede,
-        c.id,
-        String(c.id).replace(/^C-/, ''),
-        DB.opName(c.opId),
-        DB.coopNome(c),
-        cm.link,
-        cm.usuario,
-        mt,
-      ]
-        .map(qn)
-        .join(' | ');
+      return [c.cliente, c.plataforma, c.linkN, c.rede, c.id, String(c.id).replace(/^C-/, ''), DB.opName(c.opId), DB.coopNome(c), cm.link, cm.usuario, mt].map(qn).join(' | ');
     };
     const naAba = function (c) {
       return st === 'ativas'
@@ -3960,11 +4062,19 @@
             ? c.status === 'Concluída'
             : c.status === 'Lixeira';
     };
-    const vis = base.filter(function (c) {
-      if (!qq) return naAba(c);
-      if (txt(c).indexOf(qq) < 0) return false;
-      return st === 'lixeira' ? c.status === 'Lixeira' : c.status !== 'Lixeira';
-    });
+    const ordN = function (c) {
+      return +String(c.id || '').replace(/\D/g, '') || 0;
+    };
+    const vis = base
+      .slice()
+      .sort(function (a, b) {
+        return ordN(b) - ordN(a);
+      })
+      .filter(function (c) {
+        if (!qq) return naAba(c);
+        if (txt(c).indexOf(qq) < 0) return false;
+        return st === 'lixeira' ? c.status === 'Lixeira' : c.status !== 'Lixeira';
+      });
     const tk = vis.reduce(
       function (a, c) {
         const k = DB.calc(c);
@@ -3979,30 +4089,14 @@
       },
       { dep: 0, saq: 0, ds: 0, sal: 0, com: 0, lucro: 0, pend: 0 },
     );
-    const abaNome = qq
-      ? 'Resultado da busca'
-      : st === 'ativas'
-        ? 'Ativas'
-        : st === 'finalizadas'
-          ? 'Finalizadas'
-          : st === 'concluidas'
-            ? 'Concluídas'
-            : 'Lixeira';
+    const abaNome = qq ? 'Resultado da busca' : st === 'ativas' ? 'Ativas' : st === 'finalizadas' ? 'Finalizadas' : st === 'concluidas' ? 'Concluídas' : 'Lixeira';
     const final = !qq && st === 'concluidas';
     const fimV = final ? tk.lucro : tk.ds;
-    const fimL = final
-      ? fimV >= 0
-        ? 'Lucro final'
-        : 'Prejuízo final'
-      : st === 'ativas' && !qq
-        ? fimV >= 0
-          ? 'Resultado parcial'
-          : 'Prejuízo parcial'
-        : 'Depósito × Saque';
+    const fimL = final ? (fimV >= 0 ? 'Lucro final' : 'Prejuízo final') : st === 'ativas' && !qq ? (fimV >= 0 ? 'Resultado parcial' : 'Prejuízo parcial') : 'Depósito × Saque';
     const count = function (fn) {
       return base.filter(fn).length;
     };
-    if (open && DB.coop(open))
+    if (open && (DB.coop(open) || DB.Sync.status === 'syncing'))
       return (
         <CoopDetail
           id={open}
@@ -4123,20 +4217,6 @@
             </div>
           );
         })()}
-        {!isOp && final && vis.length ? (
-          <p className="ms7c-rule">
-            <DS.Icon name="info" size={14} />
-            <span>
-              {'Dep. × Saque ' +
-                MS7.brl(tk.ds) +
-                (tk.sal ? ' + salário ' + MS7.brl(tk.sal) : '') +
-                ' − comissão ' +
-                MS7.brl(tk.com) +
-                ' = ' +
-                MS7.brl(tk.lucro)}
-            </span>
-          </p>
-        ) : null}
         {!isOp && !final && !qq && st !== 'lixeira' && vis.length ? (
           <p className="ms7c-rule">
             <DS.Icon name="info" size={14} />
@@ -4196,6 +4276,28 @@
                 }),
               )}
             />
+          ) : null}
+          {!isOp &&
+          st === 'lixeira' &&
+          count(function (c) {
+            return c.status === 'Lixeira';
+          }) ? (
+            <Button
+              size="sm"
+              variant="danger"
+              iconLeft="trash-2"
+              onClick={function () {
+                const nL = count(function (c) {
+                  return c.status === 'Lixeira';
+                });
+                if (confirm('Apagar de vez ' + nL + (nL === 1 ? ' item' : ' itens') + ' da lixeira? Isso não tem volta.')) {
+                  const r = DB.A.limparLixeira(bau ? 'bau' : 'coop');
+                  toast('Lixeira limpa · ' + r + (r === 1 ? ' item apagado' : ' itens apagados'));
+                }
+              }}
+            >
+              Limpar lixeira
+            </Button>
           ) : null}
           <div style={{ flex: '1 1 200px', maxWidth: 300, marginLeft: 'auto' }}>
             <Input
@@ -4878,9 +4980,7 @@
           <div style={{ flex: 1, minWidth: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
             <div>
               <div style={{ fontSize: 14, fontWeight: 600, letterSpacing: '-0.005em', lineHeight: 1.3 }}>{a.titulo}</div>
-              <p style={{ margin: '3px 0 0', fontSize: 13, fontWeight: 500, lineHeight: 1.5, whiteSpace: 'pre-line', color: 'var(--text-secondary)' }}>
-                {a.conteudo}
-              </p>
+              <p style={{ margin: '3px 0 0', fontSize: 13, fontWeight: 500, lineHeight: 1.5, whiteSpace: 'pre-line', color: 'var(--text-secondary)' }}>{a.conteudo}</p>
             </div>
             <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
               <span className="ms7-num" style={{ fontSize: 12, fontWeight: 500, color: 'var(--text-secondary)' }}>
@@ -4938,7 +5038,10 @@
                       }}
                     ></i>
                   </span>
-                  <span className="ms7-num" style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', color: al.length && fe.length === al.length ? 'var(--ms7-green)' : 'var(--text-secondary)' }}>
+                  <span
+                    className="ms7-num"
+                    style={{ fontSize: 12.5, fontWeight: 600, whiteSpace: 'nowrap', color: al.length && fe.length === al.length ? 'var(--ms7-green)' : 'var(--text-secondary)' }}
+                  >
                     {fe.length + ' de ' + al.length + ' fizeram'}
                   </span>
                   <DS.Icon name={open ? 'chevron-up' : 'chevron-down'} size={16} color="var(--text-secondary)" />
@@ -4948,7 +5051,20 @@
                     {al.map(function (o) {
                       const ok = feito(a, o.id);
                       return (
-                        <span key={o.id} style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 10px', borderRadius: 8, background: 'var(--surface-muted)', fontSize: 13, fontWeight: 500, minWidth: 0 }}>
+                        <span
+                          key={o.id}
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 8,
+                            padding: '6px 10px',
+                            borderRadius: 8,
+                            background: 'var(--surface-muted)',
+                            fontSize: 13,
+                            fontWeight: 500,
+                            minWidth: 0,
+                          }}
+                        >
                           <DS.Icon name={ok ? 'circle-check' : 'circle-x'} size={15} strokeWidth={2} color={ok ? 'var(--ms7-green)' : 'var(--ms7-error)'} />
                           <span style={{ flex: 1, minWidth: 0, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{o.nome}</span>
                           <span className="ms7-num" style={{ fontSize: 11.5, color: 'var(--text-secondary)', whiteSpace: 'nowrap' }}>
@@ -5080,7 +5196,9 @@
             />
             <div style={{ background: 'var(--surface-muted)', borderRadius: 12, padding: 14, display: 'flex', alignItems: 'center', gap: 8 }}>
               <DS.Icon name="globe" size={14} color="var(--text-secondary)" />
-              <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.45 }}>{'Aparece para todo mundo que usa o painel: operadores, clientes e\u00a0admins.'}</span>
+              <span style={{ fontSize: 12.5, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.45 }}>
+                {'Aparece para todo mundo que usa o painel: operadores, clientes e\u00a0admins.'}
+              </span>
             </div>
             <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 8 }}>
               {edId != null ? (
@@ -5135,8 +5253,11 @@
             return a + (+k.deposito || 0) + (+k.redeposito || 0);
           }, 0),
         );
-        const com = r2(c.proprio ? 0 : DB.calc(c).com || 0);
-        return { c: c, dep: dep, com: com, total: r2(dep + com) };
+        const feitas = V.filter(function (k) {
+          return String(k.usuario || '').trim();
+        }).length;
+        const com = r2(c.proprio || !c.opId ? 0 : feitas * 1.5);
+        return { c: c, dep: dep, com: com, feitas: feitas, total: r2(dep + com) };
       })
       .filter(function (x) {
         return x.total > 0;
@@ -5177,7 +5298,7 @@
     const ks = Object.keys(G)
       .filter(function (k) {
         const g = G[k];
-        return st === 'todos' || (st === 'pend' ? g.falta > 0 : g.falta <= 0);
+        return st === 'todos' || (st === 'pend' ? g.falta > 0 || g.cred > 0 : g.falta <= 0);
       })
       .sort(function (a, b) {
         return DB.opName(a).localeCompare(DB.opName(b), 'pt-BR');
@@ -5195,26 +5316,30 @@
     function salvarEnvio() {
       if (!(n > 0)) return;
       const g = G[reg.k] || { l: [] };
+      const dv = !!reg.dev;
       setLed(function (cur) {
         return (Array.isArray(cur) ? cur : []).concat([
           {
             id: 'eb' + Date.now(),
             opId: reg.k,
-            v: r2(n),
+            v: dv ? -r2(n) : r2(n),
+            tipo: dv ? 'dev' : 'env',
             em: Date.now(),
-            refNome: g.l
-              .filter(function (x) {
-                return x.falta > 0;
-              })
-              .map(function (x) {
-                return nm(x.c);
-              })
-              .join(', '),
+            refNome: dv
+              ? 'Devolução'
+              : g.l
+                  .filter(function (x) {
+                    return x.falta > 0;
+                  })
+                  .map(function (x) {
+                    return nm(x.c);
+                  })
+                  .join(', '),
           },
         ]);
       });
       setReg(null);
-      toast('Envio de ' + MS7.brl(n) + ' anotado');
+      toast((dv ? 'Devolução de ' : 'Envio de ') + MS7.brl(n) + ' anotada');
     }
     const td = { padding: '9px 8px', textAlign: 'right', fontVariantNumeric: 'tabular-nums', whiteSpace: 'nowrap' };
     return (
@@ -5224,6 +5349,18 @@
             { icon: 'send', label: 'Total p/ envio', value: MS7.brl(r2(T.d)), tone: 'blue' },
             { icon: 'circle-check', label: 'Já enviado', value: MS7.brl(r2(T.e)), tone: 'green' },
             { icon: 'clock', label: 'Falta enviar', value: MS7.brl(r2(T.f)), tone: 'orange' },
+            {
+              icon: 'undo-2',
+              label: 'A devolver',
+              value: MS7.brl(
+                r2(
+                  Object.keys(G).reduce(function (a, k) {
+                    return a + G[k].cred;
+                  }, 0),
+                ),
+              ),
+              tone: 'yellow',
+            },
           ]}
         />
         <DS.Tabs
@@ -5260,12 +5397,25 @@
                       {'Total ' + MS7.brl(g.dev) + ' · enviado ' + MS7.brl(g.env)}
                     </div>
                   </div>
-                  {g.falta > 0 ? (
-                    <DS.Badge tone="orange">{'Falta ' + MS7.brl(g.falta)}</DS.Badge>
-                  ) : (
-                    <DS.Badge tone="green">Tudo enviado</DS.Badge>
-                  )}
-                  {g.cred > 0 ? <span className="ms7-num" style={{ fontSize: 13, fontWeight: 600 }}>{'Crédito ' + MS7.brl(g.cred)}</span> : null}
+                  {g.falta > 0 ? <DS.Badge tone="orange">{'Falta ' + MS7.brl(g.falta)}</DS.Badge> : <DS.Badge tone="green">Tudo enviado</DS.Badge>}
+                  {g.cred > 0 ? (
+                    <React.Fragment>
+                      <span title="Você enviou mais do que os baús dele somam (sobrou na conta dele). Ele tem que devolver." style={{ display: 'inline-flex' }}>
+                        <DS.Badge tone="orange">{'Devolver ' + MS7.brl(g.cred)}</DS.Badge>
+                      </span>
+                      <DS.Button
+                        size="sm"
+                        variant="brand"
+                        iconLeft="undo-2"
+                        onClick={function () {
+                          setVal(String(g.cred.toFixed(2)).replace('.', ','));
+                          setReg({ k: k, nome: nome, falta: g.cred, dev: true });
+                        }}
+                      >
+                        Registrar devolução
+                      </DS.Button>
+                    </React.Fragment>
+                  ) : null}
                   <DS.Button
                     size="sm"
                     variant="secondary"
@@ -5297,7 +5447,9 @@
                             <span style={{ width: 110, color: 'var(--text-secondary)' }}>
                               {new Date(e.em).toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
                             </span>
-                            <b className="ms7-num" style={{ width: 100, fontWeight: 600 }}>{MS7.brl(e.v)}</b>
+                            <b className="ms7-num" style={{ width: 100, fontWeight: 600, color: e.v < 0 ? 'var(--ms7-green)' : 'inherit' }}>
+                              {e.v < 0 ? '+' + MS7.brl(-e.v) + ' dev.' : MS7.brl(e.v)}
+                            </b>
                             <span
                               style={{
                                 flex: 1,
@@ -5354,12 +5506,13 @@
                                 <span style={{ marginLeft: 6, fontSize: 12, fontWeight: 600, color: 'var(--text-secondary)' }}>{x.c.status}</span>
                               </td>
                               <td style={td}>{MS7.brl(x.dep)}</td>
-                              <td style={td}>{MS7.brl(x.com)}</td>
+                              <td style={td} title={x.feitas + ' contas × R$ 1,50'}>
+                                {MS7.brl(x.com)}
+                                <div style={{ fontSize: 11, fontWeight: 600, color: 'var(--text-secondary)' }}>{x.feitas + ' × 1,50'}</div>
+                              </td>
                               <td style={Object.assign({}, td, { fontWeight: 600 })}>{MS7.brl(x.total)}</td>
                               <td style={td}>{x.env ? MS7.brl(x.env) : '—'}</td>
-                              <td style={Object.assign({}, td, { fontWeight: 600, color: x.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>
-                                {x.falta > 0 ? MS7.brl(x.falta) : 'OK'}
-                              </td>
+                              <td style={Object.assign({}, td, { fontWeight: 600, color: x.falta > 0 ? 'var(--ms7-orange)' : 'var(--ms7-green)' })}>{x.falta > 0 ? MS7.brl(x.falta) : 'OK'}</td>
                             </tr>
                           );
                         })}
@@ -5374,7 +5527,11 @@
           })
         ) : (
           <DS.Card padding={16}>
-            <Empty art="Wallet" title={st === 'pend' ? 'Nada falta enviar nos baús.' : 'Nada aqui.'} sub={st === 'pend' ? 'Quando um baú tiver depósito ou comissão a enviar, ele aparece\u00a0aqui.' : 'Mude o filtro acima para ver outros\u00a0envios.'} />
+            <Empty
+              art="Wallet"
+              title={st === 'pend' ? 'Nada falta enviar nos baús.' : 'Nada aqui.'}
+              sub={st === 'pend' ? 'Quando um baú tiver depósito ou comissão a enviar, ele aparece\u00a0aqui.' : 'Mude o filtro acima para ver outros\u00a0envios.'}
+            />
           </DS.Card>
         )}
         {reg ? (
@@ -5383,8 +5540,8 @@
             onClose={function (e) {
               if (e && e.currentTarget && e.currentTarget.tagName === 'BUTTON') setReg(null);
             }}
-            title="Registrar envio"
-            subtitle={reg.nome + ' · falta ' + MS7.brl(reg.falta)}
+            title={reg.dev ? 'Registrar devolução' : 'Registrar envio'}
+            subtitle={reg.nome + (reg.dev ? ' · a devolver ' : ' · falta ') + MS7.brl(reg.falta)}
             size="sm"
             footer={
               <React.Fragment>
@@ -5403,7 +5560,7 @@
             }
           >
             <DS.Input
-              label="Quanto você enviou agora"
+              label={reg.dev ? 'Quanto ele devolveu' : 'Quanto você enviou agora'}
               prefix="R$"
               value={val}
               onChange={function (e) {
@@ -5418,7 +5575,8 @@
   }
   function BauScreen(p) {
     const adm = !p.session || p.session.role !== 'operador';
-    const [aba, setAba] = usePersist('bau-aba', 'baus');
+    const [aba0, setAba] = usePersist('bau-aba', 'baus');
+    const aba = aba0 === 'envios' ? 'baus' : aba0;
     if (!adm) return <CooperacoesScreen session={p.session} bau={true} />;
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
@@ -5429,13 +5587,10 @@
           items={[
             { id: 'baus', label: 'Baús' },
             { id: 'metas', label: 'Metas' },
-            { id: 'envios', label: 'Envios e pagamentos' },
           ]}
-          style={{ maxWidth: 560 }}
+          style={{ maxWidth: 380 }}
         />
-        {aba === 'envios' ? (
-          <EnviosBau />
-        ) : aba === 'metas' ? (
+        {aba === 'metas' ? (
           React.createElement(window.MetasScreen, {
             go: p.go,
             role: p.role || (p.session && p.session.role),
@@ -5460,11 +5615,5 @@
       </div>
     );
   }
-  Object.assign(window, {
-    MinhasScreen: MinhasScreen,
-    BauScreen: BauScreen,
-    CooperacoesScreen: CooperacoesScreen,
-    ListasScreen: ListasScreen,
-    AvisosScreen: AvisosScreen,
-  });
+  Object.assign(window, { EnviosBau: EnviosBau, MinhasScreen: MinhasScreen, BauScreen: BauScreen, CooperacoesScreen: CooperacoesScreen, ListasScreen: ListasScreen, AvisosScreen: AvisosScreen });
 })();

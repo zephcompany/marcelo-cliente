@@ -45,7 +45,7 @@ const proxies=[
 {id:1,label:'Residencial BR #01',login:'ms7u01',host:'proxy.marceloproxies.com.br',port:'823',status:'Ativa',expira:'14/10/2026',uso:62},
 {id:2,label:'Residencial BR #02',login:'ms7u02',host:'proxy.marceloproxies.com.br',port:'823',status:'Expirando',expira:'25/09/2026',uso:91},
 {id:3,label:'Mobile 4G SP',login:'ms7m01',host:'proxy.marceloproxies.com.br',port:'823',status:'Expirada',expira:'10/09/2026',uso:100}];
-const proxyProdutos=[{id:'p1',nome:'Residencial 1 GB',desc:'IPs residenciais rotativos no Brasil.',preco:39.9},{id:'p2',nome:'Residencial 5 GB',desc:'Melhor custo para equipes pequenas.',preco:169.9},{id:'p3',nome:'Mobile 4G dedicado',desc:'IP móvel exclusivo, 30 dias.',preco:249.9}];
+const proxyProdutos=[[1,8],[2,15],[3,22.5],[10,75],[20,150],[50,359.9],[100,700],[200,1390],[500,2597]].map(function(x){return {id:'gb'+x[0],gb:x[0],nome:'Proxy residencial '+x[0]+' GB',desc:'IP brasileiro rotativo · entrega na hora',preco:x[1]};});
 const planos=[{id:'starter',nome:'Starter',seats:5,preco:147},{id:'pro',nome:'Pro',seats:10,preco:297},{id:'scale',nome:'Scale',seats:25,preco:597}];
 const tenants=[
 {id:1,tenant:'MS7 Operações',owner:'marcelo@ms7.com',status:'Ativa',plano:'Pro',uso:'6/10',cobranca:'R$ 297,00',proximo:'05/10/2026',cortesia:false},

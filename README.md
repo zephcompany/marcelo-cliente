@@ -1,8 +1,8 @@
 # MS Control · front novo (Zeph Company)
 
-Redesign da camada visual do painel **MS Control** (repo de produção: `PAINEL-ADMIN-MARCELO-NOVO`, no Railway). Mesma arquitetura, mesmas funções, mesma API — só o visual mudou. Direção **Black Glass**: painel preto, cards de vidro fosco, acento lima, fonte Geist, ícones lucide + emojis pontuais, assets animados mostrando cada função antes de usar, login e menu novos.
+Redesign da camada visual do painel **MS Control** (repo de produção: `PAINEL-ADMIN-MARCELO-NOVO`, no Railway). Mesma arquitetura, mesmas funções, mesma API — só o visual mudou. Direção **CRM glass** (nov/2026): moldura arredondada sobre fundo grafite quente, menu em pílula no topo, trilho de ícones flutuante, título grande com estatísticas, cards de vidro escuro, preloader com o logo MS. Regras completas na skill `skill/ms-control-crm-glass/SKILL.md`.
 
-- Base: snapshot dos arquivos **ao vivo** do painel em 29/10/2026 (14h30) + as atualizações de lógica que o Marcelo publicou até 29/10 à noite (`ScreensCoop`, `ScreensMetas`, `ScreensTarefas`, `store.js`) reaplicadas por cima do visual novo. Tudo que existia continua existindo.
+- Base: **arquivos ao vivo do painel em 10/11/2026 (13h)**, baixados da produção. Todas as mudanças de lógica até essa data (lixeira, usuário repetido, passar contas com numeração e aposta, borracha do cliente, envios do Baú em Metas, filtro de data, conferência por titular e saque a saque, Proxies para operadores, notificação curta etc.) foram juntadas por cima do visual novo, tela por tela.
 - Stack intacta: React 18 (UMD) + Babel standalone no navegador, Lucide, `_ds_bundle.js`, `store.js`, `server/server.cjs`. Sem build, sem dependência nova.
 - Nada de lógica foi alterado: `store.js`, `data.js`, `sw.js`, `manifest.webmanifest`, ícones e a pasta `server/` são cópias idênticas às do painel.
 
@@ -34,11 +34,11 @@ demo.html, tools/     ← prévia estática para o GitHub Pages (gerada por tool
 1. No repo `PAINEL-ADMIN-MARCELO-NOVO`, substitua estes arquivos pelos daqui (raiz do repo):
    `index.html`, `ms7-ui.css`, `ms7-ui.jsx`, `RailNav.jsx`, `OperacoesApp.jsx`, `Shared.jsx` e todos os `Screens*.jsx`
    (`ScreensAnalises`, `ScreensConferencia`, `ScreensConta`, `ScreensCoop`, `ScreensDashboard`, `ScreensGestao`, `ScreensMetas`, `ScreensPix`, `ScreensPonto`, `ScreensTarefas`, `ScreensVagas`).
-2. **Não** substitua `store.js`, `data.js`, `server/` — mantenha os do repo de produção (aqui são cópias de 29/10; se o painel mudou depois disso, os seus são mais novos).
-3. Se alguma tela (`Screens*.jsx`) tiver sido alterada no repo de produção **depois de 29/10 14h30**, compare antes de substituir e reaplique essa mudança de lógica por cima do arquivo novo (os arquivos daqui estão formatados em várias linhas, o que facilita o diff).
+2. **Não** substitua `store.js`, `data.js`, `sw.js`, `manifest.webmanifest`, ícones nem `server/` — mantenha os do repo de produção (os daqui são cópias de 10/11).
+3. Se alguma tela (`Screens*.jsx`) tiver sido alterada no repo de produção **depois de 10/11/2026 13h**, compare antes de substituir e reaplique essa mudança de lógica por cima do arquivo novo (os arquivos daqui estão formatados em várias linhas, o que facilita o diff).
 4. Commit + push. O Railway publica sozinho e os navegadores recarregam (`/api/version`).
 
-Para pedir ao Claude a integração, basta: *"Copie os arquivos de front do repo zephcompany/marcelo-cliente listados no README para a raiz deste repo, sem mexer em store.js, data.js e server/. Se alguma Screens*.jsx daqui tiver mudança de lógica feita depois de 29/10, reaplique por cima do arquivo novo."*
+Para pedir ao Claude a integração, basta: *"Copie os arquivos de front do repo zephcompany/marcelo-cliente listados no README para a raiz deste repo, sem mexer em store.js, data.js e server/. Se alguma Screens*.jsx de produção tiver mudança de lógica feita depois de 10/11/2026 13h, reaplique por cima do arquivo novo."*
 
 ## Rodar local
 

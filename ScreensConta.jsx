@@ -72,12 +72,7 @@
       setEdit('new');
     }
     function save() {
-      if (edit === 'new')
-        setRows(
-          rows.concat([
-            { id: 'a' + Date.now(), nome: form.nome || 'Novo aluno', email: form.email, ativo: true, criado: '22/09/2026', resultado: 0, contas: 0 },
-          ]),
-        );
+      if (edit === 'new') setRows(rows.concat([{ id: 'a' + Date.now(), nome: form.nome || 'Novo aluno', email: form.email, ativo: true, criado: '22/09/2026', resultado: 0, contas: 0 }]));
       else
         setRows(
           rows.map(function (r) {
@@ -154,12 +149,7 @@
                 {rank.length ? (
                   <RankList rows={rank} valueKey="resultado" />
                 ) : (
-                  <Empty
-                    art="People"
-                    compact
-                    title="Nenhum aluno no ranking"
-                    sub={<Sub>Cadastre o primeiro aluno para começar a acompanhar os resultados.</Sub>}
-                  />
+                  <Empty art="People" compact title="Nenhum aluno no ranking" sub={<Sub>Cadastre o primeiro aluno para começar a acompanhar os resultados.</Sub>} />
                 )}
               </Card>
             </Grid>
@@ -408,7 +398,7 @@
     }, 0);
     return (
       <React.Fragment>
-        <Card title={Tt('🛒', 'Comprar')} subtitle={nb('Escolha a quantidade de cada produto e pague por PIX')} reveal>
+        <Card title={Tt('🛒', 'Comprar proxy')} subtitle={nb('Pagamento por PIX · entrega após a confirmação')} reveal>
           <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
             {!prod ? (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
@@ -417,7 +407,7 @@
                 })}
               </div>
             ) : prod.length ? (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 14 }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(190px,1fr))', gap: 12 }}>
                 {prod.map(function (p) {
                   const n = q[p.id] || 0;
                   return (
@@ -434,6 +424,7 @@
                         {p.desc}
                       </span>
                       <span className="ms7-num ms7c-price">{MS7.brl(p.preco)}</span>
+                      {p.gb ? <span className="ms7c-c" style={{ fontSize: 12, marginTop: -6 }}>{MS7.brl(p.preco / p.gb) + ' por GB'}</span> : null}
                       <div style={{ display: 'flex', alignItems: 'center', gap: 6, marginTop: 'auto', paddingTop: 8 }}>
                         <DS.IconButton
                           icon="minus"
@@ -471,13 +462,7 @@
                 })}
               </div>
             ) : (
-              <Empty
-                art="Globe"
-                emoji={false}
-                compact
-                title="Nenhum produto à venda agora"
-                sub={<Sub>Quando houver proxies disponíveis para compra, elas aparecem aqui.</Sub>}
-              />
+              <Empty art="Globe" emoji={false} compact title="Nenhum produto à venda agora" sub={<Sub>Quando houver proxies disponíveis para compra, elas aparecem aqui.</Sub>} />
             )}
             <div
               style={{
@@ -599,6 +584,7 @@
     }
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: 24 }}>
+        <LojaCompra />
         <KpiRow
           items={[
             {
@@ -688,15 +674,9 @@
               })}
             </div>
           ) : (
-            <Empty
-              art="Globe"
-              emoji={false}
-              title="Nenhuma proxy ainda"
-              sub={<Sub>Compre uma proxy abaixo e ela aparece aqui com o endereço de conexão pronto para copiar.</Sub>}
-            />
+            <Empty art="Globe" emoji={false} title="Nenhuma proxy ainda" sub={<Sub>Compre uma proxy abaixo e ela aparece aqui com o endereço de conexão pronto para copiar.</Sub>} />
           )}
         </Card>
-        <LojaCompra />
       </div>
     );
   }
@@ -824,7 +804,9 @@
                 </div>
                 <div style={{ flex: '1 1 260px', minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-                    <span className="ms7c-c" style={{ fontWeight: 600 }}>{'Uso de seats — ' + P.nome}</span>
+                    <span className="ms7c-c" style={{ fontWeight: 600 }}>
+                      {'Uso de seats — ' + P.nome}
+                    </span>
                     <span className="ms7-num" style={{ fontSize: 14, fontWeight: 600 }}>
                       {used + '/' + P.seats}
                     </span>
@@ -837,10 +819,7 @@
             </Card>
             <Card title="Pague seu plano via PIX" subtitle={nb('Copia e cola ou QR Code, com confirmação automática')} reveal>
               <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
-                <span
-                  className="ms7c-tile is-lg"
-                  style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}
-                >
+                <span className="ms7c-tile is-lg" style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}>
                   <DS.Icon name="qr-code" size={22} strokeWidth={2} />
                 </span>
                 <div style={{ flex: '1 1 240px', display: 'flex', flexDirection: 'column', gap: 3, minWidth: 0 }}>
@@ -1128,9 +1107,7 @@
     return (
       <Card title={Tt('🔔', 'Instalar como app e receber notificações')} subtitle={nb('Quatro passos, uma vez só por aparelho')} reveal>
         <Hint>
-          {nb(
-            'Instale o painel no celular ou no computador. Ele abre como um app e mostra as notificações do sistema: início de meta, conta bloqueada e ciclo fechado com lucro ou prejuízo.',
-          )}
+          {nb('Instale o painel no celular ou no computador. Ele abre como um app e mostra as notificações do sistema: início de meta, conta bloqueada e ciclo fechado com lucro ou prejuízo.')}
         </Hint>
         {step(
           1,
@@ -1164,9 +1141,7 @@
         {step(
           2,
           'Permitir notificações',
-          perm === 'denied'
-            ? 'As notificações foram bloqueadas. Libere nas configurações do site (ícone de cadeado na barra de endereço).'
-            : 'O celular vai pedir permissão. Toque em "Permitir".',
+          perm === 'denied' ? 'As notificações foram bloqueadas. Libere nas configurações do site (ícone de cadeado na barra de endereço).' : 'O celular vai pedir permissão. Toque em "Permitir".',
           <React.Fragment>
             <Badge tone={permBadge[0]} variant="soft" size="sm">
               {permBadge[1]}
@@ -1241,10 +1216,7 @@
             flexWrap: 'wrap',
           }}
         >
-          <span
-            className="ms7c-tile"
-            style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}
-          >
+          <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, var(--ms7-green-900) 12%, var(--surface-card))', color: 'var(--ms7-green-900)' }}>
             <DS.Icon name="monitor-smartphone" size={17} strokeWidth={2} />
           </span>
           <div style={{ flex: '1 1 220px', minWidth: 0 }}>
@@ -1414,6 +1386,16 @@
           setBusy(false);
         });
     }
+    function limpar(u) {
+      if (!confirm('Apagar TODOS os dados do painel de ' + u.email + ' e deixar o painel dele zerado?\n\nUse isto se apareceram dados seus no painel do cliente. Não tem volta.')) return;
+      S.api('/api/users/' + u.id + '/limpar', { method: 'POST' })
+        .then(function () {
+          toast('Painel de ' + u.email + ' zerado');
+        })
+        .catch(function (e) {
+          toast(e.message);
+        });
+    }
     function del(u) {
       if (!confirm('Remover o acesso de ' + u.email + '?')) return;
       S.api('/api/users/' + u.id, { method: 'DELETE' })
@@ -1435,12 +1417,7 @@
           ])
           .concat(session.role === 'super' ? [{ value: 'super', label: 'Super Admin' }] : []);
     function testEnv() {
-      if (
-        !confirm(
-          'Criar os acessos de teste? Gera um login de Cliente (com painel próprio) e um de Operador desse cliente. Se já existirem, as senhas são trocadas.',
-        )
-      )
-        return;
+      if (!confirm('Criar os acessos de teste? Gera um login de Cliente (com painel próprio) e um de Operador desse cliente. Se já existirem, as senhas são trocadas.')) return;
       setBusy(true);
       S.api('/api/test-env', { method: 'POST', body: '{}' })
         .then(function (j) {
@@ -1482,9 +1459,7 @@
         }
       >
         <Hint>
-          {nb(
-            'Cada pessoa entra com o próprio email e senha. Operadores agora são criados só em Gestão → Operadores (nome, email e senha num lugar só); aqui você vê e bloqueia os acessos.',
-          )}
+          {nb('Cada pessoa entra com o próprio email e senha. Operadores agora são criados só em Gestão → Operadores (nome, email e senha num lugar só); aqui você vê e bloqueia os acessos.')}
         </Hint>
         {isCliS && window.VagasCard ? (
           <div style={{ marginBottom: 16 }}>
@@ -1517,10 +1492,7 @@
             .map(function (r) {
               const col = ROLE_COLOR[r[0]] || 'var(--ms7-green-900)';
               return (
-                <div
-                  key={r[1]}
-                  style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 16, borderRadius: 12, background: 'var(--surface-muted)' }}
-                >
+                <div key={r[1]} style={{ display: 'flex', flexDirection: 'column', gap: 10, padding: 16, borderRadius: 12, background: 'var(--surface-muted)' }}>
                   <span className="ms7c-tile" style={{ background: 'color-mix(in oklab, ' + col + ' 12%, var(--surface-card))', color: col }}>
                     <DS.Icon name={r[0]} size={17} strokeWidth={2} />
                   </span>
@@ -1543,13 +1515,7 @@
             })}
           </div>
         ) : !list.length ? (
-          <Empty
-            art="Keys"
-            emoji={false}
-            compact
-            title="Nenhum acesso criado"
-            sub={<Sub>Crie o primeiro acesso para que cada pessoa entre com o próprio email e senha.</Sub>}
-          />
+          <Empty art="Keys" emoji={false} compact title="Nenhum acesso criado" sub={<Sub>Crie o primeiro acesso para que cada pessoa entre com o próprio email e senha.</Sub>} />
         ) : (
           <DataTable
             style={{ margin: '0 -14px -10px' }}
@@ -1650,6 +1616,17 @@
                           setEdit(Object.assign({}, r, { password: '' }));
                         }}
                       />
+                      {r.role === 'cliente' && !isCliS ? (
+                        <IconButton
+                          icon="eraser"
+                          size={30}
+                          iconSize={16}
+                          label="Zerar os dados do painel deste cliente"
+                          onClick={function () {
+                            limpar(r);
+                          }}
+                        />
+                      ) : null}
                       {r.email !== (S.user() || {}).email ? (
                         <IconButton
                           icon="trash-2"
@@ -1844,9 +1821,7 @@
                 );
               })}
               <p style={{ margin: 0, fontSize: 13, fontWeight: 500, lineHeight: 1.5, color: 'var(--text-secondary)' }}>
-                {nb(
-                  'O painel do cliente já vem com 1 operador, 3 plataformas (A e B no "Grupo Teste", C sem grupo), 1 rede e 6 chaves PIX. Os dados dele ficam separados dos seus.',
-                )}
+                {nb('O painel do cliente já vem com 1 operador, 3 plataformas (A e B no "Grupo Teste", C sem grupo), 1 rede e 6 chaves PIX. Os dados dele ficam separados dos seus.')}
               </p>
             </div>
           ) : null}
@@ -1961,10 +1936,7 @@
     return (
       <Card title="Dados de exemplo">
         <div style={{ display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
-          <span
-            className="ms7c-tile is-lg"
-            style={{ background: 'color-mix(in oklab, var(--ms7-orange) 12%, var(--surface-card))', color: 'var(--ms7-orange)' }}
-          >
+          <span className="ms7c-tile is-lg" style={{ background: 'color-mix(in oklab, var(--ms7-orange) 12%, var(--surface-card))', color: 'var(--ms7-orange)' }}>
             <DS.Icon name="flask-conical" size={20} strokeWidth={2} />
           </span>
           <p className="ms7c-s" style={{ margin: 0, flex: '1 1 280px', maxWidth: 640 }}>

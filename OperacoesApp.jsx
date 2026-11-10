@@ -256,7 +256,7 @@
     );
   }
   const OP_NAV = ['geral', 'tarefas', 'cooperacoes', 'bau', 'metas', 'ponto', 'avisos'];
-  const OP_FOOT = ['config'];
+  const OP_FOOT = ['proxies', 'config'];
   const CLI_NAV = ['geral', 'tarefas', 'cooperacoes', 'bau', 'metas', 'analises', 'financeiro', 'avisos', 'gestao'];
   const CLI_FOOT = ['proxies', 'assinaturas', 'config'];
   const CLI_GESTAO = ['operadores', 'plataformas', 'pix'];
@@ -308,7 +308,9 @@
               <DS.Icon name="clock" size={24} />
             </span>
             <b style={{ fontSize: 22, letterSpacing: '-0.02em', fontWeight: 600 }}>{a.teste ? 'Seu teste grátis acabou' : 'Sua assinatura venceu'}</b>
-            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.5 }}>Seus dados estão guardados. Escolha um plano e pague por PIX para continuar usando o painel.</span>
+            <span style={{ fontSize: 14, fontWeight: 500, color: 'var(--text-secondary)', lineHeight: 1.5 }}>
+              Seus dados estão guardados. Escolha um plano e pague por PIX para continuar usando o painel.
+            </span>
             <DS.Button
               variant="brand"
               size="lg"
@@ -551,7 +553,20 @@
       </div>
     ) : null;
     const okBox = msg ? (
-      <div className="ms7-banner" style={{ padding: '10px 12px', fontSize: 13, fontWeight: 600, background: 'var(--ms7-lime-100)', color: 'var(--ms7-green-ink)', boxShadow: 'none', alignItems: 'flex-start', gap: 8, lineHeight: 1.45 }}>
+      <div
+        className="ms7-banner"
+        style={{
+          padding: '10px 12px',
+          fontSize: 13,
+          fontWeight: 600,
+          background: 'var(--ms7-lime-100)',
+          color: 'var(--ms7-green-ink)',
+          boxShadow: 'none',
+          alignItems: 'flex-start',
+          gap: 8,
+          lineHeight: 1.45,
+        }}
+      >
         <DS.Icon name="circle-check" size={16} />
         {msg}
       </div>
@@ -629,7 +644,15 @@
                   <Input label="Senha" type={ver ? 'text' : 'password'} icon="lock" value={cf.password} onChange={cset('password')} hint="Mínimo de 8 caracteres" autoComplete="new-password" />
                   {showPw}
                   {errBox}
-                  <Button type="submit" variant="brand" fullWidth size="lg" iconRight="arrow-right" disabled={busy || !cf.name.trim() || !cf.email.trim() || !cf.password || !cf.whatsapp || !cf.doc} onClick={cadastrar}>
+                  <Button
+                    type="submit"
+                    variant="brand"
+                    fullWidth
+                    size="lg"
+                    iconRight="arrow-right"
+                    disabled={busy || !cf.name.trim() || !cf.email.trim() || !cf.password || !cf.whatsapp || !cf.doc}
+                    onClick={cadastrar}
+                  >
                     {busy ? 'Criando…' : 'Criar conta e começar o teste'}
                   </Button>
                   <div className="foot" style={{ justifyContent: 'center', marginTop: 4 }}>
@@ -844,11 +867,18 @@
     const res = [];
     if (s) {
       Object.keys(TITLES).forEach(function (k) {
-        if ((!isOp || OP_NAV.concat(OP_FOOT).indexOf(k) >= 0) && (session.role !== 'cliente' || CLI_NAV.concat(CLI_FOOT).indexOf(k) >= 0) && (isOp || k !== 'ponto') && TITLES[k].toLowerCase().indexOf(s) >= 0)
+        if (
+          (!isOp || OP_NAV.concat(OP_FOOT).indexOf(k) >= 0) &&
+          (session.role !== 'cliente' || CLI_NAV.concat(CLI_FOOT).indexOf(k) >= 0) &&
+          (isOp || k !== 'ponto') &&
+          TITLES[k].toLowerCase().indexOf(s) >= 0
+        )
           res.push({
-            icon: (NAV.concat(FOOT).find(function (n) {
-              return n.id === k;
-            }) || { icon: 'layout-grid' }).icon,
+            icon: (
+              NAV.concat(FOOT).find(function (n) {
+                return n.id === k;
+              }) || { icon: 'layout-grid' }
+            ).icon,
             t: TITLES[k],
             sub: 'Página',
             fn: function () {
@@ -937,7 +967,20 @@
                 setAct(0);
               }}
             />
-            <kbd style={{ fontFamily: 'inherit', fontSize: 11, fontWeight: 600, padding: '2px 7px', borderRadius: 6, background: 'var(--surface-muted)', color: 'var(--text-secondary)', border: '1px solid var(--line)' }}>esc</kbd>
+            <kbd
+              style={{
+                fontFamily: 'inherit',
+                fontSize: 11,
+                fontWeight: 600,
+                padding: '2px 7px',
+                borderRadius: 6,
+                background: 'var(--surface-muted)',
+                color: 'var(--text-secondary)',
+                border: '1px solid var(--line)',
+              }}
+            >
+              esc
+            </kbd>
           </div>
           <div className="ms7-cmdk-list">
             {s && !list.length ? (
@@ -1090,7 +1133,15 @@
       return (
         <div className="crm-tools">
           <DS.IconButton icon="search" size={40} iconSize={18} label="Buscar (Ctrl+K)" onClick={onSearch} />
-          <DS.IconButton icon={theme === 'dark' ? 'sun' : 'moon'} size={40} iconSize={18} label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'} onClick={function () { setTheme(theme === 'dark' ? 'light' : 'dark'); }} />
+          <DS.IconButton
+            icon={theme === 'dark' ? 'sun' : 'moon'}
+            size={40}
+            iconSize={18}
+            label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+            onClick={function () {
+              setTheme(theme === 'dark' ? 'light' : 'dark');
+            }}
+          />
           <DS.IconButton icon="bell" size={40} iconSize={18} badge={notifications || null} label="Notificações" onClick={onNotificationsClick} />
           <label title={(user.name || first) + ' · ' + user.role + ' · trocar foto'} className="ms7-user-pic crm-me">
             <DS.Avatar src={foto || undefined} name={user.name} size={40} />
@@ -1117,7 +1168,15 @@
             </button>
           )}
           {actions}
-          <DS.IconButton icon={theme === 'dark' ? 'sun' : 'moon'} size={38} iconSize={19} label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'} onClick={function () { setTheme(theme === 'dark' ? 'light' : 'dark'); }} />
+          <DS.IconButton
+            icon={theme === 'dark' ? 'sun' : 'moon'}
+            size={38}
+            iconSize={19}
+            label={theme === 'dark' ? 'Modo claro' : 'Modo escuro'}
+            onClick={function () {
+              setTheme(theme === 'dark' ? 'light' : 'dark');
+            }}
+          />
           <DS.IconButton icon="bell" size={38} iconSize={19} badge={notifications || null} label="Notificações" onClick={onNotificationsClick} />
           <div className="ms7-user">
             <label title="Trocar foto" className="ms7-user-pic">
@@ -1362,7 +1421,13 @@
       }).length,
       nCoop = atv.length - nBau;
     const navT = nav.map(function (n) {
-      return n.id === 'tarefas' ? Object.assign({}, n, { badge: nTar || null }) : n.id === 'bau' ? Object.assign({}, n, { badge: nBau || null }) : n.id === 'cooperacoes' ? Object.assign({}, n, { badge: nCoop || null }) : n;
+      return n.id === 'tarefas'
+        ? Object.assign({}, n, { badge: nTar || null })
+        : n.id === 'bau'
+          ? Object.assign({}, n, { badge: nBau || null })
+          : n.id === 'cooperacoes'
+            ? Object.assign({}, n, { badge: nCoop || null })
+            : n;
     });
     const foot = (
       isOp
@@ -1443,48 +1508,84 @@
           />
         )}
         <div className="crm-body">
-        {mobile ? null : (
-          <CrmRail
-            activeId={pg}
-            tools={[
-              { label: 'Buscar (Ctrl+K)', icon: 'search', onClick: function () { setSq(true); } },
-              { id: 'tarefas', label: 'Nova tarefa', icon: 'plus', onClick: function () { go('tarefas'); } },
-              { id: 'avisos', label: 'Avisos', icon: 'megaphone', onClick: function () { go('avisos'); } },
-              '-',
-            ]
-              .concat(
-                foot.map(function (f) {
-                  return { id: f.id, label: f.label, icon: f.icon, onClick: function () { go(f.id); } };
-                }),
-              )
-              .concat(['-', { label: theme === 'dark' ? 'Modo claro' : 'Modo escuro', icon: theme === 'dark' ? 'sun' : 'moon', onClick: function () { setTheme(theme === 'dark' ? 'light' : 'dark'); } }])}
-          />
-        )}
-        <main className="ms7-main">
-          {mobile ? (
-            <AppHeader
-              title={title}
-              subtitle={SUBT[pg]}
-              user={{ name: session.name, role: roleLabel }}
-              mobile={mobile}
-              notifications={unread}
-              theme={theme}
-              setTheme={setTheme}
-              onSearch={function () {
-                setSq(true);
-              }}
-              onNotificationsClick={function () {
-                setNp(true);
-              }}
+          {mobile ? null : (
+            <CrmRail
+              activeId={pg}
+              tools={[
+                {
+                  label: 'Buscar (Ctrl+K)',
+                  icon: 'search',
+                  onClick: function () {
+                    setSq(true);
+                  },
+                },
+                {
+                  id: 'tarefas',
+                  label: 'Nova tarefa',
+                  icon: 'plus',
+                  onClick: function () {
+                    go('tarefas');
+                  },
+                },
+                {
+                  id: 'avisos',
+                  label: 'Avisos',
+                  icon: 'megaphone',
+                  onClick: function () {
+                    go('avisos');
+                  },
+                },
+                '-',
+              ]
+                .concat(
+                  foot.map(function (f) {
+                    return {
+                      id: f.id,
+                      label: f.label,
+                      icon: f.icon,
+                      onClick: function () {
+                        go(f.id);
+                      },
+                    };
+                  }),
+                )
+                .concat([
+                  '-',
+                  {
+                    label: theme === 'dark' ? 'Modo claro' : 'Modo escuro',
+                    icon: theme === 'dark' ? 'sun' : 'moon',
+                    onClick: function () {
+                      setTheme(theme === 'dark' ? 'light' : 'dark');
+                    },
+                  },
+                ])}
             />
-          ) : (
-            <AppHeader crm="title" title={pg === 'geral' ? 'Visão geral' : title} user={{ name: session.name, role: roleLabel }} />
           )}
-          {session.role === 'cliente' ? <TesteFaixa session={session} go={go} naPag={pg === 'assinaturas'} /> : null}
-          <div className="ms7-page" key={pg} style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 16 : 24 }}>
-            <S go={go} role={session.role} session={session} />
-          </div>
-        </main>
+          <main className="ms7-main">
+            {mobile ? (
+              <AppHeader
+                title={title}
+                subtitle={SUBT[pg]}
+                user={{ name: session.name, role: roleLabel }}
+                mobile={mobile}
+                notifications={unread}
+                theme={theme}
+                setTheme={setTheme}
+                onSearch={function () {
+                  setSq(true);
+                }}
+                onNotificationsClick={function () {
+                  setNp(true);
+                }}
+              />
+            ) : (
+              <AppHeader crm="title" title={pg === 'geral' ? 'Visão geral' : title} user={{ name: session.name, role: roleLabel }} />
+            )}
+            {session.role === 'cliente' ? <TesteFaixa session={session} go={go} naPag={pg === 'assinaturas'} /> : null}
+            <div className="ms7-page" key={pg} style={{ display: 'flex', flexDirection: 'column', gap: mobile ? 16 : 24 }}>
+              <S go={go} role={session.role} session={session} />
+            </div>
+          </main>
         </div>
         <Toaster />
         <PushPreview />
